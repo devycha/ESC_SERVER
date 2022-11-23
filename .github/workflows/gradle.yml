@@ -65,8 +65,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws deploy create-deployment \
-          --application-name ecs \
-          --deployment-group-name ecs-server-group \
+          --application-name esc \
+          --deployment-group-name esc-server-group \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=escawsbucket,bundleType=zip,key=springboot-intro-build.zip \
           --region ap-northeast-2
