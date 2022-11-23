@@ -13,4 +13,4 @@ else
 fi
 
 echo ">>> DEPLOY_JAR 배포"
-nohup java -jar $DEPLOY_PATH &
+nohup java -jar $DEPLOY_PATH > /dev/null 2> /dev/null < /dev/null &
