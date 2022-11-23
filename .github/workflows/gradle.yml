@@ -68,5 +68,5 @@ jobs:
           --application-name ecs \
           --deployment-group-name ecs-server-group \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=ecsawsbucket,bundleType=zip,key=springboot-intro-build.zip \
+          --s3-location bucket=escawsbucket,bundleType=zip,key=springboot-intro-build.zip \
           --region ap-northeast-2
