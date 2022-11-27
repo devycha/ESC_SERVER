@@ -2,10 +2,13 @@ package com.minwonhaeso.esc.stadium.entity;
 
 import com.sun.istack.NotNull;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +19,6 @@ import java.util.List;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@ToString
 public class Stadium {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,6 +87,11 @@ public class Stadium {
 //    @Column(name = "reviews")
 //    private List<Review> reviews;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist() {

@@ -8,8 +8,10 @@ import com.minwonhaeso.esc.stadium.entity.StadiumImg;
 import com.minwonhaeso.esc.stadium.repository.StadiumImgRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ public class StadiumService {
     private final StadiumImgRepository stadiumImgRepository;
 
 
+    @Transactional
     public CreateStadiumDto.Response createStadium(CreateStadiumDto.Request request) {
         Stadium stadium = Stadium.builder()
                 .name(request.getName())
@@ -47,10 +50,10 @@ public class StadiumService {
         return CreateStadiumDto.Response.fromEntity(stadium);
     }
 
+    @Transactional
     public void deleteStadium(Long stadiumId) {
-        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(() -> new StadiumNotFoundException(
-                        StadiumNotFound.getStatusCode(), StadiumNotFound.getErrorMessage()
-                )
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumNotFoundException(StadiumNotFound)
         );
 
         List<StadiumImg> imgs = stadiumImgRepository.findAllByStadium(stadium);
