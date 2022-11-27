@@ -1,5 +1,6 @@
 package com.minwonhaeso.esc;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
