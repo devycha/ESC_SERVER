@@ -38,3 +38,5 @@ out/
 
 application.yml
 **/test/http
+
+/src/main/resources/application.properties
