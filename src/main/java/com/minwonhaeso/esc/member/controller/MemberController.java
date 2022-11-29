@@ -1,12 +1,16 @@
 package com.minwonhaeso.esc.member.controller;
 
 import com.minwonhaeso.esc.member.model.dto.LoginDto;
+import com.minwonhaeso.esc.member.model.dto.PatchInfo;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.dto.TokenDto;
 import com.minwonhaeso.esc.member.service.MemberService;
 import com.minwonhaeso.esc.security.jwt.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,9 +27,9 @@ public class MemberController {
      * 회원가입
      **/
     @PostMapping("/signUp")
-    public ResponseEntity<?> signUp(@RequestBody SignDto signDto) {
-        memberService.signUser(signDto);
-        return ResponseEntity.ok("회원가입에 성공하셨습니다.");
+    public ResponseEntity<?> signUp(@RequestBody SignDto.Request signDto) {
+        SignDto.Response response = memberService.signUser(signDto);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -51,11 +55,9 @@ public class MemberController {
      * 메일 인증
      **/
     @PostMapping("/email-authentication")
-    public ResponseEntity<?> emailAuthentication(@RequestBody Map<String, String> key) {
-        Map<String, String> response = new HashMap<>();
-        String authKey =  memberService.emailAuthentication(key.get("key"));
-        response.put("key",authKey);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> emailAuthentication(@RequestParam String key) {
+        String authKey = memberService.emailAuthentication(key);
+        return ResponseEntity.ok("메일 인증이 완료되었습니다.");
     }
 
     /**
@@ -75,7 +77,7 @@ public class MemberController {
                                     @RequestHeader("RefreshToken") String refreshToken) {
         String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
         memberService.logout(TokenDto.of(accessToken, refreshToken), username);
-        return ResponseEntity.ok("로그아웃 성공");
+        return ResponseEntity.ok("로그아웃");
     }
 
     /**
@@ -85,6 +87,7 @@ public class MemberController {
     public ResponseEntity<?> reissue(@RequestHeader("RefreshToken") String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken));
     }
+
 
     /**
      * Bearer 부분 빼는 method

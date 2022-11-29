@@ -6,6 +6,7 @@ import com.minwonhaeso.esc.member.model.type.MemberRole;
 import com.minwonhaeso.esc.member.model.type.MemberStatus;
 import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.sun.istack.NotNull;
+import io.jsonwebtoken.Claims;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -60,19 +61,20 @@ public class Member implements UserDetails {
 
     public static UserDetails of(Member member) {
         return member.builder()
-                .name(member.getUsername())
+                .email(member.getEmail())
+                .name(member.getEmail())
                 .password(member.getPassword())
                 .role(member.getRole())
                 .build();
     }
 
-    public static Member of(SignDto signDto) {
+    public static Member of(SignDto.Request signDto) {
         Member member =  Member.builder()
                 .email(signDto.getEmail())
                 .name(signDto.getName())
                 .password(signDto.getPassword())
                 .nickname(signDto.getNickname())
-                .imgUrl(signDto.getImgUrl())
+                .imgUrl(signDto.getImage())
                 .type(signDto.getType())
                 .build();
         if(signDto.getType() == MemberType.ADMIN){
@@ -85,6 +87,11 @@ public class Member implements UserDetails {
     //    @OneToMany(mappedBy = "member")
 //    private List<Stadidum> stadiums;
 
+    public Member(Claims claims) {
+        this.memberId = Long.valueOf(claims.get("userId").toString());
+        this.name = claims.get("name").toString();
+        this.role = MemberRole.valueOf(claims.get("role").toString());
+    }
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -93,7 +100,7 @@ public class Member implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
     }
 
     @Override

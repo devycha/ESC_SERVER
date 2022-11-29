@@ -23,7 +23,7 @@ public class JwtTokenUtil {
     @Value("${spring.jwt.secret}")
     private String SECRET_KEY;
 
-    public Claims extractAllClaims(String token) { // 2
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(SECRET_KEY))
                 .build()
@@ -32,7 +32,7 @@ public class JwtTokenUtil {
     }
 
     public String getUsername(String token) {
-        return extractAllClaims(token).get("username", String.class);
+        return extractAllClaims(token).get("email", String.class);
     }
 
     private Key getSigningKey(String secretKey) {
@@ -53,9 +53,9 @@ public class JwtTokenUtil {
         return doGenerateToken(username, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
     }
 
-    private String doGenerateToken(String username, long expireTime) { // 1
+    private String doGenerateToken(String email, long expireTime) { // 1
         Claims claims = Jwts.claims();
-        claims.put("username", username);
+        claims.put("email", email);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -67,8 +67,9 @@ public class JwtTokenUtil {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         String username = getUsername(token);
-        return username.equals(userDetails.getUsername())
-                && !isTokenExpired(token);
+        String details = userDetails.getUsername();
+        return username.equals(details);
+        //&& !isTokenExpired(token)
     }
 
     public long getRemainMilliSeconds(String token) {
