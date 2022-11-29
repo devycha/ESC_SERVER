@@ -84,9 +84,9 @@ public class Stadium {
     @OneToMany(mappedBy = "stadium")
     private List<StadiumImg> imgs = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "stadium")
-//    @Column(name = "tags")
-//    private List<Tag> tags;
+    @OneToMany(mappedBy = "stadium")
+    @Column(name = "tags")
+    private List<StadiumTag> tags;
 
 //    @OneToMany(mappedBy = "stadium")
 //    @Column(name = "reviews")

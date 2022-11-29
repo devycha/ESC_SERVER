@@ -6,8 +6,10 @@ import com.minwonhaeso.esc.stadium.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
 import com.minwonhaeso.esc.stadium.entity.Stadium;
 import com.minwonhaeso.esc.stadium.entity.StadiumImg;
+import com.minwonhaeso.esc.stadium.entity.StadiumTag;
 import com.minwonhaeso.esc.stadium.repository.StadiumImgRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
+import com.minwonhaeso.esc.stadium.repository.StadiumTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
 public class StadiumService {
     private final StadiumRepository stadiumRepository;
     private final StadiumImgRepository stadiumImgRepository;
+    private final StadiumTagRepository stadiumTagRepository;
 
     public Page<StadiumResponseDto> getAllStadiums(Pageable pageable) {
         return stadiumRepository.findAll(pageable).map(StadiumResponseDto::fromEntity);
@@ -47,9 +50,14 @@ public class StadiumService {
         List<StadiumImg> imgs = request.getImgs().stream().map(imgUrl -> StadiumImg.builder()
                 .stadium(stadium).imgUrl(imgUrl).build()).collect(Collectors.toList());
 
+        List<StadiumTag> tags = request.getTags().stream().map(tag -> StadiumTag.builder()
+                .stadium(stadium).name(tag).build()).collect(Collectors.toList());
+
         stadium.setImgs(imgs);
+        stadium.setTags(tags);
         stadiumRepository.save(stadium);
         stadiumImgRepository.saveAll(imgs);
+        stadiumTagRepository.saveAll(tags);
 
         return CreateStadiumDto.Response.fromEntity(stadium);
     }
@@ -85,6 +93,7 @@ public class StadiumService {
         stadiumImgRepository.deleteByStadiumIdAndImgUrl(stadiumId, imgUrl);
     }
 
+    @Transactional
     public StadiumResponseDto updateStadiumInfo(Long stadiumId, UpdateStadiumDto.Request request) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
@@ -92,5 +101,25 @@ public class StadiumService {
         stadium.update(request);
         stadiumRepository.save(stadium);
         return StadiumResponseDto.fromEntity(stadium);
+    }
+
+    @Transactional
+    public void addStadiumTag(Long stadiumId, String tagName) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound)
+        );
+
+        StadiumTag tag = StadiumTag.builder().stadium(stadium).name(tagName).build();
+        stadium.getTags().add(tag);
+        stadiumTagRepository.save(tag);
+    }
+
+    @Transactional
+    public void deleteStadiumTag(Long stadiumId, String tagName) {
+        if (!stadiumRepository.existsById(stadiumId)) {
+            throw new StadiumException(StadiumNotFound);
+        }
+
+        stadiumTagRepository.deleteByStadiumIdAndName(stadiumId, tagName);
     }
 }

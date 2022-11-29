@@ -31,4 +31,14 @@ public class UpdateStadiumDto {
     public static class DeleteImgRequest {
         private String imgUrl;
     }
+
+    @Data
+    public static class AddTagRequest {
+        private String tagName;
+    }
+
+    @Data
+    public static class DeleteTagRequest {
+        private String tagName;
+    }
 }
