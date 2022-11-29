@@ -41,4 +41,9 @@ public class UpdateStadiumDto {
     public static class DeleteTagRequest {
         private String tagName;
     }
+
+    @Data
+    public static class DeleteItemRequest {
+        private Long itemId;
+    }
 }

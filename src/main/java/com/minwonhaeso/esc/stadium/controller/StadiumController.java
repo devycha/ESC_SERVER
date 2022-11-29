@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.controller;
 
 import com.minwonhaeso.esc.stadium.dto.CreateStadiumDto;
+import com.minwonhaeso.esc.stadium.dto.CreateStadiumItemDto;
 import com.minwonhaeso.esc.stadium.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
@@ -31,13 +32,17 @@ public class StadiumController {
 
     @PostMapping("/register")
     public ResponseEntity<?> createStadiumByManager(
-            @RequestBody CreateStadiumDto.Request request) {
+            @RequestBody CreateStadiumDto.Request request
+    ) {
         CreateStadiumDto.Response stadium = stadiumService.createStadium(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(stadium);
     }
 
     @PatchMapping("/{stadiumId}/info")
-    public ResponseEntity<?> updateStadiumInfo(@PathVariable Long stadiumId, UpdateStadiumDto.Request request) {
+    public ResponseEntity<?> updateStadiumInfo(
+            @PathVariable Long stadiumId,
+            UpdateStadiumDto.Request request
+    ) {
         StadiumResponseDto stadium = stadiumService.updateStadiumInfo(stadiumId, request);
         return ResponseEntity.ok().body(stadium);
     }
@@ -60,10 +65,20 @@ public class StadiumController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{stadiumId}/items")
+    public ResponseEntity<?> addStadiumItemByManager(
+            @PathVariable Long stadiumId,
+            @RequestBody CreateStadiumItemDto.Request request
+    )  {
+        CreateStadiumItemDto.Response item = stadiumService.addStadiumItem(stadiumId, request);
+        return ResponseEntity.ok().body(item);
+    }
+
     @DeleteMapping("/{stadiumId}/imgs")
     public ResponseEntity<?> deleteStadiumImgByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.DeleteImgRequest request) {
+            @RequestBody UpdateStadiumDto.DeleteImgRequest request
+    ) {
         stadiumService.deleteStadiumImg(stadiumId, request.getImgUrl());
         return ResponseEntity.ok().build();
     }
@@ -71,11 +86,19 @@ public class StadiumController {
     @DeleteMapping("/{stadiumId}/tags")
     public ResponseEntity<?> deleteStadiumTagByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.DeleteTagRequest request) {
+            @RequestBody UpdateStadiumDto.DeleteTagRequest request
+    ) {
         stadiumService.deleteStadiumTag(stadiumId, request.getTagName());
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{stadiumId}/items")
+    public ResponseEntity<?> deleteStadiumItemByManager(
+            @PathVariable Long stadiumId,
+            @RequestBody UpdateStadiumDto.DeleteItemRequest request) {
+        stadiumService.deleteStadiumItem(stadiumId, request);
+        return ResponseEntity.ok().build();
+    }
 
     @DeleteMapping("/{stadiumId}")
     public ResponseEntity<?> deleteStadiumByManager(@PathVariable Long stadiumId) {
