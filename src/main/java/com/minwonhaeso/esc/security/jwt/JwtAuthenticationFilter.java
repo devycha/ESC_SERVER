@@ -1,22 +1,32 @@
 package com.minwonhaeso.esc.security.jwt;
 
+import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.service.MemberDetailService;
 import com.minwonhaeso.esc.security.redis.LogoutAccessTokenRedisRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.security.auth.message.AuthException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -40,6 +50,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+    private Authentication getAuthentication(HttpServletRequest request) throws AuthException {
+
+        String token = request.getHeader("Authorization");
+
+        if (token == null) {
+            return null;
+        }
+
+        Claims claims;
+
+        try {
+            claims = jwtTokenUtil.extractAllClaims(token.substring("Bearer ".length()));
+        } catch (JwtException e) {
+            throw new AuthException("인증 토큰이 잘못되었습니다.");
+        }
+
+        Set<GrantedAuthority> roles = new HashSet<>();
+        String role = (String) claims.get("role");
+        roles.add(new SimpleGrantedAuthority("ROLE_" + role));
+
+        return new UsernamePasswordAuthenticationToken(new Member(claims), null, roles);
     }
 
     private String getToken(HttpServletRequest request) {
