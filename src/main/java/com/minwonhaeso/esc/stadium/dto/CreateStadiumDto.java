@@ -1,10 +1,7 @@
 package com.minwonhaeso.esc.stadium.dto;
 
 import com.minwonhaeso.esc.stadium.entity.Stadium;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Time;
 import java.util.List;
@@ -26,7 +23,7 @@ public class CreateStadiumDto {
         private List<String> tags;
         private Time openTime;
         private Time closeTime;
-//        private List<Item> items; // TODO: 아이템 추가
+        private List<CreateStadiumItemDto.Request> items;
     }
 
     @Getter

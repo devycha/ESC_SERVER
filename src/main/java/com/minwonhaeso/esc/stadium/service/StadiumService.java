@@ -1,6 +1,8 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
+import com.minwonhaeso.esc.stadium.dto.CreateStadiumItemDto;
+import com.minwonhaeso.esc.stadium.entity.StadiumItem;
 import com.minwonhaeso.esc.stadium.dto.CreateStadiumDto;
 import com.minwonhaeso.esc.stadium.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
@@ -8,6 +10,7 @@ import com.minwonhaeso.esc.stadium.entity.Stadium;
 import com.minwonhaeso.esc.stadium.entity.StadiumImg;
 import com.minwonhaeso.esc.stadium.entity.StadiumTag;
 import com.minwonhaeso.esc.stadium.repository.StadiumImgRepository;
+import com.minwonhaeso.esc.stadium.repository.StadiumItemRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
+import static com.minwonhaeso.esc.stadium.type.StadiumItemStatus.AVAILABLE;
 
 
 @RequiredArgsConstructor
@@ -28,24 +32,20 @@ public class StadiumService {
     private final StadiumRepository stadiumRepository;
     private final StadiumImgRepository stadiumImgRepository;
     private final StadiumTagRepository stadiumTagRepository;
-
+    private final StadiumItemRepository stadiumItemRepository;
+    
     public Page<StadiumResponseDto> getAllStadiums(Pageable pageable) {
         return stadiumRepository.findAll(pageable).map(StadiumResponseDto::fromEntity);
     }
 
     @Transactional
     public CreateStadiumDto.Response createStadium(CreateStadiumDto.Request request) {
-        Stadium stadium = Stadium.builder()
-                .name(request.getName())
-                .phone(request.getPhone())
-                .lat(request.getLat())
-                .lnt(request.getLnt())
-                .address(request.getAddress())
-                .weekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour())
-                .holidayPricePerHalfHour(request.getHolidayPricePerHalfHour())
-                .openTime(request.getOpenTime())
-                .closeTime(request.getCloseTime())
-                .build();
+        Stadium stadium = Stadium.fromRequest(request);
+
+        List<StadiumItem> stadiumItems = request.getItems()
+                .stream().map(item -> StadiumItem.fromRequest(stadium, item))
+                .collect(Collectors.toList());
+
 
         List<StadiumImg> imgs = request.getImgs().stream().map(imgUrl -> StadiumImg.builder()
                 .stadium(stadium).imgUrl(imgUrl).build()).collect(Collectors.toList());
@@ -53,8 +53,10 @@ public class StadiumService {
         List<StadiumTag> tags = request.getTags().stream().map(tag -> StadiumTag.builder()
                 .stadium(stadium).name(tag).build()).collect(Collectors.toList());
 
+        stadium.setRentalStadiumItems(stadiumItems);
         stadium.setImgs(imgs);
         stadium.setTags(tags);
+
         stadiumRepository.save(stadium);
         stadiumImgRepository.saveAll(imgs);
         stadiumTagRepository.saveAll(tags);
@@ -121,5 +123,33 @@ public class StadiumService {
         }
 
         stadiumTagRepository.deleteByStadiumIdAndName(stadiumId, tagName);
+    }
+
+    @Transactional
+    public CreateStadiumItemDto.Response addStadiumItem(Long stadiumId, CreateStadiumItemDto.Request request) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound)
+        );
+
+        StadiumItem item = StadiumItem.fromRequest(stadium, request);
+        stadium.getRentalStadiumItems().add(item);
+        stadiumItemRepository.save(item);
+
+        return CreateStadiumItemDto.Response.builder()
+                .name(item.getName())
+                .imgUrl(item.getImgUrl())
+                .price(item.getPrice())
+                .cnt(item.getCnt())
+                .isAvailable(item.getStatus() == AVAILABLE)
+                .build();
+    }
+
+    @Transactional
+    public void deleteStadiumItem(Long stadiumId, UpdateStadiumDto.DeleteItemRequest request) {
+        if (!stadiumRepository.existsById(stadiumId)) {
+            throw new StadiumException(StadiumNotFound);
+        }
+
+        stadiumItemRepository.deleteByStadiumIdAndId(stadiumId, request.getItemId());
     }
 }

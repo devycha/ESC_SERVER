@@ -1,5 +1,6 @@
 package com.minwonhaeso.esc.stadium.entity;
 
+import com.minwonhaeso.esc.stadium.dto.CreateStadiumDto;
 import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
 import com.sun.istack.NotNull;
 import lombok.*;
@@ -76,9 +77,9 @@ public class Stadium {
 //    @Column(name = "likes")
 //    private List<Like> likes;
 
-//    @OneToMany(mappedBy = "stadium")
-//    @Column(name = "rental_items")
-//    private List<Item> rentalItems;
+    @OneToMany(mappedBy = "stadium")
+    @Column(name = "rental_items")
+    private List<StadiumItem> rentalStadiumItems;
 
     @Builder.Default
     @OneToMany(mappedBy = "stadium")
@@ -107,6 +108,20 @@ public class Stadium {
         if (this.imgs == null) {
             this.imgs = new ArrayList<>();
         }
+    }
+
+    public static Stadium fromRequest(CreateStadiumDto.Request request) {
+        return Stadium.builder()
+                .name(request.getName())
+                .phone(request.getPhone())
+                .lat(request.getLat())
+                .lnt(request.getLnt())
+                .address(request.getAddress())
+                .weekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour())
+                .holidayPricePerHalfHour(request.getHolidayPricePerHalfHour())
+                .openTime(request.getOpenTime())
+                .closeTime(request.getCloseTime())
+                .build();
     }
 
     public void update(UpdateStadiumDto.Request request) {
