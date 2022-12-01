@@ -9,30 +9,26 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
 import com.minwonhaeso.esc.member.repository.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
-import com.minwonhaeso.esc.security.jwt.JwtExpirationEnums;
-import com.minwonhaeso.esc.security.jwt.JwtTokenUtil;
-import com.minwonhaeso.esc.security.redis.LogoutAccessToken;
-import com.minwonhaeso.esc.security.redis.LogoutAccessTokenRedisRepository;
-import com.minwonhaeso.esc.security.redis.RefreshToken;
-import com.minwonhaeso.esc.security.redis.RefreshTokenRedisRepository;
+import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
+import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
+import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
+import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
+import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
+import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.AuthenticationException;
-import javax.security.auth.callback.PasswordCallback;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.minwonhaeso.esc.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
 @Service
 public class MemberService {

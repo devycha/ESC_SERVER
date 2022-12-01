@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.security.jwt;
+package com.minwonhaeso.esc.security.auth.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

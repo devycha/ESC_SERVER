@@ -5,6 +5,7 @@ import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.type.MemberRole;
 import com.minwonhaeso.esc.member.model.type.MemberStatus;
 import com.minwonhaeso.esc.member.model.type.MemberType;
+import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
 import com.sun.istack.NotNull;
 import io.jsonwebtoken.Claims;
 import lombok.*;
@@ -24,7 +25,7 @@ import java.util.Collections;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member implements UserDetails {
+public class Member{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -57,16 +58,14 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private ProviderType providerType; // 소셜 타입
+
+    @Column(name = "provider_id")
+    private String providerId;
 
 
-    public static UserDetails of(Member member) {
-        return member.builder()
-                .email(member.getEmail())
-                .name(member.getEmail())
-                .password(member.getPassword())
-                .role(member.getRole())
-                .build();
-    }
+
 
     public static Member of(SignDto.Request signDto) {
         Member member =  Member.builder()
@@ -92,40 +91,5 @@ public class Member implements UserDetails {
         this.name = claims.get("name").toString();
         this.role = MemberRole.valueOf(claims.get("role").toString());
     }
-    @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isEnabled() {
-        return false;
-    }
-
 
 }

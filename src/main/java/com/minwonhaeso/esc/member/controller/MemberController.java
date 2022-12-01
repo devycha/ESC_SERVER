@@ -1,19 +1,14 @@
 package com.minwonhaeso.esc.member.controller;
 
 import com.minwonhaeso.esc.member.model.dto.LoginDto;
-import com.minwonhaeso.esc.member.model.dto.PatchInfo;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.dto.TokenDto;
 import com.minwonhaeso.esc.member.service.MemberService;
-import com.minwonhaeso.esc.security.jwt.JwtTokenUtil;
+import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.security.jwt;
+package com.minwonhaeso.esc.security.auth.jwt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;

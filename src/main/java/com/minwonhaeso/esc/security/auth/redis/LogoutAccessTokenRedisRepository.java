@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.security.redis;
+package com.minwonhaeso.esc.security.auth.redis;
 
 import org.springframework.data.repository.CrudRepository;
 
