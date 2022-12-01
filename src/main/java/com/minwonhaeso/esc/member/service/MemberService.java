@@ -2,6 +2,8 @@ package com.minwonhaeso.esc.member.service;
 
 
 import com.minwonhaeso.esc.component.MailComponents;
+import com.minwonhaeso.esc.error.exception.AuthException;
+import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.member.model.dto.*;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
@@ -63,7 +65,7 @@ public class MemberService {
     public SignDto.Response signUser(SignDto.Request signDto) {
         Optional<MemberEmail> memberEmail = memberEmailRepository.findById(signDto.getKey());
         if (memberEmail.isEmpty()) {
-            throw new MailAuthenticationException("메일인증을 진행해주세요.");
+            throw new AuthException(AuthErrorCode.EmailAuthNotYet);
         }
         memberEmailRepository.delete(memberEmail.get());
         signDto.setPassword(passwordEncoder.encode(signDto.getPassword()));
@@ -79,7 +81,7 @@ public class MemberService {
     public void emailDuplicateYn(String email) {
         Optional<Member> optional = memberRepository.findByEmail(email);
         if (optional.isPresent()) {
-            throw new RuntimeException("사용할 수 없는 이메일입니다.");
+            throw new AuthException(AuthErrorCode.EmailAlreadySignUp);
         }
     }
 
@@ -90,13 +92,13 @@ public class MemberService {
         String subject = "[ESC] 이메일 인증 안내";
         String content = "<p>아래 링크를 통해 인증을 완료해주세요. </p><a href='" + emailAuthDomain
                 + "'" + uuid + "> 인증 </a>";
-//        mailComponents.sendMail(email,subject,content);
+        mailComponents.sendMail(email,subject,content);
         memberEmailRepository.save(memberEmail);
     }
 
     public String emailAuthentication(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
-                () -> new MailAuthenticationException("인증 시간이 만료되었습니다. 다시 인증해주세요."));
+                () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmail.setAuthYn(true);
         memberEmailRepository.save(memberEmail);
         return memberEmail.getId();
@@ -105,7 +107,7 @@ public class MemberService {
     @Transactional
     public LoginDto.Response login(LoginDto.Request loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail()).
-                orElseThrow(() -> new UsernameNotFoundException("해당 이메일의 아이디가 없습니다."));
+                orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotFound));
         checkPassword(loginDto.getPassword(), member.getPassword());
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
@@ -120,7 +122,7 @@ public class MemberService {
 
     private void checkPassword(String rawPassword, String findMemberPassword) {
         if (!passwordEncoder.matches(rawPassword, findMemberPassword)) {
-            throw new IllegalArgumentException("비밀번호가 맞지 않습니다.");
+            throw new AuthException(AuthErrorCode.PasswordNotEqual);
         }
     }
 
@@ -137,11 +139,11 @@ public class MemberService {
         refreshToken = resolveToken(refreshToken);
         String username = getCurrentUsername();
         RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(
-                () -> new NoSuchElementException("인증이 만료되었습니다. 다시 로그인해주세요."));
+                () -> new AuthException(AuthErrorCode.AccessTokenAlreadyExpired));
         if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
             return reissueRefreshToken(refreshToken, username);
         }
-        throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+        throw new AuthException(AuthErrorCode.TokenNotMatch);
     }
 
     private TokenDto reissueRefreshToken(String refreshToken, String username) {
@@ -154,10 +156,10 @@ public class MemberService {
 
     public InfoDto.Response info(UserDetails user) {
         if (user.getUsername() == null) {
-            throw new UsernameNotFoundException("로그인을 해주세요,");
+            throw new AuthException(AuthErrorCode.MemberNotLogIn);
         }
         Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("다시 로그인해주세요."));
+                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         return InfoDto.Response.builder()
                 .name(member.getName())
                 .email(member.getEmail())
@@ -168,7 +170,7 @@ public class MemberService {
 
     public PatchInfo.Request patchInfo(UserDetails user, PatchInfo.Request request) {
         Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("로그인을 해주세요."));
+                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         if (request.getNickname() != null) {
             member.setName(request.getNickname());
         } else if (request.getImgUrl() != null) {
@@ -181,7 +183,7 @@ public class MemberService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteMember(UserDetails user) {
         Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("로그인을 해주세요."));
+                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         memberRepository.delete(member);
     }
 
@@ -212,7 +214,7 @@ public class MemberService {
 
     public String changePasswordMailAuth(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
-                () -> new MailAuthenticationException("인증 시간이 만료되었습니다. 다시 인증해주세요."));
+                () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmail.setAuthYn(true);
         memberEmailRepository.save(memberEmail);
         return memberEmail.getId();
@@ -220,13 +222,13 @@ public class MemberService {
 
     public void changePassword(CPasswordDto.Request request) throws AuthenticationException {
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new NoSuchElementException("이메일이 정확하지 않습니다."));
+                .orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
         boolean match = passwordEncoder.matches(request.getPrePassword(), member.getPassword());
         if(!match){
-            throw new AuthenticationException("사용 중인 비밀번호가 틀렸습니다.");
+            throw new AuthException(AuthErrorCode.PasswordNotEqual);
         }
         if(!request.getConfirmPassword().equals(request.getNewPassword())){
-            throw new RuntimeException("비밀번호와 비밀번호 확인이 같지 않습니다.");
+            throw new AuthException(AuthErrorCode.PasswordNotEqual);
         }
         member.setPassword(passwordEncoder.encode(request.getNewPassword()));
         memberRepository.save(member);
