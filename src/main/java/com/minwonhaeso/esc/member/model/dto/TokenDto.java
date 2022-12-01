@@ -2,7 +2,7 @@ package com.minwonhaeso.esc.member.model.dto;
 
 import lombok.*;
 
-import static com.minwonhaeso.esc.security.jwt.JwtHeaderUtilEnums.GRANT_TYPE;
+import static com.minwonhaeso.esc.security.auth.jwt.JwtHeaderUtilEnums.GRANT_TYPE;
 
 @Getter
 @Setter

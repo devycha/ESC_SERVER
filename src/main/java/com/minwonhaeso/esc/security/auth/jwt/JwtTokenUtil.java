@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.security.jwt;
+package com.minwonhaeso.esc.security.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,8 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
-import static com.minwonhaeso.esc.security.jwt.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
-import static com.minwonhaeso.esc.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
+import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
 @Slf4j
 @Component

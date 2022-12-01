@@ -1,8 +1,8 @@
-package com.minwonhaeso.esc.security.jwt;
+package com.minwonhaeso.esc.security.auth.jwt;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
-import com.minwonhaeso.esc.member.service.MemberDetailService;
-import com.minwonhaeso.esc.security.redis.LogoutAccessTokenRedisRepository;
+import com.minwonhaeso.esc.member.service.CustomerMemberDetailsService;
+import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,7 @@ import java.util.Set;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final MemberDetailService memberDetailService;
+    private final CustomerMemberDetailsService customerMemberDetailsService;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Override
@@ -44,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             checkLogout(accessToken);
             String username = jwtTokenUtil.getUsername(accessToken);
             if (username != null) {
-                UserDetails userDetails = memberDetailService.loadUserByUsername(username);
+                UserDetails userDetails = customerMemberDetailsService.loadUserByUsername(username);
                 validateAccessToken(accessToken, userDetails);
                 processSecurity(request, userDetails);
             }
