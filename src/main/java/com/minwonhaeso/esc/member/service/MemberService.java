@@ -15,7 +15,6 @@ import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,18 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.AuthenticationException;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
 @Service
 public class MemberService {
-    @Value("${spring.mail.domain}")
-    private String emailAuthDomain;
-    @Value("${spring.mail.password.domain}")
-    private String changePasswordEmailDomain;
 
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, MailComponents mailComponents,
                          MemberEmailRepository memberEmailRepository, RefreshTokenRedisRepository refreshTokenRedisRepository,
@@ -82,22 +75,22 @@ public class MemberService {
     }
 
     public void deliverEmailAuthCode(String email) {
-        String uuid = UUID.randomUUID().toString();
+        String uuid = String.valueOf(generateAuthNo2());
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 이메일 인증 안내";
-        String content = "<p>아래 링크를 통해 인증을 완료해주세요. </p><a href='" + emailAuthDomain
-                + "'" + uuid + "> 인증 </a>";
-        mailComponents.sendMail(email,subject,content);
+        String content = "<p>이메일 인증 코드 : " + uuid + "</p>";
+        mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
     }
 
-    public String emailAuthentication(String key) {
+    public void emailAuthentication(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
-        memberEmail.setAuthYn(true);
         memberEmailRepository.save(memberEmail);
-        return memberEmail.getId();
+        if(!memberEmail.getId().equals(key)){
+            throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
+        }
     }
 
     @Transactional
@@ -198,35 +191,40 @@ public class MemberService {
     }
 
     public void changePasswordMail(String email) {
-        String uuid = UUID.randomUUID().toString();
+        String uuid = String.valueOf(generateAuthNo2());
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
-        String content = "<p>아래 링크를 통해 다음 단계로 진행해주세요.</p><a href='" + changePasswordEmailDomain
-                + "'" + uuid + "> 인증 </a>";
-        mailComponents.sendMail(email,subject,content);
+        String content = "<p>비밀번호 변경 코드: "+ uuid+ "</p>";
+        mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
     }
 
-    public String changePasswordMailAuth(String key) {
+    public void changePasswordMailAuth(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
-        memberEmail.setAuthYn(true);
-        memberEmailRepository.save(memberEmail);
-        return memberEmail.getId();
+        memberEmailRepository.delete(memberEmail);
+        if(!memberEmail.getId().equals(key)){
+            throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
+        }
     }
 
-    public void changePassword(CPasswordDto.Request request) throws AuthenticationException {
+    public void changePassword(CPasswordDto.Request request) {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
         boolean match = passwordEncoder.matches(request.getPrePassword(), member.getPassword());
-        if(!match){
+        if (!match) {
             throw new AuthException(AuthErrorCode.PasswordNotEqual);
         }
-        if(!request.getConfirmPassword().equals(request.getNewPassword())){
+        if (!request.getConfirmPassword().equals(request.getNewPassword())) {
             throw new AuthException(AuthErrorCode.PasswordNotEqual);
         }
         member.setPassword(passwordEncoder.encode(request.getNewPassword()));
         memberRepository.save(member);
+    }
+    public static int generateAuthNo2() {
+        java.util.Random generator = new java.util.Random();
+        generator.setSeed(System.currentTimeMillis());
+        return generator.nextInt(1000000) % 1000000;
     }
 }

@@ -15,7 +15,8 @@ public enum AuthErrorCode {
     PasswordNotEqual(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     MemberNotLogIn(HttpStatus.BAD_REQUEST, "로그인을 해주세요."),
     AccessTokenAlreadyExpired(HttpStatus.BAD_REQUEST, "인증이 만료되었습니다. 다시 로그인해주세요."),
-    TokenNotMatch(HttpStatus.CONFLICT, "토큰이 일치하지 않습니다.");
+    TokenNotMatch(HttpStatus.CONFLICT, "토큰이 일치하지 않습니다."),
+    AuthKeyNotMatch(HttpStatus.CONFLICT, "인증 코드가 맞지 않습니다.");
 
 
 
