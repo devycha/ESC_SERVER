@@ -38,3 +38,6 @@ out/
 
 application.yml
 **/test/http
+
+/src/main/resources/application.properties
+/src/main/java/com/minwonhaeso/esc/security/WebSecurityConfig.java

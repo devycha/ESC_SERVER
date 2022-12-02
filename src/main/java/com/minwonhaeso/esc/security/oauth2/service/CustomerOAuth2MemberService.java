@@ -6,6 +6,7 @@ import com.minwonhaeso.esc.member.model.type.MemberStatus;
 import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
 import com.minwonhaeso.esc.security.auth.PrincipalDetails;
+import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfo;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfoFactory;
 import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class CustomerOAuth2MemberService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -64,9 +66,15 @@ public class CustomerOAuth2MemberService extends DefaultOAuth2UserService {
 
         } else {
             member = registerMember(oAuth2MemberInfo, providerType);
+            return new PrincipalDetails(member, oAuth2User.getAttributes());
         }
 
         log.info("processOAuth2User :" + member);
+
+        // TODO
+        // String accessToken = jwtTokenUtil.generateAccessToken(oAuth2MemberInfo.getEmail());
+        // RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(oAuth2MemberInfo.getEmail());
+
         return new PrincipalDetails(member, oAuth2User.getAttributes());
     }
 
@@ -81,7 +89,7 @@ public class CustomerOAuth2MemberService extends DefaultOAuth2UserService {
                 .password(BCrypt.hashpw("esc" + uuid, BCrypt.gensalt()))
                 .role(MemberRole.ROLE_USER)
                 .providerType(providerType)
-                .status(MemberStatus.AVAILABLE)
+                .status(MemberStatus.ING)
                 .type(MemberType.USER)
                 .providerId(oAuth2MemberInfo.getProviderId())
                 .imgUrl(oAuth2MemberInfo.getImageUrl())

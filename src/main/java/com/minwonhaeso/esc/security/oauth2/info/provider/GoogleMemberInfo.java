@@ -1,6 +1,5 @@
 package com.minwonhaeso.esc.security.oauth2.info.provider;
 
-
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfo;
 
 import java.util.Map;
