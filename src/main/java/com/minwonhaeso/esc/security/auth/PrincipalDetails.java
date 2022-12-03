@@ -17,12 +17,10 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     private final Member member;
     private Map<String, Object> attributes;
 
-    // 일반 로그인
     public PrincipalDetails(Member member) {
         this.member = member;
     }
 
-    // OAuth 로그인
     public PrincipalDetails(Member member, Map<String, Object> attributes) {
         this.member = member;
         this.attributes = attributes;
@@ -35,7 +33,6 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     public static UserDetails of(Member member) {
         return new PrincipalDetails(member);
     }
-
 
     @Override
     public String getPassword() {

@@ -82,8 +82,7 @@ public class MemberController {
     public ResponseEntity<?> reissue(@RequestHeader("RefreshToken") String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken));
     }
-
-
+    
     /**
      * Bearer 부분 빼는 method
      **/
