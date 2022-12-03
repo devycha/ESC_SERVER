@@ -9,7 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.AuthenticationException;
 import java.util.Map;
 
 @RestController
@@ -35,24 +34,39 @@ public class MemberProfileController {
         return ResponseEntity.ok(memberService.patchInfo(userDetails, request));
     }
 
+    /**
+     * 회원 탈퇴
+     **/
     @DeleteMapping("/info")
     public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetails userDetails) {
         memberService.deleteMember(userDetails);
         return ResponseEntity.ok("탈퇴에 성공했습니다.");
     }
+
+    /**
+     * 비밀번호 변경 메일 전송
+     **/
     @PostMapping("/password/send-mail")
-    public ResponseEntity<?> changePasswordMail(@RequestBody Map<String, String> body){
+    public ResponseEntity<?> changePasswordMail(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         memberService.changePasswordMail(email);
         return ResponseEntity.ok("메일이 발송되었습니다.");
     }
+
+    /**
+     * 비밀번호 변경 메일 인증코드 확인
+     **/
     @GetMapping("/password")
-    public ResponseEntity<?> changePasswordMailAuth(@RequestParam String key){
-        String email =  memberService.changePasswordMailAuth(key);
+    public ResponseEntity<?> changePasswordMailAuth(@RequestParam String key) {
+        memberService.changePasswordMailAuth(key);
         return ResponseEntity.ok("메일 인증이 완료되었습니다.");
     }
+
+    /**
+     * 비밀번호 변경
+     **/
     @PostMapping("/password")
-    public ResponseEntity<?> changePassword(@RequestBody CPasswordDto.Request request) throws AuthenticationException {
+    public ResponseEntity<?> changePassword(@RequestBody CPasswordDto.Request request) {
         memberService.changePassword(request);
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }

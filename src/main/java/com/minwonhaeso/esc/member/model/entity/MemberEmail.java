@@ -22,8 +22,6 @@ public class MemberEmail {
 
     private String email;
 
-    private boolean authYn;
-
     @TimeToLive
     private Long expireDt;
 
@@ -32,7 +30,6 @@ public class MemberEmail {
                 .id(authKey)
                 .email(email)
                 .expireDt(emailExpiredTime)
-                .authYn(false)
                 .build();
     }
 

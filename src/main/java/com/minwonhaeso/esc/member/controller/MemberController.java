@@ -51,7 +51,7 @@ public class MemberController {
      **/
     @PostMapping("/email-authentication")
     public ResponseEntity<?> emailAuthentication(@RequestParam String key) {
-        String authKey = memberService.emailAuthentication(key);
+        memberService.emailAuthentication(key);
         return ResponseEntity.ok("메일 인증이 완료되었습니다.");
     }
 
