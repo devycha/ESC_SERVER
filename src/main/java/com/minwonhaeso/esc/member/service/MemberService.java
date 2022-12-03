@@ -9,12 +9,14 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
 import com.minwonhaeso.esc.member.repository.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
+import com.minwonhaeso.esc.security.auth.AuthUtil;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
 import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,20 +29,10 @@ import java.util.Optional;
 
 import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
+@RequiredArgsConstructor
 @Service
 public class MemberService {
 
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, MailComponents mailComponents,
-                         MemberEmailRepository memberEmailRepository, RefreshTokenRedisRepository refreshTokenRedisRepository,
-                         LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository, JwtTokenUtil jwtTokenUtil) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.mailComponents = mailComponents;
-        this.memberEmailRepository = memberEmailRepository;
-        this.refreshTokenRedisRepository = refreshTokenRedisRepository;
-        this.logoutAccessTokenRedisRepository = logoutAccessTokenRedisRepository;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -49,6 +41,7 @@ public class MemberService {
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final AuthUtil authUtil;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public SignDto.Response signUser(SignDto.Request signDto) {
@@ -75,7 +68,7 @@ public class MemberService {
     }
 
     public void deliverEmailAuthCode(String email) {
-        String uuid = String.valueOf(generateAuthNo2());
+        String uuid = authUtil.generateAuthNo();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 이메일 인증 안내";
@@ -191,7 +184,7 @@ public class MemberService {
     }
 
     public void changePasswordMail(String email) {
-        String uuid = String.valueOf(generateAuthNo2());
+        String uuid = authUtil.generateAuthNo();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
@@ -221,10 +214,5 @@ public class MemberService {
         }
         member.setPassword(passwordEncoder.encode(request.getNewPassword()));
         memberRepository.save(member);
-    }
-    public static int generateAuthNo2() {
-        java.util.Random generator = new java.util.Random();
-        generator.setSeed(System.currentTimeMillis());
-        return generator.nextInt(1000000) % 1000000;
     }
 }
