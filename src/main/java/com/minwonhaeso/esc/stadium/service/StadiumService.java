@@ -1,18 +1,15 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
-import com.minwonhaeso.esc.stadium.dto.CreateStadiumItemDto;
-import com.minwonhaeso.esc.stadium.entity.StadiumItem;
-import com.minwonhaeso.esc.stadium.dto.CreateStadiumDto;
-import com.minwonhaeso.esc.stadium.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
-import com.minwonhaeso.esc.stadium.entity.Stadium;
-import com.minwonhaeso.esc.stadium.entity.StadiumImg;
-import com.minwonhaeso.esc.stadium.entity.StadiumTag;
-import com.minwonhaeso.esc.stadium.repository.StadiumImgRepository;
-import com.minwonhaeso.esc.stadium.repository.StadiumItemRepository;
-import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
-import com.minwonhaeso.esc.stadium.repository.StadiumTagRepository;
+import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
+import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
+import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
+import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumImg;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumTag;
+import com.minwonhaeso.esc.stadium.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
-import static com.minwonhaeso.esc.stadium.type.StadiumItemStatus.AVAILABLE;
+import static com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus.AVAILABLE;
 
 
 @RequiredArgsConstructor
@@ -33,6 +30,7 @@ public class StadiumService {
     private final StadiumImgRepository stadiumImgRepository;
     private final StadiumTagRepository stadiumTagRepository;
     private final StadiumItemRepository stadiumItemRepository;
+    private final StadiumRepositorySupport stadiumRepositorySupport;
     
     public Page<StadiumResponseDto> getAllStadiums(Pageable pageable) {
         return stadiumRepository.findAll(pageable).map(StadiumResponseDto::fromEntity);
@@ -42,25 +40,31 @@ public class StadiumService {
     public CreateStadiumDto.Response createStadium(CreateStadiumDto.Request request) {
         Stadium stadium = Stadium.fromRequest(request);
 
-        List<StadiumItem> stadiumItems = request.getItems()
-                .stream().map(item -> StadiumItem.fromRequest(stadium, item))
-                .collect(Collectors.toList());
+        if (request.getItems().size() > 0) {
+            List<StadiumItem> stadiumItems = request.getItems()
+                    .stream().map(item -> StadiumItem.fromRequest(stadium, item))
+                    .collect(Collectors.toList());
 
+            stadium.getRentalStadiumItems().addAll(stadiumItems);
+            stadiumItemRepository.saveAll(stadiumItems);
+        }
 
-        List<StadiumImg> imgs = request.getImgs().stream().map(imgUrl -> StadiumImg.builder()
-                .stadium(stadium).imgUrl(imgUrl).build()).collect(Collectors.toList());
+        if (request.getImgs().size() > 0) {
+            List<StadiumImg> imgs = request.getImgs().stream().map(imgUrl -> StadiumImg.builder()
+                    .stadium(stadium).imgUrl(imgUrl).build()).collect(Collectors.toList());
 
-        List<StadiumTag> tags = request.getTags().stream().map(tag -> StadiumTag.builder()
-                .stadium(stadium).name(tag).build()).collect(Collectors.toList());
+            stadium.getImgs().addAll(imgs);
+            stadiumImgRepository.saveAll(imgs);
+        }
 
-        stadium.setRentalStadiumItems(stadiumItems);
-        stadium.setImgs(imgs);
-        stadium.setTags(tags);
+        if (request.getTags().size() > 0) {
+            List<StadiumTag> tags = request.getTags().stream().map(tag -> StadiumTag.builder()
+                    .stadium(stadium).name(tag).build()).collect(Collectors.toList());
+            stadium.getTags().addAll(tags);
+            stadiumTagRepository.saveAll(tags);
+        }
 
         stadiumRepository.save(stadium);
-        stadiumImgRepository.saveAll(imgs);
-        stadiumTagRepository.saveAll(tags);
-
         return CreateStadiumDto.Response.fromEntity(stadium);
     }
 
@@ -151,5 +155,10 @@ public class StadiumService {
         }
 
         stadiumItemRepository.deleteByStadiumIdAndId(stadiumId, request.getItemId());
+    }
+
+    public List<StadiumResponseDto> getAllStadiumsNearLocation(Double lnt, Double lat, Pageable pageable) {
+        return stadiumRepositorySupport.getAllStadiumsNearLocation(lnt, lat, pageable)
+                .stream().map(StadiumResponseDto::fromEntity).collect(Collectors.toList());
     }
 }

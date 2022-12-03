@@ -1,7 +1,7 @@
-package com.minwonhaeso.esc.stadium.dto;
+package com.minwonhaeso.esc.stadium.model.dto;
 
-import com.minwonhaeso.esc.stadium.entity.Stadium;
-import com.minwonhaeso.esc.stadium.entity.StadiumImg;
+import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumImg;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
