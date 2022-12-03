@@ -1,9 +1,10 @@
-package com.minwonhaeso.esc.stadium.dto;
+package com.minwonhaeso.esc.stadium.model.dto;
 
-import com.minwonhaeso.esc.stadium.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import lombok.*;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateStadiumDto {
@@ -12,7 +13,6 @@ public class CreateStadiumDto {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private List<String> imgs;
         private String name;
         private String phone;
         private String address;
@@ -20,10 +20,17 @@ public class CreateStadiumDto {
         private Double lnt;
         private Integer weekdayPricePerHalfHour;
         private Integer holidayPricePerHalfHour;
-        private List<String> tags;
         private Time openTime;
         private Time closeTime;
-        private List<CreateStadiumItemDto.Request> items;
+
+        @Builder.Default
+        private List<String> imgs = new ArrayList<>();
+
+        @Builder.Default
+        private List<String> tags = new ArrayList<>();
+
+        @Builder.Default
+        private List<CreateStadiumItemDto.Request> items = new ArrayList<>();
     }
 
     @Getter

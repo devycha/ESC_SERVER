@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.stadium.entity;
+package com.minwonhaeso.esc.stadium.model.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,11 +14,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "stadium_img")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class StadiumImg implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne

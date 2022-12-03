@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.stadium.entity;
+package com.minwonhaeso.esc.stadium.model.entity;
 
 
 import lombok.*;
@@ -14,17 +14,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "stadium_tag")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class StadiumTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @Column(name = "name")
     private String name;
 
     @CreatedDate

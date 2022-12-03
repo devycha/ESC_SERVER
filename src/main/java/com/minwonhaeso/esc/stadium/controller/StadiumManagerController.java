@@ -1,13 +1,11 @@
 package com.minwonhaeso.esc.stadium.controller;
 
-import com.minwonhaeso.esc.stadium.dto.CreateStadiumDto;
-import com.minwonhaeso.esc.stadium.dto.CreateStadiumItemDto;
-import com.minwonhaeso.esc.stadium.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
+import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
+import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
+import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/stadiums")
-public class StadiumController {
+public class StadiumManagerController {
     private final StadiumService stadiumService;
-
-    @GetMapping()
-    public ResponseEntity<?> getAllStadiums(Pageable pageable) {
-        Page<StadiumResponseDto> stadiums = stadiumService.getAllStadiums(pageable);
-        return ResponseEntity.ok().body(stadiums);
-    }
 
     @GetMapping("/manager")
     public ResponseEntity<?> getAllRegisteredStadiumsByManager(@PathVariable String memberId) {

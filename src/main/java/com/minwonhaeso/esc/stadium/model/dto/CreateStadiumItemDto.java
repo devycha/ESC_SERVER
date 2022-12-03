@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.stadium.dto;
+package com.minwonhaeso.esc.stadium.model.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.minwonhaeso.esc.stadium.repository;
 
-import com.minwonhaeso.esc.stadium.entity.StadiumItem;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StadiumItemRepository extends JpaRepository<StadiumItem, Long> {

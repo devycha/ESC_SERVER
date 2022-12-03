@@ -1,7 +1,7 @@
-package com.minwonhaeso.esc.stadium.entity;
+package com.minwonhaeso.esc.stadium.model.entity;
 
-import com.minwonhaeso.esc.stadium.dto.CreateStadiumDto;
-import com.minwonhaeso.esc.stadium.dto.UpdateStadiumDto;
+import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
+import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,12 +19,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "stadium")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Stadium {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stadium_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -77,17 +78,17 @@ public class Stadium {
 //    @Column(name = "likes")
 //    private List<Like> likes;
 
+    @Builder.Default
     @OneToMany(mappedBy = "stadium")
-    @Column(name = "rental_items")
-    private List<StadiumItem> rentalStadiumItems;
+    private List<StadiumItem> rentalStadiumItems = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "stadium")
     private List<StadiumImg> imgs = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "stadium")
-    @Column(name = "tags")
-    private List<StadiumTag> tags;
+    private List<StadiumTag> tags = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "stadium")
 //    @Column(name = "reviews")

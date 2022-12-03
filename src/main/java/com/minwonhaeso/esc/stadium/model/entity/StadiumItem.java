@@ -1,7 +1,7 @@
-package com.minwonhaeso.esc.stadium.entity;
+package com.minwonhaeso.esc.stadium.model.entity;
 
-import com.minwonhaeso.esc.stadium.dto.CreateStadiumItemDto;
-import com.minwonhaeso.esc.stadium.type.StadiumItemStatus;
+import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
+import com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static com.minwonhaeso.esc.stadium.type.StadiumItemStatus.AVAILABLE;
+import static com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus.AVAILABLE;
 import static javax.persistence.EnumType.STRING;
 
 @Getter
@@ -18,12 +18,13 @@ import static javax.persistence.EnumType.STRING;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "stadium_item")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class StadiumItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -33,7 +34,7 @@ public class StadiumItem {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
-    @Column(name = "img_url")
+    @Column(name = "img_url", length = 1000)
     private String imgUrl;
 
     @Column(name = "price", nullable = false)

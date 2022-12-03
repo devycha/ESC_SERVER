@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.stadium.type;
+package com.minwonhaeso.esc.stadium.model.type;
 
 public enum StadiumItemStatus {
     AVAILABLE, UNAVAILABLE
