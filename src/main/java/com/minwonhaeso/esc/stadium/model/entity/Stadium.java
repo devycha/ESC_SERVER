@@ -49,6 +49,10 @@ public class Stadium {
     private String address;
 
     @NotNull
+    @Column(name = "detail_address", nullable = false)
+    private String detailAddress;
+
+    @NotNull
     @Column(name = "weekday_price_per_half_hour", nullable = false)
     private Integer weekdayPricePerHalfHour;
 

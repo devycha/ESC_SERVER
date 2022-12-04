@@ -1,7 +1,12 @@
 package com.minwonhaeso.esc.stadium.model.dto;
 
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
-import lombok.*;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -12,6 +17,7 @@ public class CreateStadiumDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @ApiModel(value = "체육관 생성 Request Body")
     public static class Request {
         private String name;
         private String phone;
@@ -20,7 +26,11 @@ public class CreateStadiumDto {
         private Double lnt;
         private Integer weekdayPricePerHalfHour;
         private Integer holidayPricePerHalfHour;
+
+        @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS")
         private Time openTime;
+
+        @ApiModelProperty(value = "마감 시간", example = "HH:MM:SS")
         private Time closeTime;
 
         @Builder.Default
@@ -37,6 +47,7 @@ public class CreateStadiumDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @ApiModel(value = "체육관 생성 성공 Response Body")
     public static class Response {
 //        private List<StadiumResponseDto> stadiums;
 //
@@ -44,6 +55,7 @@ public class CreateStadiumDto {
 //            return stadiumList.stream().map(StadiumResponseDto::fromEntity)
 //                    .collect(Collectors.toList());
 //        }
+
         private StadiumResponseDto stadium;
 
         public static Response fromEntity(Stadium stadium) {
