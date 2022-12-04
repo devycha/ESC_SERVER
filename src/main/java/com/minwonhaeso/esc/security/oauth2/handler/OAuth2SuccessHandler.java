@@ -28,7 +28,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${test.url}")
     private String basicUrl;
 
-    private final static String REFRESH_TOKEN = "refresh_token";
+    @Value("${spring.jwt.refresh-token.cookie}")
+    private String refreshTokenForCookie;
 
     private final JwtTokenUtil jwtTokenUtil;
 
@@ -53,7 +54,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(memberEmail);
 
         int cookieMaxAge = (int) (REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 60);
-        CookieUtil.addCookie(response, REFRESH_TOKEN, refreshToken.getRefreshToken(), cookieMaxAge);
+        CookieUtil.addCookie(response, refreshTokenForCookie, refreshToken.getRefreshToken(), cookieMaxAge);
 
         String targetUrl = makeRedirectUrl(token);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
