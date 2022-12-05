@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StadiumSearchRepository extends ElasticsearchRepository<StadiumDocument, Long> {
     Page<StadiumDocument> findByName(String name, Pageable pageable);
+
+    @Override
+    Page<StadiumDocument> searchSimilar(StadiumDocument entity, String[] fields, Pageable pageable);
 }

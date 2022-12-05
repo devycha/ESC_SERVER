@@ -13,9 +13,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "stadiums")
 public class StadiumDocument {
     @Id
+    @Field(type = FieldType.Keyword)
     private Long id;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String name;
 
     @Field(type = FieldType.Text)

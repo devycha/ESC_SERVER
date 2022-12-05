@@ -22,6 +22,7 @@ public class CreateStadiumDto {
         private String name;
         private String phone;
         private String address;
+        private String detailAddress;
         private Double lat;
         private Double lnt;
         private Integer weekdayPricePerHalfHour;
