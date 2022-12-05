@@ -5,8 +5,10 @@ import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.member.model.dto.*;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
+import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +32,8 @@ class MemberServiceWithPrincipalTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RefreshTokenRedisRepository refreshTokenRedisRepository;
+    @Autowired
+    private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     //토큰이 필요한 테스트의 경우, 사전 세팅 메소드
     private UserDetails setUserToContextByUsername(String username) {
@@ -41,35 +45,32 @@ class MemberServiceWithPrincipalTest {
     }
 
     @Test
-    void login() {
+    @DisplayName("로그인 + 토큰 재발행 + 로그아웃까지 Test")
+    void loginAndOutStory() {
         //given
+        String email = "ESC@gmail.com";
         LoginDto.Request request = LoginDto.Request
                 .builder()
                 .email("ESC@gmail.com")
                 .password("1111")
                 .build();
         //when
+        //1.Login
         LoginDto.Response response = memberService.login(request);
-        //then
-        Optional<RefreshToken> optional = refreshTokenRedisRepository.findById(request.getEmail());
-        assertEquals(response.getRefreshToken(), optional.get().getRefreshToken());
-    }
-
-    @Test
-    void reissue() {
-        //given
-        String email = "ESC@gmail.com";
-        //when
-        login();
         setUserToContextByUsername(email);
+        //2.Reissue
         RefreshToken before = refreshTokenRedisRepository.findById(email).orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
         String refreshToken = "Bearer " + before.getRefreshToken();
         TokenDto after = memberService.reissue(refreshToken);
+        //3.Logout
+        after.setAccessToken("Bearer " + after.getAccessToken());
+        memberService.logout(after, email);
         //then
-        assertEquals(before.getRefreshToken(), after.getRefreshToken());
+        assertTrue(logoutAccessTokenRedisRepository.existsById(memberService.resolveToken(after.getAccessToken())));
     }
 
     @Test
+    @DisplayName("회원정보 가져오기")
     void info() {
         //given
         String email = "ESC@gmail.com";
@@ -83,6 +84,7 @@ class MemberServiceWithPrincipalTest {
     }
 
     @Test
+    @DisplayName("회원정보 수정하기")
     void patchInfo() {
         //given
         String email = "ESC@gmail.com";
@@ -92,14 +94,16 @@ class MemberServiceWithPrincipalTest {
 
         //when
         UserDetails userDetails = setUserToContextByUsername(email);
-        memberService.patchInfo(userDetails,request);
+        memberService.patchInfo(userDetails, request);
         //then
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         assertEquals(member.getNickname(), request.getNickname());
     }
+
     @Test
-    void passwordChange(){
+    @DisplayName("비밀번호 변경")
+    void passwordChange() {
         //given
         String email = "ESC@gmail.com";
         setUserToContextByUsername(email);
@@ -110,19 +114,21 @@ class MemberServiceWithPrincipalTest {
                 .confirmPassword("1234")
                 .build();
         //when
-        String uuid =  memberService.changePasswordMail(email);
+        String uuid = memberService.changePasswordMail(email);
         memberService.changePasswordMailAuth(uuid);
         memberService.changePassword(request);
         //then
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
-        assertTrue(passwordEncoder.matches("1234",member.getPassword()));
+        assertTrue(passwordEncoder.matches("1234", member.getPassword()));
     }
+
     @Test
-    void deleteMember(){
+    @DisplayName("회원 탈퇴")
+    void deleteMember() {
         //given
         String email = "ESC@gmail.com";
-        UserDetails userDetails= setUserToContextByUsername(email);
+        UserDetails userDetails = setUserToContextByUsername(email);
         //when
         memberService.deleteMember(userDetails);
         //then

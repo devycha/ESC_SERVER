@@ -82,7 +82,7 @@ public class MemberService {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmailRepository.save(memberEmail);
-        if(!memberEmail.getId().equals(key)){
+        if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
         }
     }
@@ -169,7 +169,7 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    private String resolveToken(String token) {
+    public String resolveToken(String token) {
         return token.substring(7);
     }
 
@@ -188,7 +188,7 @@ public class MemberService {
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
-        String content = "<p>비밀번호 변경 코드: "+ uuid+ "</p>";
+        String content = "<p>비밀번호 변경 코드: " + uuid + "</p>";
         mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
         return uuid;
@@ -198,7 +198,7 @@ public class MemberService {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmailRepository.delete(memberEmail);
-        if(!memberEmail.getId().equals(key)){
+        if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
         }
     }
