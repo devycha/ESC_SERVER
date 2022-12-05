@@ -1,5 +1,9 @@
 package com.minwonhaeso.esc.security.auth;
 
+
+import org.springframework.stereotype.Component;
+
+@Component
 public class AuthUtil {
 
     public String generateAuthNo() {

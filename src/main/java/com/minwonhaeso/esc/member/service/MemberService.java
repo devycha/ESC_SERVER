@@ -67,7 +67,7 @@ public class MemberService {
         }
     }
 
-    public void deliverEmailAuthCode(String email) {
+    public String deliverEmailAuthCode(String email) {
         String uuid = authUtil.generateAuthNo();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
@@ -75,6 +75,7 @@ public class MemberService {
         String content = "<p>이메일 인증 코드 : " + uuid + "</p>";
         mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
+        return memberEmail.getId();
     }
 
     public void emailAuthentication(String key) {
@@ -108,7 +109,6 @@ public class MemberService {
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void logout(TokenDto tokenDto, String username) {
         String accessToken = resolveToken(tokenDto.getAccessToken());
         long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
@@ -154,7 +154,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         if (request.getNickname() != null) {
-            member.setName(request.getNickname());
+            member.setNickname(request.getNickname());
         } else if (request.getImgUrl() != null) {
             member.setImgUrl(request.getImgUrl());
         }
@@ -183,7 +183,7 @@ public class MemberService {
         return principal.getUsername();
     }
 
-    public void changePasswordMail(String email) {
+    public String changePasswordMail(String email) {
         String uuid = authUtil.generateAuthNo();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
@@ -191,6 +191,7 @@ public class MemberService {
         String content = "<p>비밀번호 변경 코드: "+ uuid+ "</p>";
         mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
+        return uuid;
     }
 
     public void changePasswordMailAuth(String key) {

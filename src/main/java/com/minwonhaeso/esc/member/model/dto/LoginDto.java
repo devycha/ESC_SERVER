@@ -8,6 +8,7 @@ public class LoginDto {
 
     @Getter
     @Setter
+    @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Request {
