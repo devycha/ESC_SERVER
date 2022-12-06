@@ -9,12 +9,14 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
 import com.minwonhaeso.esc.member.repository.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
+import com.minwonhaeso.esc.security.auth.AuthUtil;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
 import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,20 +29,10 @@ import java.util.Optional;
 
 import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
+@RequiredArgsConstructor
 @Service
 public class MemberService {
 
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, MailComponents mailComponents,
-                         MemberEmailRepository memberEmailRepository, RefreshTokenRedisRepository refreshTokenRedisRepository,
-                         LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository, JwtTokenUtil jwtTokenUtil) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.mailComponents = mailComponents;
-        this.memberEmailRepository = memberEmailRepository;
-        this.refreshTokenRedisRepository = refreshTokenRedisRepository;
-        this.logoutAccessTokenRedisRepository = logoutAccessTokenRedisRepository;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -49,6 +41,7 @@ public class MemberService {
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final AuthUtil authUtil;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public SignDto.Response signUser(SignDto.Request signDto) {
@@ -74,21 +67,22 @@ public class MemberService {
         }
     }
 
-    public void deliverEmailAuthCode(String email) {
-        String uuid = String.valueOf(generateAuthNo2());
+    public String deliverEmailAuthCode(String email) {
+        String uuid = authUtil.generateAuthNo();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 이메일 인증 안내";
         String content = "<p>이메일 인증 코드 : " + uuid + "</p>";
         mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
+        return memberEmail.getId();
     }
 
     public void emailAuthentication(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmailRepository.save(memberEmail);
-        if(!memberEmail.getId().equals(key)){
+        if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
         }
     }
@@ -115,7 +109,6 @@ public class MemberService {
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void logout(TokenDto tokenDto, String username) {
         String accessToken = resolveToken(tokenDto.getAccessToken());
         long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
@@ -161,7 +154,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         if (request.getNickname() != null) {
-            member.setName(request.getNickname());
+            member.setNickname(request.getNickname());
         } else if (request.getImgUrl() != null) {
             member.setImgUrl(request.getImgUrl());
         }
@@ -176,7 +169,7 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    private String resolveToken(String token) {
+    public String resolveToken(String token) {
         return token.substring(7);
     }
 
@@ -190,21 +183,22 @@ public class MemberService {
         return principal.getUsername();
     }
 
-    public void changePasswordMail(String email) {
-        String uuid = String.valueOf(generateAuthNo2());
+    public String changePasswordMail(String email) {
+        String uuid = authUtil.generateAuthNo();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
-        String content = "<p>비밀번호 변경 코드: "+ uuid+ "</p>";
+        String content = "<p>비밀번호 변경 코드: " + uuid + "</p>";
         mailComponents.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
+        return uuid;
     }
 
     public void changePasswordMailAuth(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmailRepository.delete(memberEmail);
-        if(!memberEmail.getId().equals(key)){
+        if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
         }
     }
@@ -221,10 +215,5 @@ public class MemberService {
         }
         member.setPassword(passwordEncoder.encode(request.getNewPassword()));
         memberRepository.save(member);
-    }
-    public static int generateAuthNo2() {
-        java.util.Random generator = new java.util.Random();
-        generator.setSeed(System.currentTimeMillis());
-        return generator.nextInt(1000000) % 1000000;
     }
 }

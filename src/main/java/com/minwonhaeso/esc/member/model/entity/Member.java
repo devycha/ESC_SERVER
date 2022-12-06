@@ -72,9 +72,12 @@ public class Member{
                 .email(signDto.getEmail())
                 .name(signDto.getName())
                 .password(signDto.getPassword())
+                .status(MemberStatus.ING)
                 .nickname(signDto.getNickname())
                 .imgUrl(signDto.getImage())
                 .type(signDto.getType())
+                .providerType(ProviderType.LOCAL)
+                .providerId(signDto.getEmail().split("@")[0])
                 .build();
         if(signDto.getType() == MemberType.ADMIN){
             member.role = MemberRole.ROLE_STADIUM;
@@ -83,8 +86,6 @@ public class Member{
         }
         return member;
     }
-    //    @OneToMany(mappedBy = "member")
-//    private List<Stadidum> stadiums;
 
     public Member(Claims claims) {
         this.memberId = Long.valueOf(claims.get("userId").toString());
