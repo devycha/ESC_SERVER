@@ -18,9 +18,9 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(AuthException.class)
-    protected ResponseEntity<GlobalErrorResponse> handleStadiumExceptionHandler(AuthException exception) {
+    protected ResponseEntity<GlobalErrorResponse> handleAuthExceptionHandler(AuthException exception) {
         return ResponseEntity
-                .status(exception.getErrorcode().getStatusCode())
-                .body(GlobalErrorResponse.from(exception.getErrorcode().getErrorMessage()));
+                .status(exception.getErrorCode().getStatusCode())
+                .body(GlobalErrorResponse.from(exception.getErrorCode().getErrorMessage()));
     }
 }

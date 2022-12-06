@@ -41,7 +41,6 @@ dependencies{
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-//    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     runtimeOnly 'com.mysql:mysql-connector-j'
     compileOnly "com.querydsl:querydsl-core" // querydsl
     compileOnly "com.querydsl:querydsl-jpa" // querydsl

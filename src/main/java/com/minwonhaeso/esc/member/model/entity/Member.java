@@ -1,6 +1,5 @@
 package com.minwonhaeso.esc.member.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.type.MemberRole;
 import com.minwonhaeso.esc.member.model.type.MemberStatus;
@@ -9,13 +8,8 @@ import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
 import com.sun.istack.NotNull;
 import io.jsonwebtoken.Claims;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
 
 
 @Entity

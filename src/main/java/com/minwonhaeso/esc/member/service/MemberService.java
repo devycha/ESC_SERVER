@@ -27,12 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
-
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -94,13 +91,8 @@ public class MemberService {
         checkPassword(loginDto.getPassword(), member.getPassword());
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
-        RefreshToken refreshToken = saveRefreshToken(email);
+        RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
         return LoginDto.Response.of(email, member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
-    }
-
-    private RefreshToken saveRefreshToken(String username) {
-        return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username,
-                jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
     }
 
     private void checkPassword(String rawPassword, String findMemberPassword) {
@@ -131,7 +123,7 @@ public class MemberService {
     private TokenDto reissueRefreshToken(String refreshToken, String username) {
         if (lessThanReissueExpirationTimesLeft(refreshToken)) {
             String accessToken = jwtTokenUtil.generateAccessToken(username);
-            return TokenDto.of(accessToken, saveRefreshToken(username).getRefreshToken());
+            return TokenDto.of(accessToken, jwtTokenUtil.saveRefreshToken(username).getRefreshToken());
         }
         return TokenDto.of(jwtTokenUtil.generateAccessToken(username), refreshToken);
     }
