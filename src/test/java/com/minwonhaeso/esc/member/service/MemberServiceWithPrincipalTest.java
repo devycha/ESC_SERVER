@@ -35,7 +35,7 @@ class MemberServiceWithPrincipalTest {
     @Autowired
     private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
-    //토큰이 필요한 테스트의 경우, 사전 세팅 메소드
+    //토큰이 필요한 테스트의 경우,   사전 세팅 메소드
     private UserDetails setUserToContextByUsername(String username) {
         CustomerMemberDetailsService customUserDetailsService = new CustomerMemberDetailsService(memberRepository);
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);

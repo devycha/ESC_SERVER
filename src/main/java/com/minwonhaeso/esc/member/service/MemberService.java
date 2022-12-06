@@ -68,7 +68,7 @@ public class MemberService {
     }
 
     public String deliverEmailAuthCode(String email) {
-        String uuid = authUtil.generateAuthNo();
+        String uuid = authUtil.generateEmailAuthNum();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 이메일 인증 안내";
@@ -184,7 +184,7 @@ public class MemberService {
     }
 
     public String changePasswordMail(String email) {
-        String uuid = authUtil.generateAuthNo();
+        String uuid = authUtil.generateEmailAuthNum();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
