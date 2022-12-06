@@ -1,9 +1,12 @@
 package com.minwonhaeso.esc.security.auth.jwt;
 
+import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
+import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +21,13 @@ import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_T
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtil {
 
     @Value("${spring.jwt.secret}")
     private String SECRET_KEY;
+
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
@@ -53,7 +59,7 @@ public class JwtTokenUtil {
         return doGenerateToken(username, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
     }
 
-    private String doGenerateToken(String email, long expireTime) { // 1
+    private String doGenerateToken(String email, long expireTime) {
         Claims claims = Jwts.claims();
         claims.put("email", email);
 
@@ -76,5 +82,10 @@ public class JwtTokenUtil {
         Date expiration = extractAllClaims(token).getExpiration();
         Date now = new Date();
         return expiration.getTime() - now.getTime();
+    }
+
+    public RefreshToken saveRefreshToken(String username) {
+        return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username,
+                generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
     }
 }

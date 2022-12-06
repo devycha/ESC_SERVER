@@ -16,8 +16,9 @@ public enum AuthErrorCode {
     MemberNotLogIn(HttpStatus.BAD_REQUEST, "로그인을 해주세요."),
     AccessTokenAlreadyExpired(HttpStatus.BAD_REQUEST, "인증이 만료되었습니다. 다시 로그인해주세요."),
     TokenNotMatch(HttpStatus.CONFLICT, "토큰이 일치하지 않습니다."),
-    AuthKeyNotMatch(HttpStatus.CONFLICT, "인증 코드가 맞지 않습니다.");
+    AuthKeyNotMatch(HttpStatus.CONFLICT, "인증 코드가 맞지 않습니다."),
 
+    OAuthProviderMissMatch(HttpStatus.BAD_REQUEST, "기존에 회원가입한 소셜 타입과 일치하지 않습니다.");
 
 
     private final HttpStatus statusCode;
