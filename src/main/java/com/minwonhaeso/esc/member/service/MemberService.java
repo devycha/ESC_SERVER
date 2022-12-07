@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -57,11 +59,12 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public void emailDuplicateYn(String email) {
+    public Map<String, String> emailDuplicateYn(String email) {
         Optional<Member> optional = memberRepository.findByEmail(email);
         if (optional.isPresent()) {
             throw new AuthException(AuthErrorCode.EmailAlreadySignUp);
         }
+        return successMessage("사용 가능한 이메일입니다.");
     }
 
     public String deliverEmailAuthCode(String email) {
@@ -75,13 +78,14 @@ public class MemberService {
         return memberEmail.getId();
     }
 
-    public void emailAuthentication(String key) {
+    public Map<String, String> emailAuthentication(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmailRepository.save(memberEmail);
         if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
         }
+        return successMessage("메일 인증이 완료되었습니다.");
     }
 
     @Transactional
@@ -101,11 +105,12 @@ public class MemberService {
         }
     }
 
-    public void logout(TokenDto tokenDto, String username) {
+    public Map<String, String> logout(TokenDto tokenDto, String username) {
         String accessToken = resolveToken(tokenDto.getAccessToken());
         long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
         refreshTokenRedisRepository.deleteById(username);
         logoutAccessTokenRedisRepository.save(LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
+        return successMessage("로그아웃");
     }
 
 
@@ -154,11 +159,11 @@ public class MemberService {
         return request;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void deleteMember(UserDetails user) {
+    public Map<String, String> deleteMember(UserDetails user) {
         Member member = memberRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         memberRepository.delete(member);
+        return successMessage("탈퇴에 성공했습니다.");
     }
 
     public String resolveToken(String token) {
@@ -186,16 +191,17 @@ public class MemberService {
         return uuid;
     }
 
-    public void changePasswordMailAuth(String key) {
+    public Map<String, String> changePasswordMailAuth(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
         memberEmailRepository.delete(memberEmail);
         if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
         }
+        return successMessage("메일 인증이 완료되었습니다.");
     }
 
-    public void changePassword(CPasswordDto.Request request) {
+    public Map<String, String> changePassword(CPasswordDto.Request request) {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
         boolean match = passwordEncoder.matches(request.getPrePassword(), member.getPassword());
@@ -207,5 +213,13 @@ public class MemberService {
         }
         member.setPassword(passwordEncoder.encode(request.getNewPassword()));
         memberRepository.save(member);
+
+        return successMessage("비밀번호가 성공적으로 변경되었습니다.");
+    }
+
+    private Map<String, String> successMessage(String message) {
+        Map<String, String> result = new HashMap<>();
+        result.put("message", message);
+        return result;
     }
 }

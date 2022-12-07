@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -23,7 +24,7 @@ public class MemberController {
      * 회원가입
      **/
     @ApiOperation(value = "회원 가입", notes = "입력한 정보로 회원가입한다.")
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignDto.Request signDto) {
         SignDto.Response response = memberService.signUser(signDto);
         return ResponseEntity.ok(response);
@@ -35,8 +36,9 @@ public class MemberController {
     @ApiOperation(value = "이메일 중복 확인", notes = "입력 받은 이메일의 회원이 이미 존재하는지 확인한다.")
     @PostMapping("/email-dup")
     public ResponseEntity<?> emailDuplicated(@RequestBody Map<String, String> email) {
-        memberService.emailDuplicateYn(email.get("email"));
-        return ResponseEntity.ok("사용 가능한 이메일입니다.");
+
+
+        return ResponseEntity.ok(memberService.emailDuplicateYn(email.get("email")));
     }
 
     /**
@@ -46,18 +48,18 @@ public class MemberController {
     @PostMapping("/email-auth")
     public ResponseEntity<?> deliverEmailAuthCode(@RequestBody Map<String, String> email) {
         memberService.deliverEmailAuthCode(email.get("email"));
-
-        return ResponseEntity.ok("이메일 인증 코드를 전송했습니다.");
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "이메일 인증 코드를 전송했습니다.");
+        return ResponseEntity.ok(result);
     }
 
     /**
      * 메일 인증
      **/
     @ApiOperation(value = "메일 인증", notes = "메일 인증 코드가 맞는지 확인합니다.")
-    @PostMapping("/email-authentication")
+    @GetMapping("/email-authentication")
     public ResponseEntity<?> emailAuthentication(@RequestParam String key) {
-        memberService.emailAuthentication(key);
-        return ResponseEntity.ok("메일 인증이 완료되었습니다.");
+        return ResponseEntity.ok(memberService.emailAuthentication(key));
     }
 
     /**
@@ -78,8 +80,7 @@ public class MemberController {
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken,
                                     @RequestHeader("RefreshToken") String refreshToken) {
         String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
-        memberService.logout(TokenDto.of(accessToken, refreshToken), username);
-        return ResponseEntity.ok("로그아웃");
+        return ResponseEntity.ok(memberService.logout(TokenDto.of(accessToken, refreshToken), username));
     }
 
     /**
@@ -90,7 +91,7 @@ public class MemberController {
     public ResponseEntity<?> reissue(@RequestHeader("RefreshToken") String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken));
     }
-    
+
     /**
      * Bearer 부분 빼는 method
      **/

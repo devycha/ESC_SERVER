@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -43,8 +44,8 @@ public class MemberProfileController {
     @ApiOperation(value = "회원 탈퇴", notes = "해당 서비스를 탈퇴합니다.")
     @DeleteMapping("/info")
     public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetails userDetails) {
-        memberService.deleteMember(userDetails);
-        return ResponseEntity.ok("탈퇴에 성공했습니다.");
+
+        return ResponseEntity.ok(memberService.deleteMember(userDetails));
     }
 
     /**
@@ -53,9 +54,10 @@ public class MemberProfileController {
     @ApiOperation(value = "비밀번호 변경 이메일 전송", notes = "인증 코드와 함께 본인확인을 위한 이메일을 전송한다.")
     @PostMapping("/password/send-mail")
     public ResponseEntity<?> changePasswordMail(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        memberService.changePasswordMail(email);
-        return ResponseEntity.ok("메일이 발송되었습니다.");
+        memberService.changePasswordMail(body.get("email"));
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "메일이 발송되었습니다.");
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -64,8 +66,7 @@ public class MemberProfileController {
     @ApiOperation(value = "인증코드 확인(비밀번호 변경)", notes = "비밀번호 변경을 위한 메일 인증 코드 일치 여부를 확인합니다.")
     @GetMapping("/password")
     public ResponseEntity<?> changePasswordMailAuth(@RequestParam String key) {
-        memberService.changePasswordMailAuth(key);
-        return ResponseEntity.ok("메일 인증이 완료되었습니다.");
+        return ResponseEntity.ok(memberService.changePasswordMailAuth(key));
     }
 
     /**
@@ -74,7 +75,6 @@ public class MemberProfileController {
     @ApiOperation(value = "비밀번호 변경", notes = "이전 비밀번호가 일치하는지 확인하고, 새로운 비밀번호로 변경합니다.")
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody CPasswordDto.Request request) {
-        memberService.changePassword(request);
-        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        return ResponseEntity.ok(memberService.changePassword(request));
     }
 }
