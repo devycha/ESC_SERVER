@@ -25,7 +25,7 @@ import static com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums.REFRESH_T
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${test.url}")
+    @Value("${targetUrl.success}")
     private String basicUrl;
 
     @Value("${spring.jwt.refresh-token.cookie}")
