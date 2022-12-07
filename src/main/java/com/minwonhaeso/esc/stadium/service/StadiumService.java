@@ -1,11 +1,15 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
-import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
+import com.minwonhaeso.esc.stadium.model.dto.*;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.CreateStadiumResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.UpdateStadiumRequest;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumImgDto.CreateImgResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.CreateItemRequest;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.CreateItemResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.DeleteItemRequest;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumTagDto.AddTagResponse;
 import com.minwonhaeso.esc.stadium.model.entity.*;
-import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
 import com.minwonhaeso.esc.stadium.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +39,7 @@ public class StadiumService {
     }
 
     @Transactional
-    public CreateStadiumDto.Response createStadium(CreateStadiumDto.Request request) {
+    public CreateStadiumResponse createStadium(StadiumDto.CreateStadiumRequest request) {
         Stadium stadium = Stadium.fromRequest(request);
 
         if (request.getItems().size() > 0) {
@@ -48,8 +52,9 @@ public class StadiumService {
         }
 
         if (request.getImgs().size() > 0) {
-            List<StadiumImg> imgs = request.getImgs().stream().map(imgUrl -> StadiumImg.builder()
-                    .stadium(stadium).imgUrl(imgUrl).build()).collect(Collectors.toList());
+            List<StadiumImg> imgs = request.getImgs().stream().map(img -> StadiumImg.builder()
+                    .stadium(stadium).imgId(img.getPublicId()).imgUrl(img.getImgUrl()).build())
+                    .collect(Collectors.toList());
 
             stadium.getImgs().addAll(imgs);
             stadiumImgRepository.saveAll(imgs);
@@ -65,7 +70,7 @@ public class StadiumService {
         stadiumRepository.save(stadium);
         stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
 
-        return CreateStadiumDto.Response.fromEntity(stadium);
+        return CreateStadiumResponse.fromEntity(stadium);
     }
 
     @Transactional
@@ -80,7 +85,7 @@ public class StadiumService {
     }
 
     @Transactional
-    public void addStadiumImg(Long stadiumId, String imgUrl) {
+    public CreateImgResponse addStadiumImg(Long stadiumId, String imgUrl) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound)
         );
@@ -88,6 +93,12 @@ public class StadiumService {
         StadiumImg img = StadiumImg.builder().stadium(stadium).imgUrl(imgUrl).build();
         stadium.getImgs().add(img);
         stadiumImgRepository.save(img);
+
+        return CreateImgResponse
+                .builder()
+                .publicId(img.getImgId())
+                .imgUrl(img.getImgUrl())
+                .build();
     }
 
     @Transactional
@@ -100,7 +111,7 @@ public class StadiumService {
     }
 
     @Transactional
-    public StadiumResponseDto updateStadiumInfo(Long stadiumId, UpdateStadiumDto.Request request) {
+    public StadiumResponseDto updateStadiumInfo(Long stadiumId, UpdateStadiumRequest request) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
@@ -110,7 +121,7 @@ public class StadiumService {
     }
 
     @Transactional
-    public void addStadiumTag(Long stadiumId, String tagName) {
+    public AddTagResponse addStadiumTag(Long stadiumId, String tagName) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound)
         );
@@ -118,6 +129,8 @@ public class StadiumService {
         StadiumTag tag = StadiumTag.builder().stadium(stadium).name(tagName).build();
         stadium.getTags().add(tag);
         stadiumTagRepository.save(tag);
+
+        return AddTagResponse.builder().tagName(tag.getName()).build();
     }
 
     @Transactional
@@ -130,7 +143,7 @@ public class StadiumService {
     }
 
     @Transactional
-    public CreateStadiumItemDto.Response addStadiumItem(Long stadiumId, CreateStadiumItemDto.Request request) {
+    public CreateItemResponse addStadiumItem(Long stadiumId, CreateItemRequest request) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound)
         );
@@ -139,7 +152,7 @@ public class StadiumService {
         stadium.getRentalStadiumItems().add(item);
         stadiumItemRepository.save(item);
 
-        return CreateStadiumItemDto.Response.builder()
+        return CreateItemResponse.builder()
                 .name(item.getName())
                 .imgUrl(item.getImgUrl())
                 .price(item.getPrice())
@@ -149,7 +162,7 @@ public class StadiumService {
     }
 
     @Transactional
-    public void deleteStadiumItem(Long stadiumId, UpdateStadiumDto.DeleteItemRequest request) {
+    public void deleteStadiumItem(Long stadiumId, DeleteItemRequest request) {
         if (!stadiumRepository.existsById(stadiumId)) {
             throw new StadiumException(StadiumNotFound);
         }

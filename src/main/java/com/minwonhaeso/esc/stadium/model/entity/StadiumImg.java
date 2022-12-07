@@ -27,6 +27,9 @@ public class StadiumImg implements Serializable {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @Column(name = "img_id")
+    private String imgId;
+
     @Column(name = "img_url", length = 1000)
     private String imgUrl;
 

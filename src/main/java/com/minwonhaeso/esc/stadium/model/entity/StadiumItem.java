@@ -1,6 +1,6 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
-import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto;
 import com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -52,7 +52,7 @@ public class StadiumItem {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public static StadiumItem fromRequest(Stadium stadium, CreateStadiumItemDto.Request request) {
+    public static StadiumItem fromRequest(Stadium stadium, StadiumItemDto.CreateItemRequest request) {
         return StadiumItem.builder()
                 .name(request.getName())
                 .stadium(stadium)
