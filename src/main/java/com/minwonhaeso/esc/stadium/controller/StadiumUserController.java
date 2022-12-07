@@ -1,6 +1,9 @@
 package com.minwonhaeso.esc.stadium.controller;
 
+import com.minwonhaeso.esc.stadium.model.dto.SearchStadiumDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumDocument;
+import com.minwonhaeso.esc.stadium.service.StadiumSearchService;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,6 +23,8 @@ import java.util.Map;
 @RequestMapping("/stadiums")
 public class StadiumUserController {
     private final StadiumService stadiumService;
+    private final StadiumSearchService stadiumSearchService;
+
     private final Double DEFAULT_LAT = 37.5030;
     private final Double DEFAULT_LNT = 127.0416;
 
@@ -39,5 +44,14 @@ public class StadiumUserController {
 
         List<StadiumResponseDto> stadiums = stadiumService.getAllStadiumsNearLocation(lnt, lat, pageable);
         return ResponseEntity.ok().body(stadiums);
+    }
+
+    @ApiOperation(value = "체육관 검색", notes = "검색어를 입력하여 체육관을 조회한다.")
+    @PostMapping("/search")
+    public ResponseEntity<?> searchStadium(
+            @RequestBody SearchStadiumDto.Request request,
+            Pageable pageable) {
+        Page<StadiumDocument> stadiumDocuments = stadiumSearchService.search(request, pageable);
+        return ResponseEntity.ok().body(stadiumDocuments);
     }
 }

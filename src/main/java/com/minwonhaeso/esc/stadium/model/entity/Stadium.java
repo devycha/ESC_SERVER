@@ -122,6 +122,7 @@ public class Stadium {
                 .lat(request.getLat())
                 .lnt(request.getLnt())
                 .address(request.getAddress())
+                .detailAddress(request.getDetailAddress())
                 .weekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(request.getHolidayPricePerHalfHour())
                 .openTime(request.getOpenTime())

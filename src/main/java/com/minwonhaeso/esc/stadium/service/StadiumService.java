@@ -2,20 +2,17 @@ package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
+import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
-import com.minwonhaeso.esc.stadium.model.entity.Stadium;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumImg;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumTag;
 import com.minwonhaeso.esc.stadium.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +28,7 @@ public class StadiumService {
     private final StadiumTagRepository stadiumTagRepository;
     private final StadiumItemRepository stadiumItemRepository;
     private final StadiumRepositorySupport stadiumRepositorySupport;
+    private final StadiumSearchRepository stadiumSearchRepository;
     
     public Page<StadiumResponseDto> getAllStadiums(Pageable pageable) {
         return stadiumRepository.findAll(pageable).map(StadiumResponseDto::fromEntity);
@@ -65,6 +63,8 @@ public class StadiumService {
         }
 
         stadiumRepository.save(stadium);
+        stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
+
         return CreateStadiumDto.Response.fromEntity(stadium);
     }
 
@@ -157,6 +157,7 @@ public class StadiumService {
         stadiumItemRepository.deleteByStadiumIdAndId(stadiumId, request.getItemId());
     }
 
+    @Transactional(readOnly = true)
     public List<StadiumResponseDto> getAllStadiumsNearLocation(Double lnt, Double lat, Pageable pageable) {
         return stadiumRepositorySupport.getAllStadiumsNearLocation(lnt, lat, pageable)
                 .stream().map(StadiumResponseDto::fromEntity).collect(Collectors.toList());
