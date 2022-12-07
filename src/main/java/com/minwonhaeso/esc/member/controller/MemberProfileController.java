@@ -44,8 +44,8 @@ public class MemberProfileController {
     @ApiOperation(value = "회원 탈퇴", notes = "해당 서비스를 탈퇴합니다.")
     @DeleteMapping("/info")
     public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetails userDetails) {
-
-        return ResponseEntity.ok(memberService.deleteMember(userDetails));
+        Map<String, String> result = memberService.deleteMember(userDetails);
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -55,8 +55,7 @@ public class MemberProfileController {
     @PostMapping("/password/send-mail")
     public ResponseEntity<?> changePasswordMail(@RequestBody Map<String, String> body) {
         memberService.changePasswordMail(body.get("email"));
-        Map<String, String> result = new HashMap<>();
-        result.put("message", "메일이 발송되었습니다.");
+        Map<String, String> result = memberService.successMessage("메일이 발송되었습니다.");
         return ResponseEntity.ok(result);
     }
 
@@ -66,7 +65,8 @@ public class MemberProfileController {
     @ApiOperation(value = "인증코드 확인(비밀번호 변경)", notes = "비밀번호 변경을 위한 메일 인증 코드 일치 여부를 확인합니다.")
     @GetMapping("/password")
     public ResponseEntity<?> changePasswordMailAuth(@RequestParam String key) {
-        return ResponseEntity.ok(memberService.changePasswordMailAuth(key));
+        Map<String, String> result = memberService.changePasswordMailAuth(key);
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -75,6 +75,7 @@ public class MemberProfileController {
     @ApiOperation(value = "비밀번호 변경", notes = "이전 비밀번호가 일치하는지 확인하고, 새로운 비밀번호로 변경합니다.")
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody CPasswordDto.Request request) {
-        return ResponseEntity.ok(memberService.changePassword(request));
+        Map<String, String> result = memberService.changePassword(request);
+        return ResponseEntity.ok(result);
     }
 }

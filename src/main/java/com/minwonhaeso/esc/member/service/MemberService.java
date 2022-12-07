@@ -217,7 +217,7 @@ public class MemberService {
         return successMessage("비밀번호가 성공적으로 변경되었습니다.");
     }
 
-    private Map<String, String> successMessage(String message) {
+    public Map<String, String> successMessage(String message) {
         Map<String, String> result = new HashMap<>();
         result.put("message", message);
         return result;

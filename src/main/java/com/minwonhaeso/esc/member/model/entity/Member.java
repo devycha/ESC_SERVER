@@ -74,7 +74,7 @@ public class Member {
             member.setType(MemberType.USER);
             member.setRole(MemberRole.ROLE_USER);
         } else {
-            member.setType(MemberType.STADIUM);
+            member.setType(MemberType.MANAGER);
             member.setRole(MemberRole.ROLE_STADIUM);
         }
         return member;
