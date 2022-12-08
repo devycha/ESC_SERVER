@@ -19,7 +19,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member{
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -59,24 +59,23 @@ public class Member{
     private String providerId;
 
 
-
-
     public static Member of(SignDto.Request signDto) {
-        Member member =  Member.builder()
+        Member member = Member.builder()
                 .email(signDto.getEmail())
                 .name(signDto.getName())
                 .password(signDto.getPassword())
                 .status(MemberStatus.ING)
                 .nickname(signDto.getNickname())
                 .imgUrl(signDto.getImage())
-                .type(signDto.getType())
                 .providerType(ProviderType.LOCAL)
                 .providerId(signDto.getEmail().split("@")[0])
                 .build();
-        if(signDto.getType() == MemberType.ADMIN){
-            member.role = MemberRole.ROLE_STADIUM;
-        }else{
-            member.role = MemberRole.ROLE_USER;
+        if (signDto.getType().equals(MemberType.USER.name())) {
+            member.setType(MemberType.USER);
+            member.setRole(MemberRole.ROLE_USER);
+        } else {
+            member.setType(MemberType.MANAGER);
+            member.setRole(MemberRole.ROLE_STADIUM);
         }
         return member;
     }
