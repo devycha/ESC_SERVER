@@ -14,7 +14,7 @@ public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
     @Value("${elasticsearch.url}")
     private String hostUrl;
 
-    @Value("${elasticsearch.clustername")
+    @Value("${elasticsearch.clusterName}")
     private String clusterName;
 
     @Override
