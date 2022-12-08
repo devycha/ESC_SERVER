@@ -1,5 +1,6 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
+import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.sun.istack.NotNull;
 import lombok.*;
@@ -70,8 +71,9 @@ public class Stadium {
     @Column(name = "star_avg")
     private Double starAvg;
 
-//    @ManyToOne
-//    private Member member;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Member member;
 
 //    @OneToMany(mappedBy = "stadium")
 //    @Column(name = "reservations")
@@ -114,8 +116,9 @@ public class Stadium {
         }
     }
 
-    public static Stadium fromRequest(StadiumDto.CreateStadiumRequest request) {
+    public static Stadium fromRequest(StadiumDto.CreateStadiumRequest request, Member member) {
         return Stadium.builder()
+                .member(member)
                 .name(request.getName())
                 .phone(request.getPhone())
                 .lat(request.getLat())

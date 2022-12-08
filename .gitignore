@@ -41,4 +41,5 @@ application.yml
 generated/
 /src/main/resources/application.properties
 /src/main/java/com/minwonhaeso/esc/security/WebSecurityConfig.java
+/src/main/java/com/minwonhaeso/esc/security/WebConfig.java
 

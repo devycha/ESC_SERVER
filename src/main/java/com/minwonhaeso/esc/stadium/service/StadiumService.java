@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
+import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.model.dto.*;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.CreateStadiumResponse;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.UpdateStadiumRequest;
@@ -33,14 +34,20 @@ public class StadiumService {
     private final StadiumItemRepository stadiumItemRepository;
     private final StadiumRepositorySupport stadiumRepositorySupport;
     private final StadiumSearchRepository stadiumSearchRepository;
-    
+
+    @Transactional(readOnly = true)
     public Page<StadiumResponseDto> getAllStadiums(Pageable pageable) {
         return stadiumRepository.findAll(pageable).map(StadiumResponseDto::fromEntity);
     }
 
+    @Transactional(readOnly = true)
+    public Page<StadiumResponseDto> getAllStadiumsByManager(Member member, Pageable pageable) {
+        return stadiumRepository.findByMember(member, pageable).map(StadiumResponseDto::fromEntity);
+    }
+
     @Transactional
-    public CreateStadiumResponse createStadium(StadiumDto.CreateStadiumRequest request) {
-        Stadium stadium = Stadium.fromRequest(request);
+    public CreateStadiumResponse createStadium(StadiumDto.CreateStadiumRequest request, Member member) {
+        Stadium stadium = Stadium.fromRequest(request, member);
 
         if (request.getItems().size() > 0) {
             List<StadiumItem> stadiumItems = request.getItems()

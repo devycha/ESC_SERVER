@@ -23,6 +23,7 @@ public class CustomerMemberDetailsService implements UserDetailsService {
     @Override
     @Cacheable(value = CacheKey.USER, key = "#email", unless = "#result == null")
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        System.out.println(email);
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new AuthException(MemberNotFound));
         return PrincipalDetails.of(member);
     }

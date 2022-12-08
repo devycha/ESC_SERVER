@@ -1,5 +1,6 @@
 package com.minwonhaeso.esc.stadium.repository;
 
+import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,6 @@ public interface StadiumRepository extends JpaRepository<Stadium, Long> {
 
     @Override
     Page<Stadium> findAll(Pageable pageable);
+    Page<Stadium> findByMember(Member member, Pageable pageable);
 
 }

@@ -1,13 +1,20 @@
 package com.minwonhaeso.esc.stadium.controller;
 
+import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.security.auth.PrincipalDetails;
 import com.minwonhaeso.esc.stadium.model.dto.*;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("hasRole('ROLE_STADIUM')")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/stadiums")
@@ -16,17 +23,23 @@ public class StadiumManagerController {
 
     @ApiOperation(value = "등록 체육관 조회", notes = "사용자(매니저)가 등록한 체육관을 조회한다.")
     @GetMapping("/manager")
-    public ResponseEntity<?> getAllRegisteredStadiumsByManager(@PathVariable String memberId) {
-        // TODO: Member 도메인 작업 후 진행
-        return null;
+    public ResponseEntity<?> getAllRegisteredStadiumsByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Pageable pageable
+    ) {
+        Member member = principalDetails.getMember();
+        Page<StadiumResponseDto> stadiums = stadiumService.getAllStadiumsByManager(member, pageable);
+        return ResponseEntity.ok().body(stadiums);
     }
 
     @ApiOperation(value = "체육관 신규 등록", notes = "사용자(매니저)가 체육관을 새로 등록한다.")
     @PostMapping("/register")
     public ResponseEntity<?> createStadiumByManager(
-            @RequestBody StadiumDto.CreateStadiumRequest request
-    ) {
-        StadiumDto.CreateStadiumResponse stadium = stadiumService.createStadium(request);
+            @RequestBody StadiumDto.CreateStadiumRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+            ) {
+        Member member = principalDetails.getMember();
+        StadiumDto.CreateStadiumResponse stadium = stadiumService.createStadium(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(stadium);
     }
 
