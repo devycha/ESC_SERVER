@@ -67,7 +67,7 @@ public class CustomerOAuth2MemberService extends DefaultOAuth2UserService {
             member = registerMember(memberInfo, providerType);
         }
 
-        log.info("processOAuth2User :" + member);
+        log.info("["+providerType.toString() + "] processOAuth2User :" + member);
 
         return new PrincipalDetails(member, oAuth2User.getAttributes());
     }
