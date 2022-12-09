@@ -28,8 +28,7 @@ public class StadiumSearchService {
     public Page<StadiumDocument> search(
             SearchStadiumDto.Request request,
             Pageable pageable) {
-//        return stadiumSearchRepository.findByName(request.getSearchValue(), pageable);
-        return stadiumSearchRepository.searchSimilar(
-                new StadiumDocument(), new String[] {request.getSearchValue()}, pageable);
+        String searchValue = request.getSearchValue();
+        return stadiumSearchRepository.findByNameLikeOrAddressLike(searchValue, searchValue, pageable);
     }
 }

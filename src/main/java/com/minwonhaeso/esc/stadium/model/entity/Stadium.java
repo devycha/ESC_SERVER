@@ -133,7 +133,9 @@ public class Stadium {
     }
 
     public void update(StadiumDto.UpdateStadiumRequest request) {
+        System.out.println(request.getName());
         if (request.getName() != null) {
+            System.out.println("수정 중입니다만..." + request.getName());
             this.setName(request.getName());
         }
 

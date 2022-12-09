@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,8 +17,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ApiModel(value = "체육관 정보 Response")
-public class StadiumResponseDto {
+@ApiModel(value = "체육관 상세 정보 조회 Response")
+public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "체육관 ID", example = "1")
     private Long id;
 
@@ -39,28 +40,46 @@ public class StadiumResponseDto {
     @ApiModelProperty(value = "찜하기 수", example = "8")
     private Integer likes;
 
+    @ApiModelProperty(value = "평일 30분당 가격", example = "20000")
+    private Integer weekdayPricePerHalfHour;
+
+    @ApiModelProperty(value = "공휴일 30분당 가격", example = "30000")
+    private Integer holidayPricePerHalfHour;
+
     @ApiModelProperty(value = "이미지", example = "['img_url1', 'img_url2', ...]")
-    private StadiumImgDto.ImgResponse img; // TODO: 이미지주소 + public_id도 포함 필요
+    private List<StadiumImgDto.ImgResponse> imgs; // TODO: 이미지주소 + public_id도 포함 필요
     private List<String> tags;
 
+    @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS")
+    private Time openTime;
 
-    public static StadiumResponseDto fromEntity(Stadium stadium) {
-        return StadiumResponseDto.builder()
+    @ApiModelProperty(value = "마감 시간", example = "HH:MM:SS")
+    private Time closeTime;
+
+    public static StadiumInfoResponseDto fromEntity(Stadium stadium) {
+        return StadiumInfoResponseDto.builder()
                 .id(stadium.getId())
                 .name(stadium.getName())
                 .lat(stadium.getLat())
                 .lnt(stadium.getLnt())
                 .address(stadium.getAddress())
                 .star_avg(stadium.getStarAvg())
-                .img(stadium.getImgs().isEmpty() ?
+                .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
+                .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
+                .openTime(stadium.getOpenTime())
+                .closeTime(stadium.getCloseTime())
+                .imgs(stadium.getImgs().isEmpty() ?
                         null :
-                        StadiumImgDto.ImgResponse.builder()
-                                .publicId(stadium.getImgs().get(0).getImgId())
-                                .imgUrl(stadium.getImgs().get(0).getImgUrl())
-                                .build())
+                        stadium.getImgs().stream().map(img ->
+                                StadiumImgDto.ImgResponse.builder()
+                                        .publicId(img.getImgId())
+                                        .imgUrl(img.getImgUrl())
+                                        .build())
+                        .collect(Collectors.toList()))
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
                 // TODO: 찜하기 수 업데이트
                 // .likes(stadium.getLikes().size())
                 .build();
     }
+
 }
