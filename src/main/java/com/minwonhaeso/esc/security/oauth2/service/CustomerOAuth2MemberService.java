@@ -7,7 +7,7 @@ import com.minwonhaeso.esc.member.model.type.MemberRole;
 import com.minwonhaeso.esc.member.model.type.MemberStatus;
 import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
-import com.minwonhaeso.esc.security.auth.PrincipalDetails;
+import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfo;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfoFactory;
 import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
@@ -69,7 +69,7 @@ public class CustomerOAuth2MemberService extends DefaultOAuth2UserService {
 
         log.info("["+providerType.toString() + "] processOAuth2User :" + member);
 
-        return new PrincipalDetails(member, oAuth2User.getAttributes());
+        return new PrincipalDetail(member, oAuth2User.getAttributes());
     }
 
     private Member registerMember(OAuth2MemberInfo memberInfo, ProviderType providerType) {

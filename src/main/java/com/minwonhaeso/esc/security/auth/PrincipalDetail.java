@@ -1,7 +1,8 @@
 package com.minwonhaeso.esc.security.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minwonhaeso.esc.member.model.entity.Member;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,64 +13,79 @@ import java.util.Collections;
 import java.util.Map;
 
 @Getter
-public class PrincipalDetails implements UserDetails, OAuth2User {
+@Setter
+@NoArgsConstructor
+public class PrincipalDetail implements UserDetails, OAuth2User {
 
-    private final Member member;
+    private String username;
+    private String password;
+    private String role;
     private Map<String, Object> attributes;
 
-    public PrincipalDetails(Member member) {
-        this.member = member;
+    public PrincipalDetail(Member member) {
+        this.username = member.getEmail();
+        this.password = member.getPassword();
+        this.role = member.getRole().name();
     }
 
-    public PrincipalDetails(Member member, Map<String, Object> attributes) {
-        this.member = member;
+    public PrincipalDetail(Member member, Map<String, Object> attributes) {
+        this.username = member.getEmail();
+        this.password = member.getPassword();
+        this.role = member.getRole().name();
         this.attributes = attributes;
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(this.member.getRole().name()));
+        return Collections.singleton(new SimpleGrantedAuthority(this.role));
     }
     public static UserDetails of(Member member) {
-        return new PrincipalDetails(member);
+        return new PrincipalDetail(member);
     }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return username;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
 
     @Override
+//    @JsonIgnore
     public Map<String, Object> getAttributes() {
         return attributes;
     }
 
     @Override
+    @JsonIgnore
     public String getName() {
         return null;
     }

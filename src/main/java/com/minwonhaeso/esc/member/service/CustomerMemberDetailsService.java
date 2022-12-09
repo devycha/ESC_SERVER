@@ -3,7 +3,7 @@ package com.minwonhaeso.esc.member.service;
 import com.minwonhaeso.esc.error.exception.AuthException;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
-import com.minwonhaeso.esc.security.auth.PrincipalDetails;
+import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.security.auth.redis.CacheKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,10 +21,10 @@ public class CustomerMemberDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    @Cacheable(value = CacheKey.USER, key = "#email", unless = "#result == null")
+    @Cacheable(value = CacheKey.USER, key = "#email")
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         System.out.println(email);
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new AuthException(MemberNotFound));
-        return PrincipalDetails.of(member);
+        return PrincipalDetail.of(member);
     }
 }
