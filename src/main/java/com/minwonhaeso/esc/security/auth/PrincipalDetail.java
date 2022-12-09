@@ -41,8 +41,7 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
         return Collections.singleton(new SimpleGrantedAuthority(this.role));
     }
     public static UserDetails of(Member member) {
-        UserDetails userDetails = new PrincipalDetail(member);
-        return userDetails;
+        return new PrincipalDetail(member);
     }
 
     @Override
