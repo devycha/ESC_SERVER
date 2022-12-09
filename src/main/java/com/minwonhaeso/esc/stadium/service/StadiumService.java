@@ -1,14 +1,17 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
+import com.minwonhaeso.esc.error.type.StadiumErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
-import com.minwonhaeso.esc.stadium.model.dto.*;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.CreateStadiumResponse;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.UpdateStadiumRequest;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumImgDto.CreateImgResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumInfoResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.CreateItemRequest;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.CreateItemResponse;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.DeleteItemRequest;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumTagDto.AddTagResponse;
 import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.repository.*;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.UnAuthorizedAccess;
 import static com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus.AVAILABLE;
 
 
@@ -34,6 +38,15 @@ public class StadiumService {
     private final StadiumItemRepository stadiumItemRepository;
     private final StadiumRepositorySupport stadiumRepositorySupport;
     private final StadiumSearchRepository stadiumSearchRepository;
+
+    @Transactional(readOnly = true)
+    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId, Pageable pageable) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound)
+        );
+
+        return StadiumInfoResponseDto.fromEntity(stadium);
+    }
 
     @Transactional(readOnly = true)
     public Page<StadiumResponseDto> getAllStadiums(Pageable pageable) {
@@ -81,21 +94,32 @@ public class StadiumService {
     }
 
     @Transactional
-    public void deleteStadium(Long stadiumId) {
+    public void deleteStadium(Member member, Long stadiumId) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
-                () -> new StadiumException(StadiumNotFound)
-        );
+                () -> new StadiumException(StadiumNotFound));
 
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
+
+        List<StadiumItem> items = stadiumItemRepository.findAllByStadium(stadium);
         List<StadiumImg> imgs = stadiumImgRepository.findAllByStadium(stadium);
+        List<StadiumTag> tags = stadiumTagRepository.findAllByStadium(stadium);
+        stadiumItemRepository.deleteAll(items);
         stadiumImgRepository.deleteAll(imgs);
+        stadiumTagRepository.deleteAll(tags);
+        stadiumSearchRepository.deleteById(stadiumId);
         stadiumRepository.delete(stadium);
     }
 
     @Transactional
-    public CreateImgResponse addStadiumImg(Long stadiumId, String imgUrl) {
+    public CreateImgResponse addStadiumImg(Member member, Long stadiumId, String imgUrl) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
-                () -> new StadiumException(StadiumNotFound)
-        );
+                () -> new StadiumException(StadiumNotFound));
+
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
 
         StadiumImg img = StadiumImg.builder().stadium(stadium).imgUrl(imgUrl).build();
         stadium.getImgs().add(img);
@@ -109,29 +133,41 @@ public class StadiumService {
     }
 
     @Transactional
-    public void deleteStadiumImg(Long stadiumId, String imgUrl) {
-        if (!stadiumRepository.existsById(stadiumId)) {
-            throw new StadiumException(StadiumNotFound);
+    public void deleteStadiumImg(Member member, Long stadiumId, String imgUrl) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
         }
 
         stadiumImgRepository.deleteByStadiumIdAndImgUrl(stadiumId, imgUrl);
     }
 
     @Transactional
-    public StadiumResponseDto updateStadiumInfo(Long stadiumId, UpdateStadiumRequest request) {
+    public StadiumResponseDto updateStadiumInfo(Member member, Long stadiumId, UpdateStadiumRequest request) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
+
         stadium.update(request);
         stadiumRepository.save(stadium);
+        StadiumDocument stadiumDocument = StadiumDocument.fromEntity(stadium);
+        stadiumSearchRepository.save(stadiumDocument);
         return StadiumResponseDto.fromEntity(stadium);
     }
 
     @Transactional
-    public AddTagResponse addStadiumTag(Long stadiumId, String tagName) {
+    public AddTagResponse addStadiumTag(Member member, Long stadiumId, String tagName) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
-                () -> new StadiumException(StadiumNotFound)
-        );
+                () -> new StadiumException(StadiumNotFound));
+
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
 
         StadiumTag tag = StadiumTag.builder().stadium(stadium).name(tagName).build();
         stadium.getTags().add(tag);
@@ -141,9 +177,12 @@ public class StadiumService {
     }
 
     @Transactional
-    public void deleteStadiumTag(Long stadiumId, String tagName) {
-        if (!stadiumRepository.existsById(stadiumId)) {
-            throw new StadiumException(StadiumNotFound);
+    public void deleteStadiumTag(Member member, Long stadiumId, String tagName) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
         }
 
         stadiumTagRepository.deleteByStadiumIdAndName(stadiumId, tagName);
@@ -169,9 +208,12 @@ public class StadiumService {
     }
 
     @Transactional
-    public void deleteStadiumItem(Long stadiumId, DeleteItemRequest request) {
-        if (!stadiumRepository.existsById(stadiumId)) {
-            throw new StadiumException(StadiumNotFound);
+    public void deleteStadiumItem(Member member, Long stadiumId, DeleteItemRequest request) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        if (stadium.getMember().getMemberId() != member.getMemberId()) {
+            throw new StadiumException(UnAuthorizedAccess);
         }
 
         stadiumItemRepository.deleteByStadiumIdAndId(stadiumId, request.getItemId());

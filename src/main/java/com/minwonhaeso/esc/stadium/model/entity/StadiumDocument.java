@@ -23,6 +23,12 @@ public class StadiumDocument {
     private String address;
 
     @Field(type = FieldType.Double)
+    private Double lat;
+
+    @Field(type = FieldType.Double)
+    private Double lnt;
+
+    @Field(type = FieldType.Double)
     private Double starAvg;
 
     @Field(type = FieldType.Integer)
@@ -36,6 +42,8 @@ public class StadiumDocument {
                 .id(stadium.getId())
                 .name(stadium.getName())
                 .address(stadium.getAddress())
+                .lat(stadium.getLat())
+                .lnt(stadium.getLnt())
                 .starAvg(stadium.getStarAvg())
                 .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())

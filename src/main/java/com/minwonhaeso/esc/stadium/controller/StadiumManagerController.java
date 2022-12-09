@@ -46,30 +46,36 @@ public class StadiumManagerController {
     @ApiOperation(value = "체육관 정보 수정", notes = "사용자(매니저)가 등록한 체육관의 정보를 수정한다.")
     @PatchMapping("/{stadiumId}/info")
     public ResponseEntity<?> updateStadiumInfo(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long stadiumId,
-            StadiumDto.UpdateStadiumRequest request
+            @RequestBody StadiumDto.UpdateStadiumRequest request
     ) {
-        StadiumResponseDto stadium = stadiumService.updateStadiumInfo(stadiumId, request);
+        Member member = principalDetails.getMember();
+        StadiumResponseDto stadium = stadiumService.updateStadiumInfo(member, stadiumId, request);
         return ResponseEntity.ok().body(stadium);
     }
 
     @ApiOperation(value = "체육관 이미지 추가", notes = "사용자(매니저)가 등록한 체육관의 이미지를 1장 추가한다.")
     @PostMapping("/{stadiumId}/imgs")
     public ResponseEntity<?> addStadiumImgByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long stadiumId,
             @RequestBody StadiumImgDto.AddImgRequest request
     ) {
-        StadiumImgDto.CreateImgResponse img = stadiumService.addStadiumImg(stadiumId, request.getImgUrl());
+        Member member = principalDetails.getMember();
+        StadiumImgDto.CreateImgResponse img = stadiumService.addStadiumImg(member, stadiumId, request.getImgUrl());
         return ResponseEntity.ok().body(img);
     }
 
     @ApiOperation(value = "체육관 종목(태그) 추가", notes = "사용자(매니저)가 등록한 체육관의 종목을 1개 추가한다.")
     @PostMapping("/{stadiumId}/tags")
     public ResponseEntity<?> addStadiumTagByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long stadiumId,
             @RequestBody StadiumTagDto.AddTagRequest request
     ) {
-        StadiumTagDto.AddTagResponse tag = stadiumService.addStadiumTag(stadiumId, request.getTagName());
+        Member member = principalDetails.getMember();
+        StadiumTagDto.AddTagResponse tag = stadiumService.addStadiumTag(member, stadiumId, request.getTagName());
         return ResponseEntity.ok().body(tag);
     }
 
@@ -86,36 +92,45 @@ public class StadiumManagerController {
     @ApiOperation(value = "체육관 이미지 삭제", notes = "사용자(매니저)가 등록한 체육관의 이미지 1장을 삭제한다.")
     @DeleteMapping("/{stadiumId}/imgs")
     public ResponseEntity<?> deleteStadiumImgByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long stadiumId,
             @RequestBody StadiumImgDto.DeleteImgRequest request
     ) {
-        stadiumService.deleteStadiumImg(stadiumId, request.getImgUrl());
+        Member member = principalDetails.getMember();
+        stadiumService.deleteStadiumImg(member, stadiumId, request.getImgUrl());
         return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "체육관 종목(태그) 삭제", notes = "사용자(매니저)가 등록한 체육관의 종목 1개를 삭제한다.")
     @DeleteMapping("/{stadiumId}/tags")
     public ResponseEntity<?> deleteStadiumTagByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long stadiumId,
             @RequestBody StadiumTagDto.DeleteTagRequest request
     ) {
-        stadiumService.deleteStadiumTag(stadiumId, request.getTagName());
+        Member member = principalDetails.getMember();
+        stadiumService.deleteStadiumTag(member, stadiumId, request.getTagName());
         return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "체육관 대여 용품 삭제", notes = "사용자(매니저)가 등록한 체육관의 대여 용품 1개를 삭제한다.")
     @DeleteMapping("/{stadiumId}/items")
     public ResponseEntity<?> deleteStadiumItemByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long stadiumId,
             @RequestBody StadiumItemDto.DeleteItemRequest request) {
-        stadiumService.deleteStadiumItem(stadiumId, request);
+        Member member = principalDetails.getMember();
+        stadiumService.deleteStadiumItem(member, stadiumId, request);
         return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "체육관 삭제", notes = "사용자(매니저)가 등록한 체육관을 삭제한다.")
-    @DeleteMapping("/{stadiumId}")
-    public ResponseEntity<?> deleteStadiumByManager(@PathVariable Long stadiumId) {
-        stadiumService.deleteStadium(stadiumId);
+    @DeleteMapping("/{stadiumId}/info")
+    public ResponseEntity<?> deleteStadiumByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Long stadiumId) {
+        Member member = principalDetails.getMember();
+        stadiumService.deleteStadium(member, stadiumId);
         return ResponseEntity.ok().build();
     }
 }
