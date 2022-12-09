@@ -1,16 +1,20 @@
 package com.minwonhaeso.esc.stadium.controller;
 
-import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
-import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumItemDto;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
+import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.security.auth.PrincipalDetails;
+import com.minwonhaeso.esc.stadium.model.dto.*;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("hasRole('ROLE_STADIUM')")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/stadiums")
@@ -19,17 +23,23 @@ public class StadiumManagerController {
 
     @ApiOperation(value = "등록 체육관 조회", notes = "사용자(매니저)가 등록한 체육관을 조회한다.")
     @GetMapping("/manager")
-    public ResponseEntity<?> getAllRegisteredStadiumsByManager(@PathVariable String memberId) {
-        // TODO: Member 도메인 작업 후 진행
-        return null;
+    public ResponseEntity<?> getAllRegisteredStadiumsByManager(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Pageable pageable
+    ) {
+        Member member = principalDetails.getMember();
+        Page<StadiumResponseDto> stadiums = stadiumService.getAllStadiumsByManager(member, pageable);
+        return ResponseEntity.ok().body(stadiums);
     }
 
     @ApiOperation(value = "체육관 신규 등록", notes = "사용자(매니저)가 체육관을 새로 등록한다.")
     @PostMapping("/register")
     public ResponseEntity<?> createStadiumByManager(
-            @RequestBody CreateStadiumDto.Request request
-    ) {
-        CreateStadiumDto.Response stadium = stadiumService.createStadium(request);
+            @RequestBody StadiumDto.CreateStadiumRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+            ) {
+        Member member = principalDetails.getMember();
+        StadiumDto.CreateStadiumResponse stadium = stadiumService.createStadium(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(stadium);
     }
 
@@ -37,7 +47,7 @@ public class StadiumManagerController {
     @PatchMapping("/{stadiumId}/info")
     public ResponseEntity<?> updateStadiumInfo(
             @PathVariable Long stadiumId,
-            UpdateStadiumDto.Request request
+            StadiumDto.UpdateStadiumRequest request
     ) {
         StadiumResponseDto stadium = stadiumService.updateStadiumInfo(stadiumId, request);
         return ResponseEntity.ok().body(stadium);
@@ -47,29 +57,29 @@ public class StadiumManagerController {
     @PostMapping("/{stadiumId}/imgs")
     public ResponseEntity<?> addStadiumImgByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.AddImgRequest request
+            @RequestBody StadiumImgDto.AddImgRequest request
     ) {
-        stadiumService.addStadiumImg(stadiumId, request.getImgUrl());
-        return ResponseEntity.ok().build();
+        StadiumImgDto.CreateImgResponse img = stadiumService.addStadiumImg(stadiumId, request.getImgUrl());
+        return ResponseEntity.ok().body(img);
     }
 
     @ApiOperation(value = "체육관 종목(태그) 추가", notes = "사용자(매니저)가 등록한 체육관의 종목을 1개 추가한다.")
     @PostMapping("/{stadiumId}/tags")
     public ResponseEntity<?> addStadiumTagByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.AddTagRequest request
+            @RequestBody StadiumTagDto.AddTagRequest request
     ) {
-        stadiumService.addStadiumTag(stadiumId, request.getTagName());
-        return ResponseEntity.ok().build();
+        StadiumTagDto.AddTagResponse tag = stadiumService.addStadiumTag(stadiumId, request.getTagName());
+        return ResponseEntity.ok().body(tag);
     }
 
     @ApiOperation(value = "체육관 대여 용품 추가", notes = "사용자(매니저)가 등록한 체육관의 대여 용품을 1개 추가한다.")
     @PostMapping("/{stadiumId}/items")
     public ResponseEntity<?> addStadiumItemByManager(
             @PathVariable Long stadiumId,
-            @RequestBody CreateStadiumItemDto.Request request
+            @RequestBody StadiumItemDto.CreateItemRequest request
     )  {
-        CreateStadiumItemDto.Response item = stadiumService.addStadiumItem(stadiumId, request);
+        StadiumItemDto.CreateItemResponse item = stadiumService.addStadiumItem(stadiumId, request);
         return ResponseEntity.ok().body(item);
     }
 
@@ -77,7 +87,7 @@ public class StadiumManagerController {
     @DeleteMapping("/{stadiumId}/imgs")
     public ResponseEntity<?> deleteStadiumImgByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.DeleteImgRequest request
+            @RequestBody StadiumImgDto.DeleteImgRequest request
     ) {
         stadiumService.deleteStadiumImg(stadiumId, request.getImgUrl());
         return ResponseEntity.ok().build();
@@ -87,7 +97,7 @@ public class StadiumManagerController {
     @DeleteMapping("/{stadiumId}/tags")
     public ResponseEntity<?> deleteStadiumTagByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.DeleteTagRequest request
+            @RequestBody StadiumTagDto.DeleteTagRequest request
     ) {
         stadiumService.deleteStadiumTag(stadiumId, request.getTagName());
         return ResponseEntity.ok().build();
@@ -97,7 +107,7 @@ public class StadiumManagerController {
     @DeleteMapping("/{stadiumId}/items")
     public ResponseEntity<?> deleteStadiumItemByManager(
             @PathVariable Long stadiumId,
-            @RequestBody UpdateStadiumDto.DeleteItemRequest request) {
+            @RequestBody StadiumItemDto.DeleteItemRequest request) {
         stadiumService.deleteStadiumItem(stadiumId, request);
         return ResponseEntity.ok().build();
     }

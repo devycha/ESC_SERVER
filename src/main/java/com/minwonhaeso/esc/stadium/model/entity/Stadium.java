@@ -1,7 +1,7 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
-import com.minwonhaeso.esc.stadium.model.dto.CreateStadiumDto;
-import com.minwonhaeso.esc.stadium.model.dto.UpdateStadiumDto;
+import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -71,8 +71,9 @@ public class Stadium {
     @Column(name = "star_avg")
     private Double starAvg;
 
-//    @ManyToOne
-//    private Member member;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Member member;
 
 //    @OneToMany(mappedBy = "stadium")
 //    @Column(name = "reservations")
@@ -115,8 +116,9 @@ public class Stadium {
         }
     }
 
-    public static Stadium fromRequest(CreateStadiumDto.Request request) {
+    public static Stadium fromRequest(StadiumDto.CreateStadiumRequest request, Member member) {
         return Stadium.builder()
+                .member(member)
                 .name(request.getName())
                 .phone(request.getPhone())
                 .lat(request.getLat())
@@ -130,7 +132,7 @@ public class Stadium {
                 .build();
     }
 
-    public void update(UpdateStadiumDto.Request request) {
+    public void update(StadiumDto.UpdateStadiumRequest request) {
         if (request.getName() != null) {
             this.setName(request.getName());
         }

@@ -39,7 +39,7 @@ public class StadiumResponseDto {
     private Integer likes;
 
     @ApiModelProperty(value = "이미지", example = "['img_url1', 'img_url2', ...]")
-    private List<String> imgs; // TODO: 이미지주소 + public_id도 포함 필요
+    private List<StadiumImgDto.ImgResponse> imgs; // TODO: 이미지주소 + public_id도 포함 필요
     private List<String> tags;
 
     @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS")
@@ -59,7 +59,12 @@ public class StadiumResponseDto {
                 .closeTime(stadium.getCloseTime())
 //                // TODO: 찜하기 수 업데이트
 //                .likes(stadium.getLikes().size())
-                .imgs(stadium.getImgs().stream().map(StadiumImg::getImgUrl).collect(Collectors.toList()))
+                .imgs(stadium.getImgs().stream().map(img ->
+                        StadiumImgDto.ImgResponse.builder()
+                                .publicId(img.getImgId())
+                                .imgUrl(img.getImgUrl())
+                                .build())
+                        .collect(Collectors.toList()))
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
                 .build();
     }
