@@ -5,6 +5,7 @@ import com.minwonhaeso.esc.member.service.CustomerMemberDetailsService;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

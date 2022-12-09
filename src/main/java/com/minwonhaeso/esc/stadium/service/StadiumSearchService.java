@@ -14,16 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class StadiumSearchService {
     private final StadiumSearchRepository stadiumSearchRepository;
 
-    @Transactional
-    public StadiumDocument save(StadiumDocument stadiumDocument) {
-        return stadiumSearchRepository.save(stadiumDocument);
-    }
-
-    @Transactional
-    public void delete(StadiumDocument stadiumDocument) {
-        stadiumSearchRepository.delete(stadiumDocument);
-    }
-
     @Transactional(readOnly = true)
     public Page<StadiumDocument> search(
             SearchStadiumDto.Request request,

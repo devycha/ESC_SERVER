@@ -51,10 +51,9 @@ public class StadiumUserController {
     @ApiOperation(value = "가까운 체육관 조회", notes = "사용자(일반)의 위도 경도를 기준으로 가까운 체육관을 조회한다.")
     @GetMapping("/near-loc")
     public ResponseEntity<?> getAllStadiumsNearLocation(
-            @ApiParam(value = "위도, 경도") @RequestParam Map<String, String> params, Pageable pageable) {
-        Double lnt = Double.valueOf(params.getOrDefault("lnt", String.valueOf(DEFAULT_LNT)));
-        Double lat = Double.valueOf(params.getOrDefault("lat", String.valueOf(DEFAULT_LAT)));
-
+            @RequestParam Double lnt, @RequestParam Double lat, Pageable pageable) {
+        lnt = lnt == null ? DEFAULT_LNT : lnt;
+        lat = lat == null ? DEFAULT_LAT : lat;
         List<StadiumResponseDto> stadiums = stadiumService.getAllStadiumsNearLocation(lnt, lat, pageable);
         return ResponseEntity.ok().body(stadiums);
     }
