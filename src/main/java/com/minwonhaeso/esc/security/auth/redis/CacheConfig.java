@@ -42,12 +42,10 @@ public class CacheConfig {
                         .SerializationPair
                         .fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
-
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)
                 .cacheDefaults(configuration)
                 .build();
-
     }
 
     @Bean

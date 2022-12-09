@@ -62,10 +62,10 @@ public class JwtTokenUtil {
     private String doGenerateToken(String email, long expireTime) {
         Claims claims = Jwts.claims();
         claims.put("email", email);
-
+        Date curTime = new Date(System.currentTimeMillis());
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(curTime)
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(getSigningKey(SECRET_KEY), SignatureAlgorithm.HS256)
                 .compact();
