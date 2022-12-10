@@ -1,7 +1,7 @@
 package com.minwonhaeso.esc.member.service;
 
 
-import com.minwonhaeso.esc.component.MailComponents;
+import com.minwonhaeso.esc.mail.MailService;
 import com.minwonhaeso.esc.error.exception.AuthException;
 import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.member.model.dto.*;
@@ -9,9 +9,9 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
 import com.minwonhaeso.esc.member.repository.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
-import com.minwonhaeso.esc.security.auth.AuthUtil;
+import com.minwonhaeso.esc.util.AuthUtil;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
-import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
+import com.minwonhaeso.esc.util.JwtTokenUtil;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
@@ -35,12 +35,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MailComponents mailComponents;
+    private final MailService mailService;
     private final MemberEmailRepository memberEmailRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final JwtTokenUtil jwtTokenUtil;
-    private final AuthUtil authUtil;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public SignDto.Response signUser(SignDto.Request signDto) {
@@ -53,6 +52,7 @@ public class MemberService {
         Member member = Member.of(signDto);
         memberRepository.save(member);
         return SignDto.Response.builder()
+                .nickName(member.getNickname())
                 .name(member.getName())
                 .image(member.getImgUrl())
                 .build();
@@ -68,12 +68,12 @@ public class MemberService {
     }
 
     public String deliverEmailAuthCode(String email) {
-        String uuid = authUtil.generateEmailAuthNum();
+        String uuid = AuthUtil.generateEmailAuthNum();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 이메일 인증 안내";
         String content = "<p>이메일 인증 코드 : " + uuid + "</p>";
-        mailComponents.sendMail(email, subject, content);
+        mailService.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
         return memberEmail.getId();
     }
@@ -96,7 +96,7 @@ public class MemberService {
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
-        return LoginDto.Response.of(email, member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
+        return LoginDto.Response.of(email,member.getNickname(), member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
     }
 
     private void checkPassword(String rawPassword, String findMemberPassword) {
@@ -140,9 +140,8 @@ public class MemberService {
         Member member = memberRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         return InfoDto.Response.builder()
-                .name(member.getName())
+                .nickName(member.getNickname())
                 .email(member.getEmail())
-                .password(member.getPassword())
                 .imgUrl(member.getImgUrl())
                 .build();
     }
@@ -181,12 +180,12 @@ public class MemberService {
     }
 
     public String changePasswordMail(String email) {
-        String uuid = authUtil.generateEmailAuthNum();
+        String uuid = AuthUtil.generateEmailAuthNum();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
         String content = "<p>비밀번호 변경 코드: " + uuid + "</p>";
-        mailComponents.sendMail(email, subject, content);
+        mailService.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
         return uuid;
     }

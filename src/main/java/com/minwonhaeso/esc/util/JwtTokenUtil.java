@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.security.auth.jwt;
+package com.minwonhaeso.esc.util;
 
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;

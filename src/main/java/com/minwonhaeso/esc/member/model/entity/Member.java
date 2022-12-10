@@ -22,25 +22,24 @@ import javax.persistence.*;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long memberId;
 
-    @Column(unique = true, name = "email")
+    @Column(unique = true)
     private String email;
 
     @NotNull
-    @Column(name = "name")
+    @Column(nullable = false)
     private String name;
 
     @NotNull
-    @Column(name = "password")
+    @Column(nullable = false)
     private String password;
 
+    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-
-    @Column(name = "img_url")
     private String imgUrl;
 
     @Column(unique = true)
@@ -55,7 +54,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private ProviderType providerType; // 소셜 타입
 
-    @Column(name = "provider_id")
     private String providerId;
 
 
