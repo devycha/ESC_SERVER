@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/stadiums")
+@RequestMapping("/stadium")
 public class StadiumUserController {
     private final StadiumService stadiumService;
     private final StadiumSearchService stadiumSearchService;

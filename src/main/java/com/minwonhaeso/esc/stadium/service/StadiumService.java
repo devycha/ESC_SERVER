@@ -200,6 +200,7 @@ public class StadiumService {
 
         return CreateItemResponse.builder()
                 .name(item.getName())
+                .publicId(item.getImgId())
                 .imgUrl(item.getImgUrl())
                 .price(item.getPrice())
                 .cnt(item.getCnt())

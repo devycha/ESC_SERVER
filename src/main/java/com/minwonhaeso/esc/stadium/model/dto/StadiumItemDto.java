@@ -9,7 +9,7 @@ public class StadiumItemDto {
     @ApiModel(value = "체육관 대여 용품 추가 Request Body")
     public static class CreateItemRequest {
         private String name;
-        private String imgId;
+        private String publicId;
         private String imgUrl;
         private Integer price;
         private Integer cnt;
@@ -20,6 +20,7 @@ public class StadiumItemDto {
     @ApiModel(value = "체육관 대여 용품 추가 성공 Response Body")
     public static class CreateItemResponse {
         private String name;
+        private String publicId;
         private String imgUrl;
         private Integer price;
         private Integer cnt;

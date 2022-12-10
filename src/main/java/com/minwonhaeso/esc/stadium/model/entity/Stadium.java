@@ -32,8 +32,8 @@ public class Stadium {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "phone", nullable = false)
+//    @NotNull
+    @Column(name = "phone")
     private String phone;
 
     @NotNull
@@ -56,8 +56,8 @@ public class Stadium {
     @Column(name = "weekday_price_per_half_hour", nullable = false)
     private Integer weekdayPricePerHalfHour;
 
-    @NotNull
-    @Column(name = "holiday_price_per_half_hour", nullable = false)
+//    @NotNull
+//    @Column(name = "holiday_price_per_half_hour")
     private Integer holidayPricePerHalfHour;
 
     @NotNull
