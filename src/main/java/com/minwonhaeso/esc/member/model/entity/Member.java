@@ -35,8 +35,6 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    @NotNull
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
