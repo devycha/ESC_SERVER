@@ -96,7 +96,7 @@ public class MemberService {
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
-        return LoginDto.Response.of(email, member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
+        return LoginDto.Response.of(email, member.getNickname(), member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
     }
 
     private void checkPassword(String rawPassword, String findMemberPassword) {
@@ -140,9 +140,8 @@ public class MemberService {
         Member member = memberRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         return InfoDto.Response.builder()
-                .name(member.getName())
+                .nickName(member.getNickname())
                 .email(member.getEmail())
-                .password(member.getPassword())
                 .imgUrl(member.getImgUrl())
                 .build();
     }

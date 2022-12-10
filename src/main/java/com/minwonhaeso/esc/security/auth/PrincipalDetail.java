@@ -19,12 +19,14 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
 
     private String username;
     private String password;
+    private Member member;
     private String role;
     private Map<String, Object> attributes;
 
     public PrincipalDetail(Member member) {
         this.username = member.getEmail();
         this.password = member.getPassword();
+        this.member = member;
         this.role = member.getRole().name();
     }
 
