@@ -1,15 +1,11 @@
 package com.minwonhaeso.esc.stadium.controller;
 
-import com.minwonhaeso.esc.stadium.model.dto.SearchStadiumDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumInfoResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumDocument;
 import com.minwonhaeso.esc.stadium.service.StadiumSearchService;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/stadium")
+@RequestMapping("/stadiums")
 public class StadiumUserController {
     private final StadiumService stadiumService;
     private final StadiumSearchService stadiumSearchService;
@@ -41,10 +36,9 @@ public class StadiumUserController {
     @ApiOperation(value = "체육관 상세 정보 조회", notes = "사용자(일반)가 체육관 상세 정보를 조회한다.")
     @GetMapping("/{stadiumId}/info")
     public ResponseEntity<?> getStadiumInfo(
-            @PathVariable Long stadiumId,
-            Pageable pageable
+            @PathVariable Long stadiumId
     ) {
-        StadiumInfoResponseDto stadium = stadiumService.getStadiumInfo(stadiumId, pageable);
+        StadiumInfoResponseDto stadium = stadiumService.getStadiumInfo(stadiumId);
         return ResponseEntity.ok().body(stadium);
     }
 
@@ -54,16 +48,16 @@ public class StadiumUserController {
             @RequestParam Double lnt, @RequestParam Double lat, Pageable pageable) {
         lnt = lnt == null ? DEFAULT_LNT : lnt;
         lat = lat == null ? DEFAULT_LAT : lat;
-        List<StadiumResponseDto> stadiums = stadiumService.getAllStadiumsNearLocation(lnt, lat, pageable);
+        List<StadiumResponseDto> stadiums = stadiumSearchService.getAllStadiumsNearLocation(lnt, lat, pageable);
         return ResponseEntity.ok().body(stadiums);
     }
 
     @ApiOperation(value = "체육관 검색", notes = "검색어를 입력하여 체육관을 조회한다.")
-    @PostMapping("/search")
+    @GetMapping("/search")
     public ResponseEntity<?> searchStadium(
-            @RequestBody SearchStadiumDto.Request request,
+            @RequestParam String searchValue,
             Pageable pageable) {
-        Page<StadiumDocument> stadiumDocuments = stadiumSearchService.search(request, pageable);
+        Page<StadiumDocument> stadiumDocuments = stadiumSearchService.search(searchValue, pageable);
         return ResponseEntity.ok().body(stadiumDocuments);
     }
 }

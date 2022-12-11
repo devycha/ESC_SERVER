@@ -1,7 +1,6 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
-import com.minwonhaeso.esc.error.type.StadiumErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.CreateStadiumResponse;
@@ -36,11 +35,10 @@ public class StadiumService {
     private final StadiumImgRepository stadiumImgRepository;
     private final StadiumTagRepository stadiumTagRepository;
     private final StadiumItemRepository stadiumItemRepository;
-    private final StadiumRepositorySupport stadiumRepositorySupport;
     private final StadiumSearchRepository stadiumSearchRepository;
 
     @Transactional(readOnly = true)
-    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId, Pageable pageable) {
+    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound)
         );
@@ -153,7 +151,7 @@ public class StadiumService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
-        stadium.update(request);
+        stadium.setAll(request);
         stadiumRepository.save(stadium);
         StadiumDocument stadiumDocument = StadiumDocument.fromEntity(stadium);
         stadiumSearchRepository.save(stadiumDocument);
@@ -218,11 +216,5 @@ public class StadiumService {
         }
 
         stadiumItemRepository.deleteByStadiumIdAndId(stadiumId, request.getItemId());
-    }
-
-    @Transactional(readOnly = true)
-    public List<StadiumResponseDto> getAllStadiumsNearLocation(Double lnt, Double lat, Pageable pageable) {
-        return stadiumRepositorySupport.getAllStadiumsNearLocation(lnt, lat, pageable)
-                .stream().map(StadiumResponseDto::fromEntity).collect(Collectors.toList());
     }
 }
