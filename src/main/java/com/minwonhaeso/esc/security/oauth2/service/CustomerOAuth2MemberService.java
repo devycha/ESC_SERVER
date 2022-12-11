@@ -79,7 +79,7 @@ public class CustomerOAuth2MemberService extends DefaultOAuth2UserService {
         return memberRepository.saveAndFlush(Member.builder()
                 .email(memberInfo.getEmail())
                 .name(memberInfo.getName())
-                .nickname(providerType+"_"+ memberInfo.getProviderId())
+                .nickname(providerType+"_"+ uuid)
                 .password(BCrypt.hashpw("esc" + uuid, BCrypt.gensalt()))
                 .role(MemberRole.ROLE_USER)
                 .providerType(providerType)

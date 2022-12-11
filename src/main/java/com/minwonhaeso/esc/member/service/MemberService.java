@@ -221,4 +221,19 @@ public class MemberService {
         result.put("message", message);
         return result;
     }
+
+    public OAuthDto.Response oauthInfo(OAuthDto.Request oauthDto) {
+        Member member = memberRepository.findByEmail(oauthDto.getEmail())
+                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotFound));
+
+        String email = member.getEmail();
+        RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
+
+        return OAuthDto.Response.builder()
+                .email(email)
+                .nickName(member.getNickname())
+                .imgUrl(member.getImgUrl())
+                .refreshToken(refreshToken.getRefreshToken())
+                .build();
+    }
 }

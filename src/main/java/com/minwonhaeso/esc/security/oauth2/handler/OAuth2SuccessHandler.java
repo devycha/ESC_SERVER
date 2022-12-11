@@ -1,11 +1,9 @@
 package com.minwonhaeso.esc.security.oauth2.handler;
 
 import com.minwonhaeso.esc.util.JwtTokenUtil;
-import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfo;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfoFactory;
 import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
-import com.minwonhaeso.esc.security.oauth2.util.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -28,9 +26,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${targetUrl.success}")
     private String basicUrl;
 
-    @Value("${spring.jwt.refresh-token.cookie}")
-    private String refreshTokenForCookie;
-
     private final JwtTokenUtil jwtTokenUtil;
 
     public OAuth2SuccessHandler(JwtTokenUtil jwtTokenUtil) {
@@ -51,10 +46,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String memberEmail = memberInfo.getEmail();
         String token = jwtTokenUtil.generateAccessToken(memberEmail);
-        RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(memberEmail);
-
-        int cookieMaxAge = (int) (REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 60);
-        CookieUtil.addCookie(response, refreshTokenForCookie, refreshToken.getRefreshToken(), cookieMaxAge);
+        //RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(memberEmail);
 
         String targetUrl = makeRedirectUrl(token);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
