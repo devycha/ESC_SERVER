@@ -12,5 +12,6 @@ public class CPasswordDto {
         private String prePassword;
         private String newPassword;
         private String confirmPassword;
+        private Boolean hasToken;
     }
 }

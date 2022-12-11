@@ -52,7 +52,7 @@ public class MemberProfileController {
      * 비밀번호 변경 메일 전송
      **/
     @ApiOperation(value = "비밀번호 변경 이메일 전송", notes = "인증 코드와 함께 본인확인을 위한 이메일을 전송한다.")
-    @PostMapping("/password/send-mail")
+    @PostMapping("/password/send-email")
     public ResponseEntity<?> changePasswordMail(@RequestBody Map<String, String> body) {
         memberService.changePasswordMail(body.get("email"));
         Map<String, String> result = memberService.successMessage("메일이 발송되었습니다.");
