@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.common.swagger;
+package com.minwonhaeso.esc.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

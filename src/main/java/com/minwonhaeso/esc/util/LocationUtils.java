@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.stadium.util;
+package com.minwonhaeso.esc.util;
 
 import lombok.Builder;
 import lombok.Data;

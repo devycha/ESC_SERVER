@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.common.config;
+package com.minwonhaeso.esc.config;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;

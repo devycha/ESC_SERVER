@@ -4,13 +4,12 @@ import com.minwonhaeso.esc.member.model.dto.LoginDto;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.dto.TokenDto;
 import com.minwonhaeso.esc.member.service.MemberService;
-import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
+import com.minwonhaeso.esc.util.JwtTokenUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController

@@ -1,5 +1,6 @@
-package com.minwonhaeso.esc.security.auth.redis;
+package com.minwonhaeso.esc.config;
 
+import com.minwonhaeso.esc.security.auth.redis.CacheKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
