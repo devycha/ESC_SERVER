@@ -1,15 +1,15 @@
-package com.minwonhaeso.esc.component;
+package com.minwonhaeso.esc.mail;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Component
-public class MailComponents {
+@Service
+public class MailService {
     private final JavaMailSender javaMailSender;
 
     public boolean sendMail(String mail, String subject, String text) {

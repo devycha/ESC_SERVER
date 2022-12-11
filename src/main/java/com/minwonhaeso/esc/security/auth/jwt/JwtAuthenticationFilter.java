@@ -3,6 +3,7 @@ package com.minwonhaeso.esc.security.auth.jwt;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.service.CustomerMemberDetailsService;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
+import com.minwonhaeso.esc.util.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;

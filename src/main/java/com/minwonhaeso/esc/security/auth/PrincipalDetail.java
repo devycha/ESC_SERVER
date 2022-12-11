@@ -20,27 +20,33 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
     private String username;
     private String password;
     private Member member;
+<<<<<<< HEAD
     private String role;
+=======
+>>>>>>> upstream/feat
     private Map<String, Object> attributes;
 
     public PrincipalDetail(Member member) {
         this.username = member.getEmail();
         this.password = member.getPassword();
         this.member = member;
+<<<<<<< HEAD
         this.role = member.getRole().name();
+=======
+>>>>>>> upstream/feat
     }
 
     public PrincipalDetail(Member member, Map<String, Object> attributes) {
         this.username = member.getEmail();
         this.password = member.getPassword();
-        this.role = member.getRole().name();
         this.attributes = attributes;
+        this.member = member;
     }
 
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(this.role));
+        return Collections.singleton(new SimpleGrantedAuthority(this.member.getRole().name()));
     }
     public static UserDetails of(Member member) {
         return new PrincipalDetail(member);

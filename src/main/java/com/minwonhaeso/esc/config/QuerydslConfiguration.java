@@ -1,4 +1,4 @@
-package com.minwonhaeso.esc.common.config;
+package com.minwonhaeso.esc.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

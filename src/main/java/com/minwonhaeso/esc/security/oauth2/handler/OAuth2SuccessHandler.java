@@ -1,6 +1,6 @@
 package com.minwonhaeso.esc.security.oauth2.handler;
 
-import com.minwonhaeso.esc.security.auth.jwt.JwtTokenUtil;
+import com.minwonhaeso.esc.util.JwtTokenUtil;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfo;
 import com.minwonhaeso.esc.security.oauth2.info.OAuth2MemberInfoFactory;
