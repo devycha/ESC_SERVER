@@ -230,7 +230,6 @@ public class MemberService {
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
 
         return OAuthDto.Response.builder()
-                .email(email)
                 .nickName(member.getNickname())
                 .imgUrl(member.getImgUrl())
                 .refreshToken(refreshToken.getRefreshToken())
