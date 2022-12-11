@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.member.controller;
 
 import com.minwonhaeso.esc.member.model.dto.LoginDto;
+import com.minwonhaeso.esc.member.model.dto.OAuthDto;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.dto.TokenDto;
 import com.minwonhaeso.esc.member.service.MemberService;
@@ -89,6 +90,13 @@ public class MemberController {
     @PostMapping("/auth/refresh-token")
     public ResponseEntity<?> reissue(@RequestHeader("RefreshToken") String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken));
+    }
+
+    @ApiOperation(value = "OAuth2 회원 정보 요청", notes = "소셜 로그인 시, 필요한 회원 정보를 전달합니다.")
+    @PostMapping("/oauth2/info")
+    public ResponseEntity<?> oauth2Info(@RequestBody OAuthDto.Request oauthDto) {
+        OAuthDto.Response response = memberService.oauthInfo(oauthDto);
+        return ResponseEntity.ok(response);
     }
 
     /**

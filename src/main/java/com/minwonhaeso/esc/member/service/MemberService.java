@@ -1,21 +1,21 @@
 package com.minwonhaeso.esc.member.service;
 
 
-import com.minwonhaeso.esc.mail.MailService;
 import com.minwonhaeso.esc.error.exception.AuthException;
 import com.minwonhaeso.esc.error.type.AuthErrorCode;
+import com.minwonhaeso.esc.mail.MailService;
 import com.minwonhaeso.esc.member.model.dto.*;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
 import com.minwonhaeso.esc.member.repository.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
-import com.minwonhaeso.esc.util.AuthUtil;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
-import com.minwonhaeso.esc.util.JwtTokenUtil;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
+import com.minwonhaeso.esc.util.AuthUtil;
+import com.minwonhaeso.esc.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -203,16 +203,31 @@ public class MemberService {
     public Map<String, String> changePassword(CPasswordDto.Request request) {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
-        boolean match = passwordEncoder.matches(request.getPrePassword(), member.getPassword());
-        if (!match) {
-            throw new AuthException(AuthErrorCode.PasswordNotEqual);
-        }
-        if (!request.getConfirmPassword().equals(request.getNewPassword())) {
-            throw new AuthException(AuthErrorCode.PasswordNotEqual);
-        }
-        member.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        memberRepository.save(member);
 
+        if(request.getHasToken()) {
+            boolean match = passwordEncoder.matches(request.getPrePassword(), member.getPassword());
+
+            if (!match) {
+                throw new AuthException(AuthErrorCode.PasswordNotEqual);
+            }
+
+            if (!request.getConfirmPassword().equals(request.getNewPassword())) {
+                throw new AuthException(AuthErrorCode.PasswordNotEqual);
+            }
+
+            member.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        }else{
+
+            if(!request.getNewPassword().equals(request.getConfirmPassword())){
+                throw new AuthException(AuthErrorCode.PasswordNotEqual);
+            }
+
+            String password = passwordEncoder.encode(request.getNewPassword());
+            member.setPassword(password);
+        }
+
+        memberRepository.save(member);
         return successMessage("비밀번호가 성공적으로 변경되었습니다.");
     }
 
@@ -220,5 +235,19 @@ public class MemberService {
         Map<String, String> result = new HashMap<>();
         result.put("message", message);
         return result;
+    }
+
+    public OAuthDto.Response oauthInfo(OAuthDto.Request oauthDto) {
+        Member member = memberRepository.findByEmail(oauthDto.getEmail())
+                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotFound));
+
+        String email = member.getEmail();
+        RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
+
+        return OAuthDto.Response.builder()
+                .nickName(member.getNickname())
+                .imgUrl(member.getImgUrl())
+                .refreshToken(refreshToken.getRefreshToken())
+                .build();
     }
 }
