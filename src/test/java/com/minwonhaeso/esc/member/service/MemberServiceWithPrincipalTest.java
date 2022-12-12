@@ -80,7 +80,7 @@ class MemberServiceWithPrincipalTest {
         //then
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
-        assertEquals(response.getName(), member.getName());
+        assertEquals(response.getNickName(), member.getNickname());
     }
 
     @Test
