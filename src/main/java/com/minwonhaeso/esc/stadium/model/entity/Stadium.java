@@ -25,27 +25,27 @@ import java.util.List;
 public class Stadium {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "stadium_id", nullable = false)
     private Long id;
 
     @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @NotNull
-    @Column(name = "phone", nullable = false)
+    @Column(nullable = false)
     private String phone;
 
     @NotNull
-    @Column(name = "lat", nullable = false)
+    @Column(nullable = false)
     private Double lat;
 
     @NotNull
-    @Column(name = "lnt", nullable = false)
+    @Column(nullable = false)
     private Double lnt;
 
     @NotNull
-    @Column(name = "address", nullable = false)
+    @Column(nullable = false)
     private String address;
 
     @NotNull
@@ -132,43 +132,41 @@ public class Stadium {
                 .build();
     }
 
-    public void update(StadiumDto.UpdateStadiumRequest request) {
-        System.out.println(request.getName());
+    public void setAll(StadiumDto.UpdateStadiumRequest request) {
         if (request.getName() != null) {
-            System.out.println("수정 중입니다만..." + request.getName());
-            this.setName(request.getName());
+            this.name = request.getName();
         }
 
         if (request.getPhone() != null) {
-            this.setPhone(request.getPhone());
+            this.phone = request.getPhone();
         }
 
         if (request.getLat() != null) {
-            this.setLat(request.getLat());
+            this.lat = request.getLat();
         }
 
         if (request.getLnt() != null) {
-            this.setLnt(request.getLnt());
+            this.lnt = request.getLnt();
         }
 
         if (request.getAddress() != null) {
-            this.setAddress(request.getAddress());
+            this.address = request.getAddress();
         }
 
         if (request.getWeekdayPricePerHalfHour() != null) {
-            this.setWeekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour());
+            this.weekdayPricePerHalfHour = request.getWeekdayPricePerHalfHour();
         }
 
         if (request.getHolidayPricePerHalfHour() != null) {
-            this.setHolidayPricePerHalfHour(request.getHolidayPricePerHalfHour());
+            this.holidayPricePerHalfHour = request.getHolidayPricePerHalfHour();
         }
 
         if (request.getOpenTime() != null) {
-            this.setOpenTime(request.getOpenTime());
+            this.openTime = request.getOpenTime();
         }
 
         if (request.getCloseTime() != null) {
-            this.setCloseTime(request.getCloseTime());
+            this.closeTime = request.getCloseTime();
         }
     }
 }
