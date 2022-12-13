@@ -76,10 +76,9 @@ public class MemberController {
      **/
     @ApiOperation(value = "로그아웃", notes = "사용자의 로그아웃")
     @PostMapping("/auth/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken,
-                                    @RequestHeader("RefreshToken") String refreshToken) {
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken) {
         String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
-        Map<String, String> result = memberService.logout(TokenDto.of(accessToken, refreshToken), username);
+        Map<String, String> result = memberService.logout(TokenDto.of(accessToken), username);
         return ResponseEntity.ok(result);
     }
 

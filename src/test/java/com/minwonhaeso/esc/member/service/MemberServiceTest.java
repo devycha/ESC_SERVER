@@ -4,7 +4,6 @@ import com.minwonhaeso.esc.error.exception.AuthException;
 import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.entity.Member;
-import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ class MemberServiceTest {
                 .email("ESC@gmail.com")
                 .name("ESC_TEST")
                 .password("1111")
-                .type(MemberType.ADMIN)
+                .type("USER")
                 .nickname("ESC")
                 .image("/ESC/test/image.img")
                 .build();

@@ -21,4 +21,10 @@ public class TokenDto {
                 .refreshToken(refreshToken)
                 .build();
     }
+    public static TokenDto of(String accessToken) {
+        return TokenDto.builder()
+                .grantType(GRANT_TYPE.getValue())
+                .accessToken(accessToken)
+                .build();
+    }
 }
