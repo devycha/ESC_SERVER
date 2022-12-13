@@ -16,19 +16,25 @@ public class StadiumDto {
     @Builder
     @ApiModel(value = "체육관 생성 Request Body")
     public static class CreateStadiumRequest {
+        @ApiModelProperty(required = true)
         private String name;
+        @ApiModelProperty(required = true)
         private String phone;
+        @ApiModelProperty(required = true)
         private String address;
+        @ApiModelProperty(required = true)
         private String detailAddress;
+        @ApiModelProperty(required = true)
         private Double lat;
+        @ApiModelProperty(required = true)
         private Double lnt;
+        @ApiModelProperty(required = true)
         private Integer weekdayPricePerHalfHour;
+        @ApiModelProperty(required = true)
         private Integer holidayPricePerHalfHour;
-
-        @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS")
+        @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS", required = true)
         private Time openTime;
-
-        @ApiModelProperty(value = "마감 시간", example = "HH:MM:SS")
+        @ApiModelProperty(value = "마감 시간", example = "HH:MM:SS", required = true)
         private Time closeTime;
 
         @Builder.Default

@@ -34,6 +34,9 @@ public class StadiumItem {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @Column(name = "public_id")
+    private String imgId;
+
     @Column(name = "img_url", length = 1000)
     private String imgUrl;
 
@@ -56,6 +59,7 @@ public class StadiumItem {
         return StadiumItem.builder()
                 .name(request.getName())
                 .stadium(stadium)
+                .imgId(request.getPublicId())
                 .imgUrl(request.getImgUrl())
                 .price(request.getPrice())
                 .cnt(request.getCnt())
