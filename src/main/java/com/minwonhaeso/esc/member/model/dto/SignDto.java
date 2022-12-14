@@ -26,7 +26,7 @@ public class SignDto {
     @NoArgsConstructor
     public static class Response {
         private String name;
-        private String nickName;
+        private String nickname;
         private String image;
     }
 }
