@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.review.model.entity.Review;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.sun.istack.NotNull;
 import lombok.*;
@@ -95,9 +96,9 @@ public class Stadium {
     @OneToMany(mappedBy = "stadium")
     private List<StadiumTag> tags = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "stadium")
-//    @Column(name = "reviews")
-//    private List<Review> reviews;
+    @OneToMany(mappedBy = "stadium")
+    @Column(name = "reviews")
+    private List<Review> reviews;
 
     @CreatedDate
     private LocalDateTime createdAt;
