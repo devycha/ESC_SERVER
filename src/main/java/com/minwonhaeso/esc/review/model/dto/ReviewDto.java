@@ -12,7 +12,7 @@ public class ReviewDto {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private long star;
+        private float star;
         private String comment;
     }
 
@@ -21,7 +21,7 @@ public class ReviewDto {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private long star;
+        private float star;
         private String comment;
 
         public static ReviewDto.Response fromEntity(Review review) {

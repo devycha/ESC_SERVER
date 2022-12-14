@@ -33,7 +33,7 @@ public class Review {
     private Member member;
 
     @NotNull
-    private long star;
+    private float star;
     private String comment;
 
     @CreatedDate
@@ -42,7 +42,7 @@ public class Review {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public void update(long star, String comment) {
+    public void update(float star, String comment) {
         this.star = star;
         this.comment = comment;
     }
