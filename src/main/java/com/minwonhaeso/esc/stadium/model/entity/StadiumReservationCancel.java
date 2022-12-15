@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "stadium_reservation_cancel")
 public class StadiumReservationCancel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
