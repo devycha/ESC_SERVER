@@ -95,6 +95,9 @@ public class Stadium {
     @OneToMany(mappedBy = "stadium")
     private List<StadiumTag> tags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "stadium")
+    private List<StadiumLike> likes = new ArrayList<>();
+
 //    @OneToMany(mappedBy = "stadium")
 //    @Column(name = "reviews")
 //    private List<Review> reviews;

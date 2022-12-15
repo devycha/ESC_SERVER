@@ -5,11 +5,14 @@ import com.minwonhaeso.esc.member.model.type.MemberRole;
 import com.minwonhaeso.esc.member.model.type.MemberStatus;
 import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumLike;
 import com.sun.istack.NotNull;
 import io.jsonwebtoken.Claims;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -53,6 +56,10 @@ public class Member {
     private ProviderType providerType; // 소셜 타입
 
     private String providerId;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "likes")
+    private List<StadiumLike> likes = new ArrayList<>();
 
 
     public static Member of(SignDto.Request signDto) {
