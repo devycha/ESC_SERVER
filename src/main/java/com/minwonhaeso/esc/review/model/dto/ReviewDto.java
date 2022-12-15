@@ -14,7 +14,7 @@ public class ReviewDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @ApiModel(value = "체육관 생성 Request Body")
+    @ApiModel(value = "리뷰 Request Body")
     public static class Request {
         private Double star;
         private String comment;
@@ -24,7 +24,7 @@ public class ReviewDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @ApiModel(value = "체육관 생성 Request Body")
+    @ApiModel(value = "리뷰 Response Body")
     public static class Response {
         private Long id;
         private Double star;
