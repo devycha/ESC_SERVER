@@ -25,8 +25,9 @@ public class StadiumLikeService {
                 .orElseThrow(() -> new StadiumException(StadiumErrorCode.StadiumNotFound));
         Optional<StadiumLike> optionalLike = stadiumLikeRepository.findByMemberAndStadium(member, stadium);
         likeCD(onOff, member, stadium, optionalLike);
-
-        return (Map<String, String>) new HashMap<>().put("successMessage","찜하기 반영 성공");
+        Map<String,String> map = new HashMap<>();
+        map.put("successMessage","찜하기 반영 성공");
+        return map;
     }
 
     private void likeCD(String onOff, Member member, Stadium stadium, Optional<StadiumLike> optionalLike) {
