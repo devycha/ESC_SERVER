@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.review.model.dto;
 
 import com.minwonhaeso.esc.review.model.entity.Review;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public class ReviewDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @ApiModel(value = "체육관 생성 Request Body")
     public static class Request {
         private Double star;
         private String comment;
@@ -22,6 +24,7 @@ public class ReviewDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @ApiModel(value = "체육관 생성 Request Body")
     public static class Response {
         private Long id;
         private Double star;
