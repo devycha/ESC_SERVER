@@ -43,9 +43,6 @@ public class StadiumItem {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "cnt", nullable = false)
-    private Integer cnt;
-
     @Enumerated(STRING)
     private StadiumItemStatus status;
 
@@ -62,7 +59,6 @@ public class StadiumItem {
                 .imgId(request.getPublicId())
                 .imgUrl(request.getImgUrl())
                 .price(request.getPrice())
-                .cnt(request.getCnt())
                 .status(AVAILABLE)
                 .build();
     }

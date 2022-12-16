@@ -34,7 +34,7 @@ public class StadiumResponseDto {
     private String address;
 
     @ApiModelProperty(value = "평점", example = "4.5")
-    private Double star_avg;
+    private Double starAvg;
 
     @ApiModelProperty(value = "평일 가격", example = "20000")
     private Integer weekdayPricePerHalfHour;
@@ -57,7 +57,7 @@ public class StadiumResponseDto {
                 .lat(stadium.getLat())
                 .lnt(stadium.getLnt())
                 .address(stadium.getAddress())
-                .star_avg(stadium.getStarAvg())
+                .starAvg(stadium.getStarAvg())
                 .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
                 .img(stadium.getImgs().isEmpty() ?

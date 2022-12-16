@@ -32,7 +32,6 @@ public class StadiumUserController {
         return ResponseEntity.ok().body(stadiums);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @ApiOperation(value = "체육관 상세 정보 조회", notes = "사용자(일반)가 체육관 상세 정보를 조회한다.")
     @GetMapping("/{stadiumId}/info")
     public ResponseEntity<?> getStadiumInfo(

@@ -60,8 +60,8 @@ public class StadiumService {
     public CreateStadiumResponse createStadium(StadiumDto.CreateStadiumRequest request, Member member) {
         Stadium stadium = Stadium.fromRequest(request, member);
 
-        if (request.getItems().size() > 0) {
-            List<StadiumItem> stadiumItems = request.getItems()
+        if (request.getRentalItems().size() > 0) {
+            List<StadiumItem> stadiumItems = request.getRentalItems()
                     .stream().map(item -> StadiumItem.fromRequest(stadium, item))
                     .collect(Collectors.toList());
 
@@ -201,7 +201,6 @@ public class StadiumService {
                 .publicId(item.getImgId())
                 .imgUrl(item.getImgUrl())
                 .price(item.getPrice())
-                .cnt(item.getCnt())
                 .isAvailable(item.getStatus() == AVAILABLE)
                 .build();
     }

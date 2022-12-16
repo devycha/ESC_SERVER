@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +31,10 @@ public class StadiumDto {
         private Integer weekdayPricePerHalfHour;
         @ApiModelProperty(required = true)
         private Integer holidayPricePerHalfHour;
-        @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS", required = true)
-        private Time openTime;
-        @ApiModelProperty(value = "마감 시간", example = "HH:MM:SS", required = true)
-        private Time closeTime;
+        @ApiModelProperty(value = "오픈 시간", example = "HH:MM", required = true)
+        private String openTime;
+        @ApiModelProperty(value = "마감 시간", example = "HH:MM", required = true)
+        private String closeTime;
 
         @Builder.Default
         private List<StadiumImgDto.CreateImgRequest> imgs = new ArrayList<>();
@@ -44,7 +43,7 @@ public class StadiumDto {
         private List<String> tags = new ArrayList<>();
 
         @Builder.Default
-        private List<StadiumItemDto.CreateItemRequest> items = new ArrayList<>();
+        private List<StadiumItemDto.CreateItemRequest> rentalItems = new ArrayList<>();
     }
 
     @Getter
@@ -76,7 +75,7 @@ public class StadiumDto {
         private String address;
         private Integer weekdayPricePerHalfHour;
         private Integer holidayPricePerHalfHour;
-        private Time openTime;
-        private Time closeTime;
+        private String openTime;
+        private String closeTime;
     }
 }
