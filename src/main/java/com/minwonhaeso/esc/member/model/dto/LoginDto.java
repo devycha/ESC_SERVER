@@ -27,14 +27,14 @@ public class LoginDto {
         private String accessToken;
         private String refreshToken;
         private String name;
-        private String nickName;
+        private String nickname;
         private String imgUrl;
 
 
-        public static Response of(String username, String nickName, String imgUrl, String accessToken, String refreshToken) {
+        public static Response of(String username, String nickname, String imgUrl, String accessToken, String refreshToken) {
             return Response.builder()
                     .name(username)
-                    .nickName(nickName)
+                    .nickname(nickname)
                     .imgUrl(imgUrl)
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)

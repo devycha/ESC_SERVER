@@ -52,7 +52,7 @@ public class MemberService {
         Member member = Member.of(signDto);
         memberRepository.save(member);
         return SignDto.Response.builder()
-                .nickName(member.getNickname())
+                .nickname(member.getNickname())
                 .name(member.getName())
                 .image(member.getImgUrl())
                 .build();
@@ -140,7 +140,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         return InfoDto.Response.builder()
-                .nickName(member.getNickname())
+                .nickname(member.getNickname())
                 .email(member.getEmail())
                 .imgUrl(member.getImgUrl())
                 .build();
@@ -245,7 +245,7 @@ public class MemberService {
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
 
         return OAuthDto.Response.builder()
-                .nickName(member.getNickname())
+                .nickname(member.getNickname())
                 .imgUrl(member.getImgUrl())
                 .refreshToken(refreshToken.getRefreshToken())
                 .build();
