@@ -23,6 +23,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @ApiOperation(value = "리뷰 조회", notes = "사용자(일반&매니저)가 리뷰를 조회한다.")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{stadiumId}/reviews")
     public ResponseEntity<?> getAllReviews(
             @PathVariable Long stadiumId,

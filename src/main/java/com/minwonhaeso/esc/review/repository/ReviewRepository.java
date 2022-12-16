@@ -17,5 +17,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAll(Pageable pageable);
     Page<Review> findAllByStadium(Stadium stadium, Pageable pageable);
     Optional<Review> findByIdAndStadiumAndMember(Long reviewId, Stadium stadium, Member member);
-    long countAllByMember(Member member);
+    Long countAllByMemberAndStadium(Member member, Stadium stadium);
 }
