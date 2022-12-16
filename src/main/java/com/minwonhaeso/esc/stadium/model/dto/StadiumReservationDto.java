@@ -5,11 +5,12 @@ import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumReservation;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumReservationItem;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,8 @@ public class StadiumReservationDto {
         private Long stadiumId;
         private String stadiumName;
         private LocalDate date;
-        private Time openTime;
-        private Time closeTime;
+        private String openTime;
+        private String closeTime;
         private int pricePerHalfHour;
         private List<ItemResponse> items;
         private List<String> reservedTimes;
@@ -59,7 +60,7 @@ public class StadiumReservationDto {
                     .member(MemberResponse.fromEntity(reservation.getMember()))
                     .reservingDate(reservation.getReservingDate())
                     .reservingTimes(reservation.getReservingTimes().stream()
-                            .map(ReservingTime::getStartTime)
+                            .map(ReservingTime::getTime)
                             .collect(Collectors.toList()))
                     .headCount(reservation.getHeadCount())
                     .price(reservation.getPrice())
@@ -93,7 +94,6 @@ public class StadiumReservationDto {
                     .name(item.getName())
                     .imgUrl(item.getImgUrl())
                     .price(item.getPrice())
-                    .count(item.getCnt())
                     .build();
         }
 

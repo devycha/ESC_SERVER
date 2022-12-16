@@ -53,7 +53,8 @@ public enum ReservingTime {
     RT45("22:00"),
     RT46("22:30"),
     RT47("23:00"),
-    RT48("23:30");
+    RT48("23:30"),
+    RT49("24:00");
 
-    private String startTime;
+    private final String time;
 }

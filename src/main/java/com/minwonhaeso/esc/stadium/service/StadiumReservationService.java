@@ -69,7 +69,7 @@ public class StadiumReservationService {
                 .forEach(reservation -> {
                     reservation.getReservingTimes().forEach(
                             reservingTime -> {
-                                reservedTimes.add(reservingTime.getStartTime());
+                                reservedTimes.add(reservingTime.getTime());
                             }
                     );
                 });
@@ -122,7 +122,7 @@ public class StadiumReservationService {
                 .stadiumId(stadiumId)
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
-                        .map(ReservingTime::getStartTime)
+                        .map(ReservingTime::getTime)
                         .collect(Collectors.toList()))
                 .pricePerHalfHour(reservation.getPrice())
                 .date(reservation.getReservingDate())
@@ -213,7 +213,7 @@ public class StadiumReservationService {
                 .stadiumId(stadiumId)
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
-                        .map(ReservingTime::getStartTime)
+                        .map(ReservingTime::getTime)
                         .collect(Collectors.toList()))
                 .pricePerHalfHour(reservation.getPrice())
                 .date(reservation.getReservingDate())

@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class StadiumException extends RuntimeException{
-    private final StadiumErrorCode errorcode;
+    private final StadiumErrorCode errorCode;
 
-    public StadiumException(StadiumErrorCode errorcode) {
-        super(errorcode.getErrorMessage());
-        this.errorcode = errorcode;
+    public StadiumException(StadiumErrorCode errorCode) {
+        super(errorCode.getErrorMessage());
+        this.errorCode = errorCode;
     }
 }

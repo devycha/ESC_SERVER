@@ -1,7 +1,9 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
+import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
+import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -9,10 +11,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.TimeFormatNotAccepted;
 
 @Getter
 @Setter
@@ -62,11 +67,11 @@ public class Stadium {
 
     @NotNull
     @Column(name = "open_time", nullable = false)
-    private Time openTime;
+    private String openTime;
 
     @NotNull
     @Column(name = "close_time", nullable = false)
-    private Time closeTime;
+    private String closeTime;
 
     @Column(name = "star_avg")
     private Double starAvg;
@@ -117,19 +122,34 @@ public class Stadium {
     }
 
     public static Stadium fromRequest(StadiumDto.CreateStadiumRequest request, Member member) {
-        return Stadium.builder()
-                .member(member)
-                .name(request.getName())
-                .phone(request.getPhone())
-                .lat(request.getLat())
-                .lnt(request.getLnt())
-                .address(request.getAddress())
-                .detailAddress(request.getDetailAddress())
-                .weekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour())
-                .holidayPricePerHalfHour(request.getHolidayPricePerHalfHour())
-                .openTime(request.getOpenTime())
-                .closeTime(request.getCloseTime())
-                .build();
+        try {
+            String openTime = Arrays.stream(ReservingTime.values())
+                    .filter(time -> time.getTime().equals(request.getOpenTime()))
+                    .collect(Collectors.toList())
+                    .get(0).toString();
+
+            String closeTime = Arrays.stream(ReservingTime.values())
+                    .filter(time -> time.getTime().equals(request.getCloseTime()))
+                    .collect(Collectors.toList())
+                    .get(0).toString();
+
+            return Stadium.builder()
+                    .member(member)
+                    .name(request.getName())
+                    .phone(request.getPhone())
+                    .lat(request.getLat())
+                    .lnt(request.getLnt())
+                    .address(request.getAddress())
+                    .detailAddress(request.getDetailAddress())
+                    .weekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour())
+                    .holidayPricePerHalfHour(request.getHolidayPricePerHalfHour())
+                    .openTime(openTime)
+                    .closeTime(closeTime)
+                    .build();
+
+        } catch (NullPointerException e) {
+            throw new StadiumException(TimeFormatNotAccepted);
+        }
     }
 
     public void setAll(StadiumDto.UpdateStadiumRequest request) {
