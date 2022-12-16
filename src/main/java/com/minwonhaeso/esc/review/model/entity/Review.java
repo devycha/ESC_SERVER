@@ -5,11 +5,10 @@ import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -33,16 +32,13 @@ public class Review {
     private Member member;
 
     @NotNull
-    private float star;
+    private Double star;
     private String comment;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    public void update(float star, String comment) {
+    public void update(Double star, String comment) {
         this.star = star;
         this.comment = comment;
     }

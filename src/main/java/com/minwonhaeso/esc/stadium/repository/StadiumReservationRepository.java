@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,4 +17,5 @@ public interface StadiumReservationRepository extends JpaRepository<StadiumReser
     Page<StadiumReservation> findAllByMemberAndStatusAndReservingDateAfter(
             Member member, StadiumReservationStatus status, LocalDate reservingDate, Pageable pageable);
     List<StadiumReservation> findAllByStadiumAndReservingDate(Stadium stadium, LocalDate reservingDate);
+    Long countAllByMemberAndStadiumAndStatusIs(Member member, Stadium stadium, StadiumReservationStatus status);
 }
