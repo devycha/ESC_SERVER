@@ -34,6 +34,12 @@ public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "주소", example = "경기도 수원시")
     private String address;
 
+    @ApiModelProperty(value = "상세 주소", example = "302호")
+    private String detailAddress;
+
+    @ApiModelProperty(value = "전화번호", example="01012345678")
+    private String phone;
+
     @ApiModelProperty(value = "평점", example = "4.5")
     private Double starAvg;
 
@@ -46,7 +52,7 @@ public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "공휴일 30분당 가격", example = "30000")
     private Integer holidayPricePerHalfHour;
 
-    private List<StadiumItemDto.Response> items;
+    private List<StadiumItemDto.Response> rentalItems;
 
     @ApiModelProperty(value = "이미지", example = "['img_url1', 'img_url2', ...]")
     private List<StadiumImgDto.ImgResponse> imgs;
@@ -64,13 +70,15 @@ public class StadiumInfoResponseDto {
                 .name(stadium.getName())
                 .lat(stadium.getLat())
                 .lnt(stadium.getLnt())
+                .phone(stadium.getPhone())
                 .address(stadium.getAddress())
+                .detailAddress(stadium.getDetailAddress())
                 .starAvg(stadium.getStarAvg())
                 .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
                 .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
                 .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
-                .items(stadium.getRentalStadiumItems().stream()
+                .rentalItems(stadium.getRentalStadiumItems().stream()
                         .map(StadiumItemDto.Response::fromEntity)
                         .collect(Collectors.toList()))
                 .imgs(stadium.getImgs().isEmpty() ?

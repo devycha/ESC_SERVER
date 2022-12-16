@@ -3,6 +3,7 @@ package com.minwonhaeso.esc.stadium.controller;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.stadium.service.StadiumLikeService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,13 +22,13 @@ import java.util.Map;
 public class StadiumLikeController {
 
     private final StadiumLikeService stadiumLikeService;
-    @PostMapping("/{stadiumId}/likes/{type}")
+
+    @ApiOperation(value = "찜하기 or 취소", notes = "ON 혹은 OFF type을 받아 찜하기와 찜하기 취소 작업을 진행합니다.")
+    @PostMapping("/{stadiumId}/likes")
     public ResponseEntity<?> likes(@PathVariable(value = "stadiumId") Long stadiumId,
-                                   @PathVariable(value = "type") String type,
                                    @AuthenticationPrincipal PrincipalDetail principalDetail){
         Member member = principalDetail.getMember();
-        Map<String,String> result =  stadiumLikeService.likes(stadiumId,type,member);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(stadiumLikeService.likes(stadiumId, member));
     }
 }
 

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ReviewDto {
     @Getter
@@ -27,18 +28,20 @@ public class ReviewDto {
     @ApiModel(value = "리뷰 Response Body")
     public static class Response {
         private Long id;
+        private Long memberId;
         private Double star;
         private String comment;
         private String nickname;
-        private LocalDate createdAt;
+        private String createdAt;
 
         public static ReviewDto.Response fromEntity(Review review) {
             return Response.builder()
                     .id(review.getId())
+                    .memberId(review.getMember().getMemberId())
                     .star(review.getStar())
                     .comment(review.getComment())
                     .nickname(review.getMember().getNickname())
-                    .createdAt(review.getCreatedAt())
+                    .createdAt(review.getCreatedAt().toString())
                     .build();
         }
     }

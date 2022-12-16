@@ -1,6 +1,8 @@
 package com.minwonhaeso.esc.stadium.controller;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.notification.model.type.NotificationType;
+import com.minwonhaeso.esc.notification.service.NotificationService;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.CreateReservationRequest;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 @RequestMapping("/stadiums")
 public class StadiumReservationController {
     private final StadiumReservationService stadiumReservationService;
+    private final NotificationService notificationService;
 
     @ApiOperation(value = "내 예약 목록", notes = "내가 예약한 목록 모두 조회")
     @GetMapping("/reservations")
@@ -87,6 +90,9 @@ public class StadiumReservationController {
         Member member = principalDetail.getMember();
         ReservationInfoResponse reservationInfo =
                 stadiumReservationService.createReservation(member, stadiumId, request);
+        notificationService.createNotification(
+                NotificationType.RESERVATION, stadiumId, reservationInfo.getId(),
+                "새로운 예약이 있습니다.", member);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationInfo);
     }
 

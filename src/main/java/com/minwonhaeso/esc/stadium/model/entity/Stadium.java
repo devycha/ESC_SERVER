@@ -80,13 +80,9 @@ public class Stadium {
     @JoinColumn(name = "manager_id")
     private Member member;
 
-//    @OneToMany(mappedBy = "stadium")
-//    @Column(name = "reservations")
-//    private List<Reservation> reservations;
-
-//    @OneToMany(mappedBy = "stadium")
-//    @Column(name = "likes")
-//    private List<Like> likes;
+    @OneToMany(mappedBy = "stadium")
+    @Column(name = "reservations")
+    private List<StadiumReservation> reservations;
 
     @Builder.Default
     @OneToMany(mappedBy = "stadium")
@@ -153,40 +149,56 @@ public class Stadium {
     }
 
     public void setAll(StadiumDto.UpdateStadiumRequest request) {
-        if (request.getName() != null) {
-            this.name = request.getName();
+        try {
+            System.out.println(request);
+            String openTime = Arrays.stream(ReservingTime.values())
+                    .filter(time -> time.getTime().equals(request.getOpenTime()))
+                    .collect(Collectors.toList())
+                    .get(0).toString();
+
+            String closeTime = Arrays.stream(ReservingTime.values())
+                    .filter(time -> time.getTime().equals(request.getCloseTime()))
+                    .collect(Collectors.toList())
+                    .get(0).toString();
+
+            if (request.getName() != null) {
+                this.name = request.getName();
+            }
+
+            if (request.getPhone() != null) {
+                this.phone = request.getPhone();
+            }
+
+            if (request.getLat() != null) {
+                this.lat = request.getLat();
+            }
+
+            if (request.getLnt() != null) {
+                this.lnt = request.getLnt();
+            }
+
+            if (request.getAddress() != null) {
+                this.address = request.getAddress();
+            }
+
+            if (request.getWeekdayPricePerHalfHour() != null) {
+                this.weekdayPricePerHalfHour = request.getWeekdayPricePerHalfHour();
+            }
+
+            if (request.getHolidayPricePerHalfHour() != null) {
+                this.holidayPricePerHalfHour = request.getHolidayPricePerHalfHour();
+            }
+
+            if (request.getOpenTime() != null) {
+                this.openTime = openTime;
+            }
+
+            if (request.getCloseTime() != null) {
+                this.closeTime = closeTime;
+            }
+        } catch (Exception e) {
+            throw new StadiumException(TimeFormatNotAccepted);
         }
 
-        if (request.getPhone() != null) {
-            this.phone = request.getPhone();
-        }
-
-        if (request.getLat() != null) {
-            this.lat = request.getLat();
-        }
-
-        if (request.getLnt() != null) {
-            this.lnt = request.getLnt();
-        }
-
-        if (request.getAddress() != null) {
-            this.address = request.getAddress();
-        }
-
-        if (request.getWeekdayPricePerHalfHour() != null) {
-            this.weekdayPricePerHalfHour = request.getWeekdayPricePerHalfHour();
-        }
-
-        if (request.getHolidayPricePerHalfHour() != null) {
-            this.holidayPricePerHalfHour = request.getHolidayPricePerHalfHour();
-        }
-
-        if (request.getOpenTime() != null) {
-            this.openTime = request.getOpenTime();
-        }
-
-        if (request.getCloseTime() != null) {
-            this.closeTime = request.getCloseTime();
-        }
     }
 }

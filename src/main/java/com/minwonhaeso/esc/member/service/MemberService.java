@@ -153,7 +153,9 @@ public class MemberService {
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         if (request.getNickname() != null) {
             member.setNickname(request.getNickname());
-        } else if (request.getImgUrl() != null) {
+        }
+
+        if (request.getImgUrl() != null) {
             member.setImgUrl(request.getImgUrl());
         }
         memberRepository.save(member);
@@ -187,7 +189,7 @@ public class MemberService {
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
         String content = "<p>비밀번호 변경 코드: " + uuid + "</p>";
-//        mailService.sendMail(email, subject, content);
+        mailService.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
         return uuid;
     }
