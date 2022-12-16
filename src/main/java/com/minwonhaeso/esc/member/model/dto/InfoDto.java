@@ -11,7 +11,7 @@ public class InfoDto {
     @Getter
     @AllArgsConstructor
     public static class Response{
-        private String nickName;
+        private String nickname;
         private String email;
         private String imgUrl;
     }
