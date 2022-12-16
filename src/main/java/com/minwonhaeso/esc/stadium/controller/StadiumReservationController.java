@@ -67,7 +67,7 @@ public class StadiumReservationController {
         return ResponseEntity.ok().body(reservationInfo);
     }
 
-    @GetMapping("/{stadiumId}/reservation")
+    @GetMapping("/{stadiumId}/reservation/price")
     public ResponseEntity<?> getStadiumReservationPrice(
             @PathVariable Long stadiumId,
             @RequestParam LocalDate date,
