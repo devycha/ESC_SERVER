@@ -4,10 +4,10 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumReservation;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumReservationItem;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
+import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class StadiumReservationDto {
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class CreateReservationRequest {
         private LocalDate reservingDate;
@@ -30,6 +32,8 @@ public class StadiumReservationDto {
         private Long stadiumId;
         private String stadiumName;
         private LocalDate date;
+        private Time openTime;
+        private Time closeTime;
         private int pricePerHalfHour;
         private List<ItemResponse> items;
         private List<String> reservedTimes;
@@ -42,7 +46,7 @@ public class StadiumReservationDto {
         private StadiumResponseDto stadium;
         private MemberResponse member;
         private LocalDate reservingDate;
-        private List<String> reservingTime;
+        private List<String> reservingTimes;
         private int headCount;
         private int price;
         private String paymentType;
@@ -53,7 +57,10 @@ public class StadiumReservationDto {
                     .id(reservation.getId())
                     .stadium(StadiumResponseDto.fromEntity(reservation.getStadium()))
                     .member(MemberResponse.fromEntity(reservation.getMember()))
-
+                    .reservingDate(reservation.getReservingDate())
+                    .reservingTimes(reservation.getReservingTimes().stream()
+                            .map(ReservingTime::getStartTime)
+                            .collect(Collectors.toList()))
                     .headCount(reservation.getHeadCount())
                     .price(reservation.getPrice())
                     .paymentType(reservation.getPaymentType().toString())
@@ -63,6 +70,8 @@ public class StadiumReservationDto {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class ItemRequest {
         private Long itemId;
@@ -126,5 +135,11 @@ public class StadiumReservationDto {
                     .email(member.getEmail())
                     .build();
         }
+    }
+
+    @Data
+    @Builder
+    public static class PriceResponse {
+        private int price;
     }
 }

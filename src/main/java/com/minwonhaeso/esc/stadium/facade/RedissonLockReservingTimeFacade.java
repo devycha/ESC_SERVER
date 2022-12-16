@@ -7,6 +7,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
 
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.AlreadyReservedTime;
@@ -17,13 +18,12 @@ import static com.minwonhaeso.esc.error.type.StadiumErrorCode.AlreadyReservedTim
 public class RedissonLockReservingTimeFacade {
     private final RedissonClient redissonClient;
 
-    public String lock(Long stadiumId, String reservingTime) {
-        String key = getLockKey(stadiumId, reservingTime);
-        RLock lock = redissonClient.getLock(key);
-        log.debug("Trying lock for accountNumber : {}", reservingTime);
+    public void lock(Long stadiumId, LocalDate date) {
+        RLock lock = redissonClient.getLock(getLockKey(stadiumId, date));
+        log.debug("Trying lock for stadium id : {}", stadiumId);
 
         try {
-            boolean isLock = lock.tryLock(1, 15, TimeUnit.SECONDS);
+            boolean isLock = lock.tryLock(1, 1, TimeUnit.SECONDS);
             if(!isLock) {
                 log.error("======Lock acquisition failed=====");
                 throw new StadiumException(AlreadyReservedTime);
@@ -33,16 +33,14 @@ public class RedissonLockReservingTimeFacade {
         } catch (Exception e) {
             log.error("Redis lock failed");
         }
-
-        return key;
     }
 
-    public void unlock(String key) {
-        log.debug("Unlock for key : {}", key);
-        redissonClient.getLock(key).unlock();
+    public void unlock(Long stadiumId, LocalDate date) {
+        log.debug("Unlock for stadium id : {}", stadiumId);
+        redissonClient.getLock(getLockKey(stadiumId, date)).unlock();
     }
 
-    private static String getLockKey(Long stadiumId, String accountNumber) {
-        return "RTL-" + stadiumId + "-" + accountNumber;
+    private static String getLockKey(Long stadiumId, LocalDate date) {
+        return "RTL-" + stadiumId + "-" + date;
     }
 }

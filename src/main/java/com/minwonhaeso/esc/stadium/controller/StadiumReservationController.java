@@ -4,6 +4,7 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.CreateReservationRequest;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.PriceResponse;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ReservationInfoResponse;
 import com.minwonhaeso.esc.stadium.service.StadiumReservationService;
 import io.swagger.annotations.ApiOperation;
@@ -66,10 +67,20 @@ public class StadiumReservationController {
         return ResponseEntity.ok().body(reservationInfo);
     }
 
+    @GetMapping("/{stadiumId}/reservation")
+    public ResponseEntity<?> getStadiumReservationPrice(
+            @PathVariable Long stadiumId,
+            @RequestParam LocalDate date,
+            @RequestBody CreateReservationRequest request
+    ) {
+        PriceResponse price = stadiumReservationService.getPrice(stadiumId, date, request);
+        return ResponseEntity.ok().body(price);
+    }
+
     @PostMapping("/{stadiumId}/reservation")
-    public ResponseEntity createReservation(
+    public ResponseEntity<?> createReservation(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
-            @RequestParam Long stadiumId,
+            @PathVariable Long stadiumId,
             @RequestBody CreateReservationRequest request
 
     ) {

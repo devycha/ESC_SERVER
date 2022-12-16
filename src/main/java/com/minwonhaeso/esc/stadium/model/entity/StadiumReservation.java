@@ -7,10 +7,7 @@ import com.minwonhaeso.esc.stadium.model.type.PaymentType;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.model.type.StadiumReservationStatus;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -67,4 +64,30 @@ public class StadiumReservation {
     @Enumerated(EnumType.STRING)
     @ApiModelProperty(name = "결제 타입")
     private PaymentType paymentType;
+
+    public void cancelReservation() {
+        this.status = StadiumReservationStatus.CANCELED;
+    }
+
+    public static StadiumReservation fromRequest(
+            Stadium stadium,
+            Member member,
+            CreateReservationRequest request,
+            int price
+    ) {
+        return StadiumReservation.builder()
+                .stadium(stadium)
+                .member(member)
+                .reservingDate(request.getReservingDate())
+                .reservingTimes(request.getReservingTimes().stream()
+                        .map(ReservingTime::valueOf)
+                        .collect(Collectors.toList()))
+                .price(price)
+                .headCount(request.getHeadCount())
+                .status(StadiumReservationStatus.RESERVED)
+                .paymentType(PaymentType.valueOf(request.getPaymentType()))
+                .build();
+    }
+
+
 }

@@ -4,13 +4,11 @@ import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.facade.RedissonLockReservingTimeFacade;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.CreateReservationRequest;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ItemResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.PriceResponse;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ReservationInfoResponse;
-import com.minwonhaeso.esc.stadium.model.entity.Stadium;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumReservation;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumReservationItem;
-import com.minwonhaeso.esc.stadium.model.type.PaymentType;
+import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.model.type.StadiumReservationStatus;
 import com.minwonhaeso.esc.stadium.repository.*;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,8 +45,8 @@ public class StadiumReservationService {
         return stadiumReservationRepository
                 .findAllByMemberAndStatusAndReservingDateAfter(
                         member,
-                        StadiumReservationStatus.RESERVED.toString(),
-                        LocalDateTime.now(),
+                        StadiumReservationStatus.RESERVED,
+                        LocalDate.now(),
                         pageable).map(StadiumReservationDto.Response::fromEntity);
     }
 
@@ -78,6 +75,8 @@ public class StadiumReservationService {
                 });
 
         return ReservationInfoResponse.builder()
+                .openTime(stadium.getOpenTime())
+                .closeTime(stadium.getCloseTime())
                 .stadiumId(stadium.getId())
                 .stadiumName(stadium.getName())
                 .date(date)
@@ -103,20 +102,23 @@ public class StadiumReservationService {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
-        if (reservation.getStadium().getId() != stadiumId) {
+        if (!reservation.getStadium().getId().equals(stadiumId)) {
             throw new StadiumException(StadiumReservationNotMatch);
         }
 
-        if (reservation.getMember().getMemberId() != member.getMemberId()) {
+        if (!reservation.getMember().getMemberId().equals(member.getMemberId())) {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
         List<ItemResponse> items =
-                stadiumReservationItemRepository.findAllByReservation(reservation).stream()
+                stadiumReservationItemRepository.findAllByReservation(reservation)
+                        .stream()
                         .map(ItemResponse::fromReservationItem)
                         .collect(Collectors.toList());
 
         return ReservationInfoResponse.builder()
+                .openTime(stadium.getOpenTime())
+                .closeTime(stadium.getCloseTime())
                 .stadiumId(stadiumId)
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
@@ -130,59 +132,57 @@ public class StadiumReservationService {
 
     public void deleteReservation(Member member, Long stadiumId, Long reservationId) {
         StadiumReservation reservation = stadiumReservationRepository
-                .findById(reservationId).orElseThrow(
-                        () -> new StadiumException(ReservationNotFound)
-                );
+                .findById(reservationId).orElseThrow(() ->
+                        new StadiumException(ReservationNotFound));
 
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
-        if (reservation.getStadium().getId() != stadiumId) {
+        if (!reservation.getStadium().getId().equals(stadiumId)) {
             throw new StadiumException(StadiumReservationNotMatch);
         }
 
-        if (reservation.getMember().getMemberId() != member.getMemberId()) {
+        if (!reservation.getMember().getMemberId().equals(member.getMemberId())) {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
-        List<StadiumReservationItem> items = stadiumReservationItemRepository.findAllByReservation(reservation);
-        stadiumReservationItemRepository.deleteAll(items);
-        stadiumReservationRepository.delete(reservation);
+        reservation.cancelReservation();
+        StadiumReservationCancel reservationCancel = StadiumReservationCancel.builder()
+                .reservation(reservation)
+                .price(reservation.getPrice())
+                .build();
+        stadiumReservationCancelRepository.save(reservationCancel);
     }
 
+    @Transactional
     public ReservationInfoResponse createReservation(
             Member member,
             Long stadiumId,
-            StadiumReservationDto.CreateReservationRequest request
+            CreateReservationRequest request
     ) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
-        List<String> locks = new ArrayList<>();
+        // Get Lock
         try {
-            request.getReservingTimes().forEach(time -> {
-                redissonLockReservingTimeFacade.lock(stadiumId, time);
-            });
+            redissonLockReservingTimeFacade.lock(stadiumId, request.getReservingDate());
         } catch (StadiumException e) {
-            locks.forEach(lock -> {
-                redissonLockReservingTimeFacade.unlock(lock);
-                throw e;
-            });
+            throw e;
         }
 
-        StadiumReservation reservation = StadiumReservation.builder()
-                .stadium(stadium)
-                .member(member)
-                .reservingDate(request.getReservingDate())
-                .reservingTimes(request.getReservingTimes().stream()
-                        .map(ReservingTime::valueOf)
-                        .collect(Collectors.toList()))
-                .price(getPrice())
-                .headCount(request.getHeadCount())
-                .status(StadiumReservationStatus.RESERVED)
-                .paymentType(PaymentType.valueOf(request.getPaymentType()))
-                .build();
+        // Check Already Reserved Times
+        if (isAlreadyReservedTimes(stadium, request.getReservingDate(), request.getReservingTimes())) {
+            throw new StadiumException(AlreadyReservedTime);
+        }
 
+        // Create Reservation
+        StadiumReservation reservation = StadiumReservation
+                .fromRequest(stadium, member, request, getPrice(stadiumId, request.getReservingDate(), request).getPrice());
+
+        // Save Reservation
+        stadiumReservationRepository.save(reservation);
+
+        // Create Item Reservation
         List<StadiumReservationItem> items = new ArrayList<>();
         if (request.getItems().size() > 0) {
             request.getItems().forEach(item -> {
@@ -190,14 +190,12 @@ public class StadiumReservationService {
                     StadiumItem stadiumItem = stadiumItemRepository.findById(item.getItemId())
                             .orElseThrow(() -> new StadiumException(ItemNotFound));
 
-                    StadiumReservationItem stadiumReservationItem = StadiumReservationItem.builder()
+                    items.add(StadiumReservationItem.builder()
                             .item(stadiumItem)
                             .count(item.getCount())
                             .reservation(reservation)
                             .price(item.getCount() * stadiumItem.getPrice())
-                            .build();
-
-                    items.add(stadiumReservationItem);
+                            .build());
                 } catch (StadiumException e) {
                     log.info("item not found. id:" + item.getItemId());
                 }
@@ -205,9 +203,13 @@ public class StadiumReservationService {
             reservation.getItems().addAll(items);
             stadiumReservationItemRepository.saveAll(items);
         }
+
         stadiumReservationRepository.save(reservation);
-        locks.forEach(lock -> redissonLockReservingTimeFacade.unlock(lock));
+        redissonLockReservingTimeFacade.unlock(stadiumId, request.getReservingDate());
+
         return ReservationInfoResponse.builder()
+                .openTime(stadium.getOpenTime())
+                .closeTime(stadium.getCloseTime())
                 .stadiumId(stadiumId)
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
@@ -221,8 +223,32 @@ public class StadiumReservationService {
                 .build();
     }
 
+    private boolean isAlreadyReservedTimes(
+            Stadium stadium, LocalDate date,
+            List<String> reservingTimes
+    ) {
+        List<ReservingTime> reservedTimes = new ArrayList<>();
+        stadiumReservationRepository
+                .findAllByStadiumAndReservingDate(stadium, date)
+                .forEach(reservation -> reservedTimes.addAll(reservation.getReservingTimes()));
+
+        for (String time : reservingTimes) {
+            if (reservedTimes.contains(ReservingTime.valueOf(time))) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     // TODO: Check Price
-    private int getPrice() {
-        return 10000;
+    public PriceResponse getPrice(
+            Long stadiumId,
+            LocalDate date,
+            CreateReservationRequest request
+    ) {
+        return PriceResponse.builder()
+                .price(10000)
+                .build();
     }
 }
