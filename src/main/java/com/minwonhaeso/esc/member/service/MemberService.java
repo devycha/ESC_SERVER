@@ -143,6 +143,8 @@ public class MemberService {
                 .nickname(member.getNickname())
                 .email(member.getEmail())
                 .imgUrl(member.getImgUrl())
+                .name(member.getName())
+                .password(member.getPassword())
                 .build();
     }
 
@@ -185,7 +187,7 @@ public class MemberService {
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
         String subject = "[ESC] 비밀번호 변경 안내";
         String content = "<p>비밀번호 변경 코드: " + uuid + "</p>";
-        mailService.sendMail(email, subject, content);
+//        mailService.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
         return uuid;
     }

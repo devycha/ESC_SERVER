@@ -12,7 +12,9 @@ public class InfoDto {
     @AllArgsConstructor
     public static class Response{
         private String nickname;
+        private String name;
         private String email;
         private String imgUrl;
+        private String password;
     }
 }
