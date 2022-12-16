@@ -20,25 +20,25 @@ public class StadiumLikeService {
     private final StadiumLikeRepository stadiumLikeRepository;
     private final StadiumRepository stadiumRepository;
 
-    public Map<String, String> likes(Long stadiumId, String onOff, Member member) {
+    public Map<String, String> likes(Long stadiumId, String likeDislike, Member member) {
         Stadium stadium = stadiumRepository.findById(stadiumId)
                 .orElseThrow(() -> new StadiumException(StadiumErrorCode.StadiumNotFound));
         Optional<StadiumLike> optionalLike = stadiumLikeRepository.findByMemberAndStadium(member, stadium);
-        likeCD(onOff, member, stadium, optionalLike);
+        likeCD(likeDislike, member, stadium, optionalLike);
         Map<String,String> map = new HashMap<>();
         map.put("successMessage","찜하기 반영 성공");
         return map;
     }
 
-    private void likeCD(String onOff, Member member, Stadium stadium, Optional<StadiumLike> optionalLike) {
-        if (onOff.equals("ON")) {
+    private void likeCD(String likeDislike, Member member, Stadium stadium, Optional<StadiumLike> optionalLike) {
+        if (likeDislike.equals("ON")) {
             if (optionalLike.isEmpty()) {
                 stadiumLikeRepository.save(new StadiumLike(member, stadium));
             } else {
                 throw new StadiumException(StadiumErrorCode.LikeRequestAlreadyMatched);
             }
         }
-        if (onOff.equals("OFF")) {
+        if (likeDislike.equals("OFF")) {
             if (optionalLike.isPresent()) {
                 stadiumLikeRepository.delete(optionalLike.get());
             } else {

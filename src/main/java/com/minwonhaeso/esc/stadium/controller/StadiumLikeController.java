@@ -23,7 +23,7 @@ public class StadiumLikeController {
     private final StadiumLikeService stadiumLikeService;
     @PostMapping("/{stadiumId}/likes/{type}")
     public ResponseEntity<?> likes(@PathVariable(value = "stadiumId") Long stadiumId,
-                                   @PathVariable("type") String type,
+                                   @PathVariable(value = "type") String type,
                                    @AuthenticationPrincipal PrincipalDetail principalDetail){
         Member member = principalDetail.getMember();
         Map<String,String> result =  stadiumLikeService.likes(stadiumId,type,member);
