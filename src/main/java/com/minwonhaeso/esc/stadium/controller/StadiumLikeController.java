@@ -2,15 +2,15 @@ package com.minwonhaeso.esc.stadium.controller;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumLikeResponseDto;
 import com.minwonhaeso.esc.stadium.service.StadiumLikeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -21,6 +21,7 @@ import java.util.Map;
 public class StadiumLikeController {
 
     private final StadiumLikeService stadiumLikeService;
+
     @PostMapping("/{stadiumId}/likes/{type}")
     public ResponseEntity<?> likes(@PathVariable(value = "stadiumId") Long stadiumId,
                                    @PathVariable(value = "type") String type,
@@ -29,5 +30,14 @@ public class StadiumLikeController {
         Map<String,String> result =  stadiumLikeService.likes(stadiumId,type,member);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/likelist")
+    public ResponseEntity<?> likeList(@AuthenticationPrincipal PrincipalDetail principalDetail,
+                                      Pageable pageable){
+        Member member = principalDetail.getMember();
+        Page<StadiumLikeResponseDto> likes = stadiumLikeService.likeList(member,pageable);
+        return ResponseEntity.ok(likes);
+    }
+
 }
 
