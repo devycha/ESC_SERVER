@@ -150,7 +150,6 @@ public class Stadium {
 
     public void setAll(StadiumDto.UpdateStadiumRequest request) {
         try {
-            System.out.println(request);
             String openTime = Arrays.stream(ReservingTime.values())
                     .filter(time -> time.getTime().equals(request.getOpenTime()))
                     .collect(Collectors.toList())

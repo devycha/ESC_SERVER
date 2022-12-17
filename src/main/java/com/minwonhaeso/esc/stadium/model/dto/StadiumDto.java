@@ -67,7 +67,6 @@ public class StadiumDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @ApiModel(value = "체육관 정보 수정 Request Body")
-    @ToString
     public static class UpdateStadiumRequest {
         private String name;
         private String phone;
