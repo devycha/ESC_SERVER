@@ -37,7 +37,7 @@ public class StadiumDto {
         private String closeTime;
 
         @Builder.Default
-        private List<StadiumImgDto.CreateImgRequest> imgs = new ArrayList<>();
+        private List<StadiumImgDto> imgs = new ArrayList<>();
 
         @Builder.Default
         private List<String> tags = new ArrayList<>();
@@ -77,5 +77,14 @@ public class StadiumDto {
         private Integer holidayPricePerHalfHour;
         private String openTime;
         private String closeTime;
+
+        @Builder.Default
+        private List<StadiumImgDto> imgs = new ArrayList<>();
+
+        @Builder.Default
+        private List<StadiumTagDto> tags = new ArrayList<>();
+
+        @Builder.Default
+        private List<StadiumItemDto.CreateItemRequest> items = new ArrayList<>();
     }
 }

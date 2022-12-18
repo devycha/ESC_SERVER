@@ -55,7 +55,7 @@ public class StadiumInfoResponseDto {
     private List<StadiumItemDto.Response> rentalItems;
 
     @ApiModelProperty(value = "이미지", example = "['img_url1', 'img_url2', ...]")
-    private List<StadiumImgDto.ImgResponse> imgs;
+    private List<StadiumImgDto> imgs;
     private List<String> tags;
 
     @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS")
@@ -84,7 +84,7 @@ public class StadiumInfoResponseDto {
                 .imgs(stadium.getImgs().isEmpty() ?
                         null :
                         stadium.getImgs().stream().map(img ->
-                                StadiumImgDto.ImgResponse.builder()
+                                StadiumImgDto.builder()
                                         .publicId(img.getImgId())
                                         .imgUrl(img.getImgUrl())
                                         .build())

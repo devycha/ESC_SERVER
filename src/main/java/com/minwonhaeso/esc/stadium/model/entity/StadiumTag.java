@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
 
+import com.minwonhaeso.esc.stadium.model.dto.StadiumTagDto;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -35,4 +36,15 @@ public class StadiumTag {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public static StadiumTag fromRequest(StadiumTagDto request, Stadium stadium) {
+        return StadiumTag.builder()
+                .stadium(stadium)
+                .name(request.getTagName())
+                .build();
+    }
+
+    public void setAll(StadiumTagDto request) {
+        this.name = request.getTagName();
+    }
 }

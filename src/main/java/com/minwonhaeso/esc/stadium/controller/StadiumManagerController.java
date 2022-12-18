@@ -60,10 +60,10 @@ public class StadiumManagerController {
     public ResponseEntity<?> addStadiumImgByManager(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
-            @RequestBody StadiumImgDto.AddImgRequest request
+            @RequestBody StadiumImgDto request
     ) {
         Member member = principalDetail.getMember();
-        StadiumImgDto.CreateImgResponse img = stadiumService.addStadiumImg(member, stadiumId, request.getImgUrl());
+        StadiumImgDto img = stadiumService.addStadiumImg(member, stadiumId, request.getImgUrl());
         return ResponseEntity.ok().body(img);
     }
 
@@ -72,10 +72,10 @@ public class StadiumManagerController {
     public ResponseEntity<?> addStadiumTagByManager(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
-            @RequestBody StadiumTagDto.AddTagRequest request
+            @RequestBody StadiumTagDto request
     ) {
         Member member = principalDetail.getMember();
-        StadiumTagDto.AddTagResponse tag = stadiumService.addStadiumTag(member, stadiumId, request.getTagName());
+        StadiumTagDto tag = stadiumService.addStadiumTag(member, stadiumId, request.getTagName());
         return ResponseEntity.ok().body(tag);
     }
 
@@ -94,7 +94,7 @@ public class StadiumManagerController {
     public ResponseEntity<?> deleteStadiumImgByManager(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
-            @RequestBody StadiumImgDto.DeleteImgRequest request
+            @RequestBody StadiumImgDto request
     ) {
         Member member = principalDetail.getMember();
         stadiumService.deleteStadiumImg(member, stadiumId, request.getImgUrl());
@@ -106,7 +106,7 @@ public class StadiumManagerController {
     public ResponseEntity<?> deleteStadiumTagByManager(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
-            @RequestBody StadiumTagDto.DeleteTagRequest request
+            @RequestBody StadiumTagDto request
     ) {
         Member member = principalDetail.getMember();
         stadiumService.deleteStadiumTag(member, stadiumId, request.getTagName());

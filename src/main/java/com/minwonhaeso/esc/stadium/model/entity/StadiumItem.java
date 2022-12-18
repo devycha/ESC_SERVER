@@ -52,7 +52,7 @@ public class StadiumItem {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public static StadiumItem fromRequest(Stadium stadium, StadiumItemDto.CreateItemRequest request) {
+    public static StadiumItem fromRequest(StadiumItemDto.CreateItemRequest request, Stadium stadium) {
         return StadiumItem.builder()
                 .name(request.getName())
                 .stadium(stadium)
@@ -61,5 +61,12 @@ public class StadiumItem {
                 .price(request.getPrice())
                 .status(AVAILABLE)
                 .build();
+    }
+
+    public void setAll(StadiumItemDto.CreateItemRequest request) {
+        this.name = request.getName();
+        this.imgId = request.getPublicId();
+        this.imgUrl = request.getImgUrl();
+        this.price = request.getPrice();
     }
 }
