@@ -52,11 +52,11 @@ public class StadiumDto {
     @Builder
     @ApiModel(value = "체육관 생성 성공 Response Body")
     public static class CreateStadiumResponse {
-        private StadiumResponseDto stadium;
+        private StadiumInfoResponseDto stadium;
 
         public static CreateStadiumResponse fromEntity(Stadium stadium) {
             return CreateStadiumResponse.builder()
-                    .stadium(StadiumResponseDto.fromEntity(stadium))
+                    .stadium(StadiumInfoResponseDto.fromEntity(stadium))
                     .build();
         }
     }
@@ -82,9 +82,9 @@ public class StadiumDto {
         private List<StadiumImgDto> imgs = new ArrayList<>();
 
         @Builder.Default
-        private List<StadiumTagDto> tags = new ArrayList<>();
+        private List<String> tags = new ArrayList<>();
 
         @Builder.Default
-        private List<StadiumItemDto.CreateItemRequest> items = new ArrayList<>();
+        private List<StadiumItemDto.UpdateItemRequest> rentalItems = new ArrayList<>();
     }
 }

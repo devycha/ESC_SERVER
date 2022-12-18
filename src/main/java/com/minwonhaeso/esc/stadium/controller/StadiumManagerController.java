@@ -51,7 +51,7 @@ public class StadiumManagerController {
             @RequestBody StadiumDto.UpdateStadiumRequest request
     ) {
         Member member = principalDetail.getMember();
-        StadiumResponseDto stadium = stadiumService.updateStadiumInfo(member, stadiumId, request);
+        StadiumInfoResponseDto stadium = stadiumService.updateStadiumInfo(member, stadiumId, request);
         return ResponseEntity.ok().body(stadium);
     }
 

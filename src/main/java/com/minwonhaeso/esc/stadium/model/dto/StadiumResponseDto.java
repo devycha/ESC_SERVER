@@ -42,9 +42,6 @@ public class StadiumResponseDto {
     @ApiModelProperty(value = "휴일 가격", example = "30000")
     private Integer holidayPricePerHalfHour;
 
-    @ApiModelProperty(value = "찜하기 수", example = "8")
-    private Integer likes;
-
     @ApiModelProperty(value = "이미지", example = "['img_url1', 'img_url2', ...]")
     private String img; // TODO: 이미지주소 + public_id도 포함 필요
     private List<String> tags;
@@ -64,8 +61,6 @@ public class StadiumResponseDto {
                         null :
                         stadium.getImgs().get(0).getImgUrl())
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
-                // TODO: 찜하기 수 업데이트
-                // .likes(stadium.getLikes().size())
                 .build();
     }
 }

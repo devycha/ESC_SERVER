@@ -5,10 +5,7 @@ import com.minwonhaeso.esc.stadium.model.entity.StadiumTag;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,9 +39,6 @@ public class StadiumInfoResponseDto {
 
     @ApiModelProperty(value = "평점", example = "4.5")
     private Double starAvg;
-
-    @ApiModelProperty(value = "찜하기 수", example = "8")
-    private Integer likes;
 
     @ApiModelProperty(value = "평일 30분당 가격", example = "20000")
     private Integer weekdayPricePerHalfHour;
@@ -85,14 +79,12 @@ public class StadiumInfoResponseDto {
                         null :
                         stadium.getImgs().stream().map(img ->
                                 StadiumImgDto.builder()
+                                        .id(img.getId())
                                         .publicId(img.getImgId())
                                         .imgUrl(img.getImgUrl())
                                         .build())
                         .collect(Collectors.toList()))
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
-                // TODO: 찜하기 수 업데이트
-                // .likes(stadium.getLikes().size())
                 .build();
     }
-
 }

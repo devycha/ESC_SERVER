@@ -63,7 +63,18 @@ public class StadiumItem {
                 .build();
     }
 
-    public void setAll(StadiumItemDto.CreateItemRequest request) {
+    public static StadiumItem fromRequest(StadiumItemDto.UpdateItemRequest request, Stadium stadium) {
+        return StadiumItem.builder()
+                .name(request.getName())
+                .stadium(stadium)
+                .imgId(request.getPublicId())
+                .imgUrl(request.getImgUrl())
+                .price(request.getPrice())
+                .status(AVAILABLE)
+                .build();
+    }
+
+    public void setAll(StadiumItemDto.UpdateItemRequest request) {
         this.name = request.getName();
         this.imgId = request.getPublicId();
         this.imgUrl = request.getImgUrl();

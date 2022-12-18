@@ -36,15 +36,4 @@ public class StadiumTag {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    public static StadiumTag fromRequest(StadiumTagDto request, Stadium stadium) {
-        return StadiumTag.builder()
-                .stadium(stadium)
-                .name(request.getTagName())
-                .build();
-    }
-
-    public void setAll(StadiumTagDto request) {
-        this.name = request.getTagName();
-    }
 }

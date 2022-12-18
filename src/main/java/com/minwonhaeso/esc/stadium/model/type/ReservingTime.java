@@ -3,6 +3,9 @@ package com.minwonhaeso.esc.stadium.model.type;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Getter
 @AllArgsConstructor
 public enum ReservingTime {
@@ -57,4 +60,10 @@ public enum ReservingTime {
     RT49("24:00");
 
     private final String time;
+    public static String findTime(String findTime) {
+        return Arrays.stream(ReservingTime.values())
+                .filter(reservingTime -> reservingTime.getTime().equals(findTime))
+                .collect(Collectors.toList())
+                .get(0).toString();
+    }
 }

@@ -135,63 +135,24 @@ public class StadiumService {
     }
 
     @Transactional
-    public StadiumResponseDto updateStadiumInfo(Member member, Long stadiumId, UpdateStadiumRequest request) {
+    public StadiumInfoResponseDto updateStadiumInfo(Member member, Long stadiumId, UpdateStadiumRequest request) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
         if (stadium.getMember().getMemberId() != member.getMemberId()) {
             throw new StadiumException(UnAuthorizedAccess);
         }
-
-        // 체육관 기본 정보 수정
+        stadiumTagRepository.deleteAll(stadium.getTags());
+        stadiumImgRepository.deleteAll(stadium.getImgs());
+        stadiumItemRepository.deleteAll(stadium.getRentalStadiumItems());
         stadium.setAll(request);
-
-        // 체육관 이미지 업데이트
-        if (request.getImgs().size() > 0) {
-            request.getImgs().forEach(img -> {
-                if (img.getId() == null) {
-                    stadiumImgRepository.save(StadiumImg.fromRequest(img, stadium));
-                } else {
-                    StadiumImg stadiumImg = stadiumImgRepository.findById(img.getId()).orElseThrow(
-                            () -> new StadiumException(StadiumImgNotFound));
-                    stadiumImg.setAll(img);
-                    stadiumImgRepository.save(stadiumImg);
-                }
-            });
-        }
-
-        // 체육관 종목 업데이트
-        if (request.getTags().size() > 0) {
-            request.getTags().forEach(tag -> {
-                if (tag.getId() == null) {
-                    stadiumTagRepository.save(StadiumTag.fromRequest(tag, stadium));
-                } else {
-                    StadiumTag stadiumTag = stadiumTagRepository.findById(tag.getId()).orElseThrow(
-                            () -> new StadiumException(StadiumTagNotFound));
-                    stadiumTag.setAll(tag);
-                    stadiumTagRepository.save(stadiumTag);
-                }
-            });
-        }
-
-        // 체육관 아이템 업데이트
-        if (request.getItems().size() > 0) {
-            request.getItems().forEach(item -> {
-                if (item.getId() == null) {
-                    stadiumItemRepository.save(StadiumItem.fromRequest(item, stadium));
-                } else {
-                    StadiumItem stadiumItem = stadiumItemRepository.findById(item.getId()).orElseThrow(
-                            () -> new StadiumException(StadiumItemNotFound));
-                    stadiumItem.setAll(item);
-                    stadiumItemRepository.save(stadiumItem);
-                }
-            });
-        }
-
+        stadiumTagRepository.saveAll(stadium.getTags());
+        stadiumImgRepository.saveAll(stadium.getImgs());
+        stadiumItemRepository.saveAll(stadium.getRentalStadiumItems());
         stadiumRepository.save(stadium);
         StadiumDocument stadiumDocument = StadiumDocument.fromEntity(stadium);
         stadiumSearchRepository.save(stadiumDocument);
-        return StadiumResponseDto.fromEntity(stadium);
+        return StadiumInfoResponseDto.fromEntity(stadium);
     }
 
     public StadiumTagDto addStadiumTag(Member member, Long stadiumId, String tagName) {
