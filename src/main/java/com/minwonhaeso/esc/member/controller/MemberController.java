@@ -56,7 +56,7 @@ public class MemberController {
      **/
     @ApiOperation(value = "메일 인증", notes = "메일 인증 코드가 맞는지 확인합니다.")
     @PostMapping("/email-authentication")
-    public ResponseEntity<?> emailAuthentication(@RequestParam String key) {
+    public ResponseEntity<?> emailAuthentication(@RequestBody String key) {
         Map<String, String> result = memberService.emailAuthentication(key);
         return ResponseEntity.ok(result);
     }

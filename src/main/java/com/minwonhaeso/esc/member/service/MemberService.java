@@ -153,7 +153,9 @@ public class MemberService {
                 .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
         if (request.getNickname() != null) {
             member.setNickname(request.getNickname());
-        } else if (request.getImgUrl() != null) {
+        }
+
+        if (request.getImgUrl() != null) {
             member.setImgUrl(request.getImgUrl());
         }
         memberRepository.save(member);
