@@ -3,6 +3,7 @@ package com.minwonhaeso.esc.review.service;
 import com.minwonhaeso.esc.error.exception.ReviewException;
 import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.notification.service.NotificationService;
 import com.minwonhaeso.esc.review.model.dto.ReviewDto;
 import com.minwonhaeso.esc.review.model.entity.Review;
 import com.minwonhaeso.esc.review.repository.ReviewRepository;
@@ -17,10 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 import static com.minwonhaeso.esc.error.type.ReviewErrorCode.*;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
+import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIEW;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +30,7 @@ public class ReviewService {
 
     private final StadiumRepository stadiumRepository;
     private final StadiumReservationRepository stadiumReservationRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public Page<ReviewDto.Response> getAllReviewsByStadium(Long stadiumId, Pageable pageable) {
@@ -63,6 +64,10 @@ public class ReviewService {
 
         reviewRepository.save(review);
         log.info("회원 번호 [ " + member.getMemberId() + " ] -  리뷰를 작성하였습니다.");
+
+        notificationService.createNotification(REVIEW, stadiumId, 0L,
+                "체육관 [ " + stadium.getName() + " ]에 새로운 리뷰가 등록되었습니다.", stadium.getMember());
+        log.info("회원 번호 [ " + stadium.getMember().getMemberId() + " ] 로 알람이 발송되었습니다.");
 
         return ReviewDto.Response.fromEntity(review);
     }

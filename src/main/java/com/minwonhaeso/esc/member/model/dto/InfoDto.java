@@ -3,7 +3,6 @@ package com.minwonhaeso.esc.member.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 public class InfoDto {
 
@@ -11,6 +10,7 @@ public class InfoDto {
     @Getter
     @AllArgsConstructor
     public static class Response{
+        private Long id;
         private String nickname;
         private String name;
         private String email;
