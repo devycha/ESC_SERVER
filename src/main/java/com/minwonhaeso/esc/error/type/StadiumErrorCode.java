@@ -14,7 +14,10 @@ public enum StadiumErrorCode {
     UnAuthorizedAccess(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
     AlreadyReservedTime(HttpStatus.CONFLICT, "이미 예약이 완료되거나 진행중인 시간대입니다."),
     LikeRequestAlreadyMatched(HttpStatus.BAD_REQUEST, "요청 타입이 이미 적용되어 있습니다."),
-    TimeFormatNotAccepted(HttpStatus.BAD_REQUEST, "시간 형식이 옳바르지 않습니다.");
+    TimeFormatNotAccepted(HttpStatus.BAD_REQUEST, "시간 형식이 옳바르지 않습니다."),
+    StadiumImgNotFound(HttpStatus.BAD_REQUEST, "일치하는 체육관 이미지 정보가 존재하지 않습니다."),
+    StadiumTagNotFound(HttpStatus.BAD_REQUEST, "일치하는 체육관 종목 정보가 존재하지 않습니다."),
+    StadiumItemNotFound(HttpStatus.BAD_REQUEST, "일치하는 체육관 대여 용품 정보가 존재하지 않습니다.");
 
     private final HttpStatus statusCode;
     private final String errorMessage;

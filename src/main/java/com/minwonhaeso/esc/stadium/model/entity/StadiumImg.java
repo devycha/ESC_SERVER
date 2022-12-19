@@ -1,5 +1,6 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
+import com.minwonhaeso.esc.stadium.model.dto.StadiumImgDto;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -38,4 +39,17 @@ public class StadiumImg implements Serializable {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public static StadiumImg fromRequest(StadiumImgDto request, Stadium stadium) {
+        return StadiumImg.builder()
+                .stadium(stadium)
+                .imgId(request.getPublicId())
+                .imgUrl(request.getImgUrl())
+                .build();
+    }
+
+    public void setAll(StadiumImgDto request) {
+        this.imgId = request.getPublicId();
+        this.imgUrl = request.getImgUrl();
+    }
 }

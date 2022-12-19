@@ -37,7 +37,7 @@ public class StadiumDto {
         private String closeTime;
 
         @Builder.Default
-        private List<StadiumImgDto.CreateImgRequest> imgs = new ArrayList<>();
+        private List<StadiumImgDto> imgs = new ArrayList<>();
 
         @Builder.Default
         private List<String> tags = new ArrayList<>();
@@ -52,11 +52,11 @@ public class StadiumDto {
     @Builder
     @ApiModel(value = "체육관 생성 성공 Response Body")
     public static class CreateStadiumResponse {
-        private StadiumResponseDto stadium;
+        private StadiumInfoResponseDto stadium;
 
         public static CreateStadiumResponse fromEntity(Stadium stadium) {
             return CreateStadiumResponse.builder()
-                    .stadium(StadiumResponseDto.fromEntity(stadium))
+                    .stadium(StadiumInfoResponseDto.fromEntity(stadium))
                     .build();
         }
     }
@@ -77,5 +77,14 @@ public class StadiumDto {
         private Integer holidayPricePerHalfHour;
         private String openTime;
         private String closeTime;
+
+        @Builder.Default
+        private List<StadiumImgDto> imgs = new ArrayList<>();
+
+        @Builder.Default
+        private List<String> tags = new ArrayList<>();
+
+        @Builder.Default
+        private List<StadiumItemDto.UpdateItemRequest> rentalItems = new ArrayList<>();
     }
 }

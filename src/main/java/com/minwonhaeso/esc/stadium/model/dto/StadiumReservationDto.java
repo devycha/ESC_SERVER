@@ -30,6 +30,7 @@ public class StadiumReservationDto {
     @Data
     @Builder
     public static class ReservationInfoResponse {
+        private Long id;
         private Long stadiumId;
         private String stadiumName;
         private LocalDate date;

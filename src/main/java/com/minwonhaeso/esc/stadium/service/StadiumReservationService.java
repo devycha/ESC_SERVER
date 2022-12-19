@@ -208,6 +208,7 @@ public class StadiumReservationService {
         redissonLockReservingTimeFacade.unlock(stadiumId, request.getReservingDate());
 
         return ReservationInfoResponse.builder()
+                .id(reservation.getId())
                 .openTime(stadium.getOpenTime())
                 .closeTime(stadium.getCloseTime())
                 .stadiumId(stadiumId)

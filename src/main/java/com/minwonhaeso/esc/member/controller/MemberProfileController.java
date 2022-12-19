@@ -63,8 +63,9 @@ public class MemberProfileController {
      * 비밀번호 변경 메일 인증코드 확인
      **/
     @ApiOperation(value = "인증코드 확인(비밀번호 변경)", notes = "비밀번호 변경을 위한 메일 인증 코드 일치 여부를 확인합니다.")
-    @GetMapping("/password")
-    public ResponseEntity<?> changePasswordMailAuth(@RequestParam String key) {
+    @PostMapping("/password/config")
+    public ResponseEntity<?> changePasswordMailAuth(@RequestBody Map<String, String> response) {
+        String key = response.get("key");
         Map<String, String> result = memberService.changePasswordMailAuth(key);
         return ResponseEntity.ok(result);
     }
