@@ -3,8 +3,6 @@ package com.minwonhaeso.esc.stadium.model.entity;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.*;
 
 @Getter
