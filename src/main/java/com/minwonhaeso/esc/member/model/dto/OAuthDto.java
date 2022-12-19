@@ -22,6 +22,7 @@ public class OAuthDto {
     @NoArgsConstructor
     @ApiModel(value = "소셜 로그인 Response Body")
     public static class Response {
+        private Long id;
         private String nickname;
         private String imgUrl;
         private String refreshToken;
