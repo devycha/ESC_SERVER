@@ -28,6 +28,7 @@ public class MemberProfileController {
         return ResponseEntity.ok(memberService.info(userDetails));
     }
 
+
     /**
      * 회원 수정
      **/

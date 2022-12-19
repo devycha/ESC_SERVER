@@ -24,13 +24,11 @@ public class StadiumLikeController {
     private final StadiumLikeService stadiumLikeService;
 
     @ApiOperation(value = "찜하기 or 취소", notes = "ON 혹은 OFF type을 받아 찜하기와 찜하기 취소 작업을 진행합니다.")
-    @PostMapping("/{stadiumId}/likes/{type}")
+    @PostMapping("/{stadiumId}/likes")
     public ResponseEntity<?> likes(@PathVariable(value = "stadiumId") Long stadiumId,
-                                   @PathVariable(value = "type") String type,
                                    @AuthenticationPrincipal PrincipalDetail principalDetail){
         Member member = principalDetail.getMember();
-        Map<String,String> result =  stadiumLikeService.likes(stadiumId,type,member);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(stadiumLikeService.likes(stadiumId,member));
     }
 
     @ApiOperation(value = "찜하기 리스트", notes = "접속한 유저가 찜한 체육관 리스트를 보여줍니다.")

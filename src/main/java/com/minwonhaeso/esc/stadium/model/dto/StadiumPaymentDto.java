@@ -12,7 +12,6 @@ public class StadiumPaymentDto {
 
     @Data
     public static class PaymentConfirmRequest{
-        private Long stadiumId;
         private LocalDate date;
         private String openTime;
         private String closeTime;
@@ -30,6 +29,11 @@ public class StadiumPaymentDto {
         private String openTime;
         private String closeTime;
         private int headCount;
-        private Long price;
+        private int price;
+    }
+    @Data
+    public static class PaymentRequest {
+        private String email;
+        private String paymentType;
     }
 }

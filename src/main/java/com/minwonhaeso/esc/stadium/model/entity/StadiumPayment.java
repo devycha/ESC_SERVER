@@ -22,9 +22,11 @@ public class StadiumPayment {
     @Id
     private String id;
 
+    private Long stadiumId;
+
     private LocalDate date;
 
-    private Long price;
+    private Integer price;
 
     private int headCount;
 
