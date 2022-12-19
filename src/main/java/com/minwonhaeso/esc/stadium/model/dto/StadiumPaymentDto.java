@@ -31,6 +31,7 @@ public class StadiumPaymentDto {
         private int headCount;
         private int price;
     }
+
     @Data
     public static class PaymentRequest {
         private String email;
