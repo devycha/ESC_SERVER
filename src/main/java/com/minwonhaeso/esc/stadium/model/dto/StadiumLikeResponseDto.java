@@ -19,11 +19,14 @@ public class StadiumLikeResponseDto {
 
     private Double starAvg;
 
+    private String imgUrl;
+
 
     public static StadiumLikeResponseDto fromEntity(StadiumLike stadiumLike) {
         return StadiumLikeResponseDto.builder()
                 .id(stadiumLike.getId())
                 .name(stadiumLike.getStadium().getName())
+                .imgUrl(stadiumLike.getStadium().getImgs().get(0).getImgUrl())
                 .address(stadiumLike.getStadium().getAddress())
                 .starAvg(stadiumLike.getStadium().getStarAvg())
                 .build();
