@@ -3,7 +3,6 @@ package com.minwonhaeso.esc.stadium.service;
 import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.error.type.StadiumErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumInfoResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumLikeRequestDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumLikeResponseDto;
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
@@ -16,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -31,7 +28,7 @@ public class StadiumLikeService {
                 .orElseThrow(() -> new StadiumException(StadiumErrorCode.StadiumNotFound));
         Optional<StadiumLike> optionalLike = stadiumLikeRepository.findByMemberAndStadium(member, stadium);
         StadiumLikeRequestDto dto = new StadiumLikeRequestDto();
-        if (optionalLike.isEmpty()) {
+        if (optionalLike.isEmpty()){
             stadiumLikeRepository.save(StadiumLike.builder()
                     .stadium(stadium)
                     .member(member)

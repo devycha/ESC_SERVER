@@ -28,7 +28,7 @@ public class StadiumLikeController {
     public ResponseEntity<?> likes(@PathVariable(value = "stadiumId") Long stadiumId,
                                    @AuthenticationPrincipal PrincipalDetail principalDetail){
         Member member = principalDetail.getMember();
-        return ResponseEntity.ok(stadiumLikeService.likes(stadiumId,member));
+        return ResponseEntity.ok(stadiumLikeService.likes(stadiumId, member));
     }
 
     @ApiOperation(value = "찜하기 리스트", notes = "접속한 유저가 찜한 체육관 리스트를 보여줍니다.")
