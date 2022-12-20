@@ -1,7 +1,6 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.CreateReservationRequest;
 import com.minwonhaeso.esc.stadium.model.type.PaymentType;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

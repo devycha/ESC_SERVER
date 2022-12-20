@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.minwonhaeso.esc.error.type.AuthErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -41,16 +43,22 @@ public class MemberService {
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional( isolation = Isolation.SERIALIZABLE)
     public SignDto.Response signUser(SignDto.Request signDto) {
-        Optional<MemberEmail> memberEmail = memberEmailRepository.findById(signDto.getKey());
-        if (memberEmail.isEmpty()) {
-            throw new AuthException(AuthErrorCode.EmailAuthNotYet);
+        MemberEmail memberEmail = memberEmailRepository.findById(signDto.getKey()).orElseThrow(
+                ()-> new AuthException(AuthKeyNotMatch));
+        if(!memberEmail.getEmail().equals(signDto.getEmail())){
+            throw new AuthException(EmailNotMatched);
         }
-        memberEmailRepository.delete(memberEmail.get());
         signDto.setPassword(passwordEncoder.encode(signDto.getPassword()));
         Member member = Member.of(signDto);
-        memberRepository.save(member);
+        try {
+            memberEmailRepository.delete(memberEmail);
+
+            memberRepository.save(member);
+        }catch(Exception e){
+            memberEmailRepository.save(memberEmail);
+        }
         return SignDto.Response.builder()
                 .nickname(member.getNickname())
                 .name(member.getName())
@@ -62,7 +70,7 @@ public class MemberService {
     public Map<String, String> emailDuplicateYn(String email) {
         Optional<Member> optional = memberRepository.findByEmail(email);
         if (optional.isPresent()) {
-            throw new AuthException(AuthErrorCode.EmailAlreadySignUp);
+            throw new AuthException(EmailAlreadySignUp);
         }
         return successMessage("사용 가능한 이메일입니다.");
     }
@@ -80,10 +88,10 @@ public class MemberService {
 
     public Map<String, String> emailAuthentication(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
-                () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
+                () -> new AuthException(EmailAuthTimeOut));
         memberEmailRepository.save(memberEmail);
         if (!memberEmail.getId().equals(key)) {
-            throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
+            throw new AuthException(AuthKeyNotMatch);
         }
         return successMessage("메일 인증이 완료되었습니다.");
     }
@@ -91,7 +99,7 @@ public class MemberService {
     @Transactional
     public LoginDto.Response login(LoginDto.Request loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail()).
-                orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotFound));
+                orElseThrow(() -> new AuthException(MemberNotFound));
         checkPassword(loginDto.getPassword(), member.getPassword());
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
@@ -101,7 +109,7 @@ public class MemberService {
 
     private void checkPassword(String rawPassword, String findMemberPassword) {
         if (!passwordEncoder.matches(rawPassword, findMemberPassword)) {
-            throw new AuthException(AuthErrorCode.PasswordNotEqual);
+            throw new AuthException(PasswordNotEqual);
         }
     }
 
@@ -118,11 +126,11 @@ public class MemberService {
         refreshToken = resolveToken(refreshToken);
         String username = getCurrentUsername();
         RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(
-                () -> new AuthException(AuthErrorCode.AccessTokenAlreadyExpired));
+                () -> new AuthException(AccessTokenAlreadyExpired));
         if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
             return reissueRefreshToken(refreshToken, username);
         }
-        throw new AuthException(AuthErrorCode.TokenNotMatch);
+        throw new AuthException(TokenNotMatch);
     }
 
     private TokenDto reissueRefreshToken(String refreshToken, String username) {
@@ -135,10 +143,10 @@ public class MemberService {
 
     public InfoDto.Response info(UserDetails user) {
         if (user.getUsername() == null) {
-            throw new AuthException(AuthErrorCode.MemberNotLogIn);
+            throw new AuthException(MemberNotLogIn);
         }
         Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
+                .orElseThrow(() -> new AuthException(MemberNotLogIn));
         return InfoDto.Response.builder()
                 .id(member.getMemberId())
                 .nickname(member.getNickname())
@@ -151,7 +159,7 @@ public class MemberService {
 
     public PatchInfo.Request patchInfo(UserDetails user, PatchInfo.Request request) {
         Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
+                .orElseThrow(() -> new AuthException(MemberNotLogIn));
         if (request.getNickname() != null) {
             member.setNickname(request.getNickname());
         }
@@ -165,7 +173,7 @@ public class MemberService {
 
     public Map<String, String> deleteMember(UserDetails user) {
         Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotLogIn));
+                .orElseThrow(() -> new AuthException(MemberNotLogIn));
         memberRepository.delete(member);
         return successMessage("탈퇴에 성공했습니다.");
     }
@@ -197,27 +205,27 @@ public class MemberService {
 
     public Map<String, String> changePasswordMailAuth(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
-                () -> new AuthException(AuthErrorCode.EmailAuthTimeOut));
+                () -> new AuthException(EmailAuthTimeOut));
         memberEmailRepository.delete(memberEmail);
         if (!memberEmail.getId().equals(key)) {
-            throw new AuthException(AuthErrorCode.AuthKeyNotMatch);
+            throw new AuthException(AuthKeyNotMatch);
         }
         return successMessage("메일 인증이 완료되었습니다.");
     }
 
     public Map<String, String> changePassword(CPasswordDto.Request request) {
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.EmailNotMatched));
+                .orElseThrow(() -> new AuthException(EmailNotMatched));
 
         if(request.getHasToken()) {
             boolean match = passwordEncoder.matches(request.getPrePassword(), member.getPassword());
 
             if (!match) {
-                throw new AuthException(AuthErrorCode.PasswordNotEqual);
+                throw new AuthException(PasswordNotEqual);
             }
 
             if (!request.getConfirmPassword().equals(request.getNewPassword())) {
-                throw new AuthException(AuthErrorCode.PasswordNotEqual);
+                throw new AuthException(PasswordNotEqual);
             }
 
             member.setPassword(passwordEncoder.encode(request.getNewPassword()));
@@ -225,7 +233,7 @@ public class MemberService {
         }else{
 
             if(!request.getNewPassword().equals(request.getConfirmPassword())){
-                throw new AuthException(AuthErrorCode.PasswordNotEqual);
+                throw new AuthException(PasswordNotEqual);
             }
 
             String password = passwordEncoder.encode(request.getNewPassword());
@@ -244,7 +252,7 @@ public class MemberService {
 
     public OAuthDto.Response oauthInfo(OAuthDto.Request oauthDto) {
         Member member = memberRepository.findByEmail(oauthDto.getEmail())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.MemberNotFound));
+                .orElseThrow(() -> new AuthException(MemberNotFound));
 
         String email = member.getEmail();
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
