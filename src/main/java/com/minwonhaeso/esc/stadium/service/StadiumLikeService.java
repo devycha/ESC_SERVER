@@ -40,7 +40,6 @@ public class StadiumLikeService {
         dto.setResult(false);
         return dto;
     }
-
     @Transactional(readOnly = true)
     public Page<StadiumLikeResponseDto> likeList(Member member, Pageable pageable) {
         return stadiumLikeRepository.findByMember(member,pageable).map(StadiumLikeResponseDto::fromEntity);
