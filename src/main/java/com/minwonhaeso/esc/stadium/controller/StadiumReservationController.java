@@ -98,6 +98,17 @@ public class StadiumReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationInfo);
     }
 
+    @PatchMapping("/{stadiumId}/reservations/{reservationId}")
+    public ResponseEntity<?> executeReservation(
+            @AuthenticationPrincipal PrincipalDetail principalDetail,
+            @PathVariable Long stadiumId,
+            @PathVariable Long reservationId
+    ) {
+        Member member = principalDetail.getMember();
+        stadiumReservationService.executeReservation(member, stadiumId, reservationId);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{stadiumId}/reservations/{reservationId}")
     public ResponseEntity<?> deleteReservation(
             @AuthenticationPrincipal PrincipalDetail principalDetail,

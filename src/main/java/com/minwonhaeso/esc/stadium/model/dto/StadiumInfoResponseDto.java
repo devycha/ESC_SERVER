@@ -19,6 +19,9 @@ public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "체육관 ID", example = "1")
     private Long id;
 
+    @ApiModelProperty(value = "현재 접속한 사용자 아이디")
+    private Long memberId;
+
     @ApiModelProperty(value = "체육관 이름", example = "수원 국립 체육관")
     private String name;
 
@@ -61,6 +64,7 @@ public class StadiumInfoResponseDto {
     public static StadiumInfoResponseDto fromEntity(Stadium stadium) {
         return StadiumInfoResponseDto.builder()
                 .id(stadium.getId())
+                .memberId(stadium.getMember().getMemberId())
                 .name(stadium.getName())
                 .lat(stadium.getLat())
                 .lnt(stadium.getLnt())

@@ -84,17 +84,30 @@ public class Stadium {
     private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "stadium")
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     private List<StadiumItem> rentalStadiumItems = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "stadium")
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     private List<StadiumImg> imgs = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "stadium")
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     private List<StadiumTag> tags = new ArrayList<>();
-    @OneToMany(mappedBy = "stadium")
+
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     @Column(name = "reviews")
     private List<Review> reviews;
 

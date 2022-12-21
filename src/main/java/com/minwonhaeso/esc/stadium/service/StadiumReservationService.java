@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
+import com.minwonhaeso.esc.error.type.StadiumErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.facade.RedissonLockReservingTimeFacade;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
@@ -43,7 +44,7 @@ public class StadiumReservationService {
     public Page<StadiumReservationDto.Response> getAllReservationsByMember(
             Member member, Pageable pageable) {
         return stadiumReservationRepository
-                .findAllByMemberAndStatusAndReservingDateAfter(
+                .findAllByMemberAndStatusAndReservingDateAfterOrderByReservingDateDesc(
                         member,
                         StadiumReservationStatus.RESERVED,
                         LocalDate.now(),
@@ -80,7 +81,7 @@ public class StadiumReservationService {
                 .stadiumId(stadium.getId())
                 .stadiumName(stadium.getName())
                 .date(date.toString())
-                .pricePerHalfHour(isWeekend(date) || isHoliday(date)
+                .pricePerHalfHour(isHoliday(date)
                         ? stadium.getHolidayPricePerHalfHour()
                         : stadium.getWeekdayPricePerHalfHour())
                 .rentalItems(rentalItems)
@@ -224,6 +225,25 @@ public class StadiumReservationService {
                 .build();
     }
 
+    public void executeReservation(Member member, Long stadiumId, Long reservationId) {
+        StadiumReservation reservation = stadiumReservationRepository
+                .findById(reservationId).orElseThrow(() ->
+                        new StadiumException(ReservationNotFound));
+
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        if (!reservation.getStadium().getId().equals(stadiumId)) {
+            throw new StadiumException(StadiumReservationNotMatch);
+        }
+
+        if (!reservation.getMember().getMemberId().equals(member.getMemberId())) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
+
+        reservation.executeReservation();
+    }
+
     private boolean isAlreadyReservedTimes(
             Stadium stadium, LocalDate date,
             List<String> reservingTimes
@@ -248,8 +268,22 @@ public class StadiumReservationService {
             LocalDate date,
             CreateReservationRequest request
     ) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        int stadiumPrice = isHoliday(date) ?
+                stadium.getHolidayPricePerHalfHour() * request.getReservingTimes().size()
+                : stadium.getWeekdayPricePerHalfHour() * request.getReservingTimes().size();
+
+        int itemPrice = request.getItems().stream().map(item -> {
+            StadiumItem stadiumItem = stadiumItemRepository.findById(item.getItemId())
+                    .orElseThrow(() -> new StadiumException(StadiumItemNotFound));
+
+            return stadiumItem.getPrice() * item.getCount();
+        }).reduce(0, Integer::sum);
+
         return PriceResponse.builder()
-                .price(10000)
+                .price(stadiumPrice + itemPrice)
                 .build();
     }
 }

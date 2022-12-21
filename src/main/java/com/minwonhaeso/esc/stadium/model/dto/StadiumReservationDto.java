@@ -47,19 +47,20 @@ public class StadiumReservationDto {
         private Long id;
         private StadiumResponseDto stadium;
         private MemberResponse member;
-        private LocalDate reservingDate;
+        private String reservingDate;
         private List<String> reservingTimes;
         private int headCount;
         private int price;
         private String paymentType;
         private List<ItemResponse> items;
+        private String status;
 
         public static Response fromEntity(StadiumReservation reservation) {
             return Response.builder()
                     .id(reservation.getId())
                     .stadium(StadiumResponseDto.fromEntity(reservation.getStadium()))
                     .member(MemberResponse.fromEntity(reservation.getMember()))
-                    .reservingDate(reservation.getReservingDate())
+                    .reservingDate(reservation.getReservingDate().toString())
                     .reservingTimes(reservation.getReservingTimes().stream()
                             .map(ReservingTime::getTime)
                             .collect(Collectors.toList()))
@@ -67,6 +68,7 @@ public class StadiumReservationDto {
                     .price(reservation.getPrice())
                     .paymentType(reservation.getPaymentType().toString())
                     .items(ItemResponse.fromReservation(reservation))
+                    .status(reservation.getStatus().toString())
                     .build();
         }
     }
