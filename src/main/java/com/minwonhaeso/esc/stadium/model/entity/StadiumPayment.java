@@ -30,7 +30,8 @@ public class StadiumPayment {
 
     private int headCount;
 
-    private List<StadiumReservationDto.ItemResponse> items;
+    private List<StadiumPaymentDto.ItemRequest> items;
+
 
     private List<String> reservedTimes;
 
