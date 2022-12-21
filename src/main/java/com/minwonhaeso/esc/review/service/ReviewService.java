@@ -74,7 +74,7 @@ public class ReviewService {
 
     public void deleteReview(Member member, Long stadiumId, Long reviewId) {
         Stadium stadium = findByStadiumId(stadiumId);
-        Review review = findByIdAndStadiumAndMember(reviewId, stadium, member);
+        Review review = findByIdAndStadium(reviewId, stadium);
 
         if (review.getMember().getMemberId() != member.getMemberId()) {
             throw new ReviewException(UnAuthorizedAccess);
@@ -86,7 +86,7 @@ public class ReviewService {
 
     public ReviewDto.Response updateReview(ReviewDto.Request request, Member member, Long stadiumId, Long reviewId) {
         Stadium stadium = findByStadiumId(stadiumId);
-        Review review = findByIdAndStadiumAndMember(reviewId, stadium, member);
+        Review review = findByIdAndStadium(reviewId, stadium);
 
         if (review.getMember().getMemberId() != member.getMemberId()) {
             throw new ReviewException(UnAuthorizedAccess);
@@ -103,8 +103,8 @@ public class ReviewService {
         return stadiumRepository.findById(stadiumId).orElseThrow(() -> new StadiumException(StadiumNotFound));
     }
 
-    private Review findByIdAndStadiumAndMember(Long reviewId, Stadium stadium, Member member) {
-        return reviewRepository.findByIdAndStadiumAndMember(reviewId, stadium, member)
+    private Review findByIdAndStadium(Long reviewId, Stadium stadium) {
+        return reviewRepository.findByIdAndStadium(reviewId, stadium)
                 .orElseThrow(() -> new ReviewException(ReviewNotFound));
     }
 

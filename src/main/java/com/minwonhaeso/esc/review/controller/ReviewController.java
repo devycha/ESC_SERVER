@@ -4,7 +4,6 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.review.model.dto.ReviewDto;
 import com.minwonhaeso.esc.review.service.ReviewService;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,6 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @ApiOperation(value = "리뷰 조회", notes = "사용자(일반&매니저)가 리뷰를 조회한다.")
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{stadiumId}/reviews")
     public ResponseEntity<?> getAllReviews(
             @PathVariable Long stadiumId,
