@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +46,8 @@ public class StadiumReservationController {
     @GetMapping("/{stadiumId}/reservation")
     public ResponseEntity<?> getStadiumReservationInfo(
             @PathVariable Long stadiumId,
-            @RequestParam(value = "date", required = false) LocalDate date
+            @RequestParam(value = "date", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
             ) {
 
         if (date == null) {

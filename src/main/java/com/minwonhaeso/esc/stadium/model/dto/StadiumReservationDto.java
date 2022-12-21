@@ -33,11 +33,11 @@ public class StadiumReservationDto {
         private Long id;
         private Long stadiumId;
         private String stadiumName;
-        private LocalDate date;
+        private String date;
         private String openTime;
         private String closeTime;
         private int pricePerHalfHour;
-        private List<ItemResponse> items;
+        private List<ItemResponse> rentalItems;
         private List<String> reservedTimes;
     }
 

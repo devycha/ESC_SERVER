@@ -57,7 +57,7 @@ public class StadiumReservationService {
                 () -> new StadiumException(StadiumNotFound));
 
         // 해당 스타디움에서 빌릴 수 있는 아이템 정보들
-        List<ItemResponse> items =
+        List<ItemResponse> rentalItems =
                 stadiumItemRepository.findAllByStadium(stadium).stream()
                         .map(ItemResponse::fromEntity)
                         .collect(Collectors.toList());
@@ -75,15 +75,15 @@ public class StadiumReservationService {
                 });
 
         return ReservationInfoResponse.builder()
-                .openTime(stadium.getOpenTime())
-                .closeTime(stadium.getCloseTime())
+                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
+                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
                 .stadiumId(stadium.getId())
                 .stadiumName(stadium.getName())
-                .date(date)
+                .date(date.toString())
                 .pricePerHalfHour(isWeekend(date) || isHoliday(date)
                         ? stadium.getHolidayPricePerHalfHour()
                         : stadium.getWeekdayPricePerHalfHour())
-                .items(items)
+                .rentalItems(rentalItems)
                 .reservedTimes(reservedTimes)
                 .build();
     }
@@ -110,23 +110,23 @@ public class StadiumReservationService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
-        List<ItemResponse> items =
+        List<ItemResponse> rentalItems =
                 stadiumReservationItemRepository.findAllByReservation(reservation)
                         .stream()
                         .map(ItemResponse::fromReservationItem)
                         .collect(Collectors.toList());
 
         return ReservationInfoResponse.builder()
-                .openTime(stadium.getOpenTime())
-                .closeTime(stadium.getCloseTime())
+                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
+                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
                 .stadiumId(stadiumId)
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
                         .map(ReservingTime::getTime)
                         .collect(Collectors.toList()))
                 .pricePerHalfHour(reservation.getPrice())
-                .date(reservation.getReservingDate())
-                .items(items)
+                .date(reservation.getReservingDate().toString())
+                .rentalItems(rentalItems)
                 .build();
     }
 
@@ -183,14 +183,14 @@ public class StadiumReservationService {
         stadiumReservationRepository.save(reservation);
 
         // Create Item Reservation
-        List<StadiumReservationItem> items = new ArrayList<>();
+        List<StadiumReservationItem> rentalItems = new ArrayList<>();
         if (request.getItems().size() > 0) {
             request.getItems().forEach(item -> {
                 try {
                     StadiumItem stadiumItem = stadiumItemRepository.findById(item.getItemId())
                             .orElseThrow(() -> new StadiumException(ItemNotFound));
 
-                    items.add(StadiumReservationItem.builder()
+                    rentalItems.add(StadiumReservationItem.builder()
                             .item(stadiumItem)
                             .count(item.getCount())
                             .reservation(reservation)
@@ -200,8 +200,8 @@ public class StadiumReservationService {
                     log.info("item not found. id:" + item.getItemId());
                 }
             });
-            reservation.getItems().addAll(items);
-            stadiumReservationItemRepository.saveAll(items);
+            reservation.getItems().addAll(rentalItems);
+            stadiumReservationItemRepository.saveAll(rentalItems);
         }
 
         stadiumReservationRepository.save(reservation);
@@ -209,16 +209,16 @@ public class StadiumReservationService {
 
         return ReservationInfoResponse.builder()
                 .id(reservation.getId())
-                .openTime(stadium.getOpenTime())
-                .closeTime(stadium.getCloseTime())
+                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
+                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
                 .stadiumId(stadiumId)
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
                         .map(ReservingTime::getTime)
                         .collect(Collectors.toList()))
                 .pricePerHalfHour(reservation.getPrice())
-                .date(reservation.getReservingDate())
-                .items(items.stream()
+                .date(reservation.getReservingDate().toString())
+                .rentalItems(rentalItems.stream()
                         .map(ItemResponse::fromReservationItem)
                         .collect(Collectors.toList()))
                 .build();
