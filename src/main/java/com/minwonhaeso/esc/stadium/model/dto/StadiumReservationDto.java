@@ -1,14 +1,11 @@
 package com.minwonhaeso.esc.stadium.model.dto;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumReservation;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumReservationItem;
+import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,8 +26,22 @@ public class StadiumReservationDto {
 
     @Data
     @Builder
-    public static class ReservationInfoResponse {
-        private Long id;
+    @ApiModel(value = "예약 내역 체육관 정보 Response")
+    public static class ReservationStadiumInfoResponse {
+        private Stadium stadium;
+        private String date;
+        private String openTime;
+        private String closeTime;
+        private int pricePerHalfHour;
+        private List<ItemResponse> rentalItems;
+        private List<String> reservedTimes;
+    }
+
+    @Data
+    @Builder
+    @ApiModel(value = "예약 생성 정보 Response")
+    public static class CreateReservationResponse {
+        private Long reservationId;
         private Long stadiumId;
         private String stadiumName;
         private String date;
@@ -43,31 +54,62 @@ public class StadiumReservationDto {
 
     @Data
     @Builder
-    public static class Response {
-        private Long id;
-        private StadiumResponseDto stadium;
+    @ApiModel(value = "예약 상세 내역 정보 Response")
+    public static class ReservationInfoResponse {
+        private Long reservationId;
+        private Long stadiumId;
+        private String name;
+        private String status;
         private MemberResponse member;
         private String reservingDate;
-        private List<String> reservingTimes;
+        private List<String> reservingTime;
         private int headCount;
         private int price;
         private String paymentType;
         private List<ItemResponse> items;
-        private String status;
 
-        public static Response fromEntity(StadiumReservation reservation) {
-            return Response.builder()
-                    .id(reservation.getId())
-                    .stadium(StadiumResponseDto.fromEntity(reservation.getStadium()))
+        public static ReservationInfoResponse fromEntity(StadiumReservation reservation) {
+            return ReservationInfoResponse.builder()
+                    .reservationId(reservation.getId())
+                    .stadiumId(reservation.getStadium().getId())
+                    .name(reservation.getStadium().getName())
                     .member(MemberResponse.fromEntity(reservation.getMember()))
                     .reservingDate(reservation.getReservingDate().toString())
-                    .reservingTimes(reservation.getReservingTimes().stream()
+                    .reservingTime(reservation.getReservingTimes().stream()
                             .map(ReservingTime::getTime)
                             .collect(Collectors.toList()))
                     .headCount(reservation.getHeadCount())
                     .price(reservation.getPrice())
                     .paymentType(reservation.getPaymentType().toString())
                     .items(ItemResponse.fromReservation(reservation))
+                    .status(reservation.getStatus().toString())
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ApiModel(value = "예약 내역 리스트 정보 Response")
+    public static class ReservationResponse {
+        private Long reservationId;
+        private Long stadiumId;
+        private String name;
+        private String address;
+        private String imgUrl;
+        private Double starAvg;
+        private String status;
+
+        public static ReservationResponse fromEntity(StadiumReservation reservation) {
+            Stadium stadium = reservation.getStadium();
+            return ReservationResponse.builder()
+                    .reservationId(reservation.getId())
+                    .stadiumId(stadium.getId())
+                    .name(stadium.getName())
+                    .address(stadium.getAddress() + " " + stadium.getDetailAddress())
+                    .imgUrl(stadium.getImgs().get(0).getImgUrl())
+                    .starAvg(stadium.getStarAvg())
                     .status(reservation.getStatus().toString())
                     .build();
         }

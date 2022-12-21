@@ -82,7 +82,7 @@ public class StadiumReservation {
                 .member(member)
                 .reservingDate(request.getReservingDate())
                 .reservingTimes(request.getReservingTimes().stream()
-                        .map(ReservingTime::valueOf)
+                        .map(time -> ReservingTime.findTime(time))
                         .collect(Collectors.toList()))
                 .price(price)
                 .headCount(request.getHeadCount())

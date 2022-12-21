@@ -1,14 +1,9 @@
 package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
-import com.minwonhaeso.esc.error.type.StadiumErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.facade.RedissonLockReservingTimeFacade;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.CreateReservationRequest;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ItemResponse;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.PriceResponse;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ReservationInfoResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.*;
 import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.model.type.StadiumReservationStatus;
@@ -27,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
 import static com.minwonhaeso.esc.util.HolidayUtil.isHoliday;
-import static com.minwonhaeso.esc.util.HolidayUtil.isWeekend;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,18 +35,18 @@ public class StadiumReservationService {
     private final RedissonLockReservingTimeFacade redissonLockReservingTimeFacade;
 
     @Transactional(readOnly = true)
-    public Page<StadiumReservationDto.Response> getAllReservationsByMember(
+    public Page<ReservationResponse> getAllReservationsByMember(
             Member member, Pageable pageable) {
         return stadiumReservationRepository
                 .findAllByMemberAndStatusAndReservingDateAfterOrderByReservingDateDesc(
                         member,
                         StadiumReservationStatus.RESERVED,
                         LocalDate.now(),
-                        pageable).map(StadiumReservationDto.Response::fromEntity);
+                        pageable).map(ReservationResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
-    public ReservationInfoResponse getStadiumReservationInfo(
+    public ReservationStadiumInfoResponse getStadiumReservationInfo(
             Long stadiumId, LocalDate date) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
@@ -75,11 +69,10 @@ public class StadiumReservationService {
                     );
                 });
 
-        return ReservationInfoResponse.builder()
-                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
-                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
-                .stadiumId(stadium.getId())
-                .stadiumName(stadium.getName())
+        return ReservationStadiumInfoResponse.builder()
+                .openTime(stadium.getOpenTime().getTime())
+                .closeTime(stadium.getCloseTime().getTime())
+                .stadium(stadium)
                 .date(date.toString())
                 .pricePerHalfHour(isHoliday(date)
                         ? stadium.getHolidayPricePerHalfHour()
@@ -111,24 +104,7 @@ public class StadiumReservationService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
-        List<ItemResponse> rentalItems =
-                stadiumReservationItemRepository.findAllByReservation(reservation)
-                        .stream()
-                        .map(ItemResponse::fromReservationItem)
-                        .collect(Collectors.toList());
-
-        return ReservationInfoResponse.builder()
-                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
-                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
-                .stadiumId(stadiumId)
-                .stadiumName(stadium.getName())
-                .reservedTimes(reservation.getReservingTimes().stream()
-                        .map(ReservingTime::getTime)
-                        .collect(Collectors.toList()))
-                .pricePerHalfHour(reservation.getPrice())
-                .date(reservation.getReservingDate().toString())
-                .rentalItems(rentalItems)
-                .build();
+        return ReservationInfoResponse.fromEntity(reservation);
     }
 
     public void deleteReservation(Member member, Long stadiumId, Long reservationId) {
@@ -156,7 +132,7 @@ public class StadiumReservationService {
     }
 
     @Transactional
-    public ReservationInfoResponse createReservation(
+    public CreateReservationResponse createReservation(
             Member member,
             Long stadiumId,
             CreateReservationRequest request
@@ -208,11 +184,11 @@ public class StadiumReservationService {
         stadiumReservationRepository.save(reservation);
         redissonLockReservingTimeFacade.unlock(stadiumId, request.getReservingDate());
 
-        return ReservationInfoResponse.builder()
-                .id(reservation.getId())
-                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
-                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
-                .stadiumId(stadiumId)
+        return CreateReservationResponse.builder()
+                .reservationId(reservation.getId())
+                .openTime(stadium.getOpenTime().getTime())
+                .closeTime(stadium.getCloseTime().getTime())
+                .stadiumId(stadium.getId())
                 .stadiumName(stadium.getName())
                 .reservedTimes(reservation.getReservingTimes().stream()
                         .map(ReservingTime::getTime)
@@ -254,8 +230,12 @@ public class StadiumReservationService {
                 .forEach(reservation -> reservedTimes.addAll(reservation.getReservingTimes()));
 
         for (String time : reservingTimes) {
-            if (reservedTimes.contains(ReservingTime.valueOf(time))) {
-                return true;
+            try {
+                if (reservedTimes.contains(ReservingTime.findTime(time))) {
+                    return true;
+                }
+            } catch (Exception e) {
+                throw new StadiumException(TimeFormatNotAccepted);
             }
         }
         
