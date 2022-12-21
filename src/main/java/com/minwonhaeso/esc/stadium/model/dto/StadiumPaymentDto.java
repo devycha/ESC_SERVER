@@ -51,7 +51,7 @@ public class StadiumPaymentDto {
     @AllArgsConstructor
     @Builder
     public static class ItemRequest {
-        private Long itemId;
+        private Long id;
         private int count;
     }
 }

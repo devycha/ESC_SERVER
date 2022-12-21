@@ -15,6 +15,7 @@ import com.minwonhaeso.esc.stadium.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -24,6 +25,8 @@ import static com.minwonhaeso.esc.error.type.AuthErrorCode.*;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
 import static com.minwonhaeso.esc.member.model.type.PaymentExpirationEnums.PAYMENT_ACCESS_TIME;
 import static com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto.*;
+import static com.minwonhaeso.esc.util.HolidayUtil.isHoliday;
+import static com.minwonhaeso.esc.util.HolidayUtil.isWeekend;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -80,6 +83,7 @@ public class StadiumPaymentService {
         if (isAlreadyReservedTimes(stadium, stadiumPayment.getDate(), stadiumPayment.getReservedTimes())) {
             throw new StadiumException(AlreadyReservedTime);
         }
+
         //예약 생성
         StadiumReservation reservation = StadiumReservation.builder()
                 .stadium(stadium)
@@ -93,12 +97,14 @@ public class StadiumPaymentService {
                 .status(StadiumReservationStatus.RESERVED)
                 .paymentType(PaymentType.valueOf(request.getPaymentType()))
                 .build();
+        stadiumReservationRepository.save(reservation);
         // Create Item Reservation
         List<StadiumReservationItem> items = new ArrayList<>();
         if (stadiumPayment.getItems().size() > 0) {
-            stadiumPayment.getItems().forEach(item -> {
+            for (int i = 0; i < stadiumPayment.getItems().size(); i++) {
+                ItemRequest item = stadiumPayment.getItems().get(i);
                 try {
-                    StadiumItem stadiumItem = stadiumItemRepository.findById(item.getItemId())
+                    StadiumItem stadiumItem = stadiumItemRepository.findById(item.getId())
                             .orElseThrow(() -> new StadiumException(ItemNotFound));
 
                     items.add(StadiumReservationItem.builder()
@@ -108,10 +114,10 @@ public class StadiumPaymentService {
                             .price(item.getCount() * stadiumItem.getPrice())
                             .build());
                 } catch (StadiumException e) {
-                    log.info("item not found. id:" + item.getItemId());
+                    log.info("item not found. id:" + item.getId());
                 }
-            });
-            reservation.getItems().addAll(items);
+            }
+            reservation.setItems(items);
             stadiumReservationItemRepository.saveAll(items);
         }
         stadiumReservationRepository.save(reservation);
