@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class StadiumLikeResponseDto {
-    private Long id;
+    private Long stadiumId;
 
     private String name;
 
@@ -24,7 +24,7 @@ public class StadiumLikeResponseDto {
 
     public static StadiumLikeResponseDto fromEntity(StadiumLike stadiumLike) {
         return StadiumLikeResponseDto.builder()
-                .id(stadiumLike.getId())
+                .stadiumId(stadiumLike.getId())
                 .name(stadiumLike.getStadium().getName())
                 .imgUrl(stadiumLike.getStadium().getImgs().get(0).getImgUrl())
                 .address(stadiumLike.getStadium().getAddress())

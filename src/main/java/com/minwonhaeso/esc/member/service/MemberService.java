@@ -108,7 +108,8 @@ public class MemberService {
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
-        return LoginDto.Response.of(member.getMemberId(), email, member.getNickname(), member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
+        return LoginDto.Response.of(member.getMemberId(), email, member.getNickname(), member.getImgUrl(), accessToken,
+                refreshToken.getRefreshToken(),member.getType().name());
     }
 
     private void checkPassword(String rawPassword, String findMemberPassword) {

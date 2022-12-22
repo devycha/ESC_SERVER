@@ -32,8 +32,10 @@ public class LoginDto {
         private String name;
         private String nickname;
         private String imgUrl;
+        private String type;
 
-        public static Response of(Long id, String username, String nickname, String imgUrl, String accessToken, String refreshToken) {
+        public static Response of(Long id, String username, String nickname, String imgUrl, String accessToken,
+                                  String refreshToken, String type) {
             return Response.builder()
                     .id(id)
                     .name(username)
@@ -41,6 +43,7 @@ public class LoginDto {
                     .imgUrl(imgUrl)
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
+                    .type(type)
                     .build();
         }
     }
