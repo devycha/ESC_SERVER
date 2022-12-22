@@ -58,8 +58,8 @@ public class StadiumPaymentService {
                 .stadiumId(stadiumId)
                 .name(member.getName())
                 .date(request.getDate())
-                .openTime(request.getOpenTime())
-                .closeTime(request.getCloseTime())
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
                 .headCount(request.getHeadCount())
                 .price(price)
                 .build();
