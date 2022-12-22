@@ -94,12 +94,6 @@ public class StadiumService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
-        List<StadiumItem> items = stadiumItemRepository.findAllByStadium(stadium);
-        List<StadiumImg> imgs = stadiumImgRepository.findAllByStadium(stadium);
-        List<StadiumTag> tags = stadiumTagRepository.findAllByStadium(stadium);
-        stadiumItemRepository.deleteAll(items);
-        stadiumImgRepository.deleteAll(imgs);
-        stadiumTagRepository.deleteAll(tags);
         stadiumSearchRepository.deleteById(stadiumId);
         stadiumRepository.delete(stadium);
     }

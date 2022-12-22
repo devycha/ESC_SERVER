@@ -60,10 +60,10 @@ public enum ReservingTime {
     RT49("24:00");
 
     private final String time;
-    public static String findTime(String findTime) {
+    public static ReservingTime findTime(String findTime) {
         return Arrays.stream(ReservingTime.values())
                 .filter(reservingTime -> reservingTime.getTime().equals(findTime))
                 .collect(Collectors.toList())
-                .get(0).toString();
+                .get(0);
     }
 }

@@ -5,14 +5,13 @@ import com.minwonhaeso.esc.notification.model.type.NotificationType;
 import com.minwonhaeso.esc.notification.service.NotificationService;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.CreateReservationRequest;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.PriceResponse;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ReservationInfoResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.*;
 import com.minwonhaeso.esc.stadium.service.StadiumReservationService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +35,7 @@ public class StadiumReservationController {
             Pageable pageable
     ) {
         Member member = principalDetail.getMember();
-        Page<StadiumReservationDto.Response> reservations =
+        Page<ReservationResponse> reservations =
                 stadiumReservationService.getAllReservationsByMember(member, pageable);
         return ResponseEntity.ok().body(reservations);
     }
@@ -45,14 +44,15 @@ public class StadiumReservationController {
     @GetMapping("/{stadiumId}/reservation")
     public ResponseEntity<?> getStadiumReservationInfo(
             @PathVariable Long stadiumId,
-            @RequestParam(value = "date", required = false) LocalDate date
+            @RequestParam(value = "date", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
             ) {
 
         if (date == null) {
             date = LocalDate.now();
         }
 
-        ReservationInfoResponse reservationInfo =
+        ReservationStadiumInfoResponse reservationInfo =
                 stadiumReservationService.getStadiumReservationInfo(stadiumId, date);
         return ResponseEntity.ok().body(reservationInfo);
     }
@@ -88,12 +88,23 @@ public class StadiumReservationController {
 
     ) {
         Member member = principalDetail.getMember();
-        ReservationInfoResponse reservationInfo =
+        StadiumReservationDto.CreateReservationResponse reservationInfo =
                 stadiumReservationService.createReservation(member, stadiumId, request);
         notificationService.createNotification(
-                NotificationType.RESERVATION, stadiumId, reservationInfo.getId(),
+                NotificationType.RESERVATION, stadiumId, reservationInfo.getReservationId(),
                 "새로운 예약이 있습니다.", member);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationInfo);
+    }
+
+    @PatchMapping("/{stadiumId}/reservations/{reservationId}")
+    public ResponseEntity<?> executeReservation(
+            @AuthenticationPrincipal PrincipalDetail principalDetail,
+            @PathVariable Long stadiumId,
+            @PathVariable Long reservationId
+    ) {
+        Member member = principalDetail.getMember();
+        stadiumReservationService.executeReservation(member, stadiumId, reservationId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{stadiumId}/reservations/{reservationId}")

@@ -5,7 +5,6 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.review.model.entity.Review;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
-import com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,7 +14,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,11 +68,13 @@ public class Stadium {
 
     @NotNull
     @Column(name = "open_time", nullable = false)
-    private String openTime;
+    @Enumerated(EnumType.STRING)
+    private ReservingTime openTime;
 
     @NotNull
     @Column(name = "close_time", nullable = false)
-    private String closeTime;
+    @Enumerated(EnumType.STRING)
+    private ReservingTime closeTime;
 
     @Column(name = "star_avg")
     private Double starAvg;
@@ -84,17 +84,30 @@ public class Stadium {
     private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "stadium")
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     private List<StadiumItem> rentalStadiumItems = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "stadium")
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     private List<StadiumImg> imgs = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "stadium")
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     private List<StadiumTag> tags = new ArrayList<>();
-    @OneToMany(mappedBy = "stadium")
+
+    @OneToMany(
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     @Column(name = "reviews")
     private List<Review> reviews;
 
@@ -117,8 +130,8 @@ public class Stadium {
 
     public static Stadium fromRequest(StadiumDto.CreateStadiumRequest request, Member member) {
         try {
-            String openTime = ReservingTime.findTime(request.getOpenTime());
-            String closeTime = ReservingTime.findTime(request.getCloseTime());
+            ReservingTime openTime = ReservingTime.findTime(request.getOpenTime());
+            ReservingTime closeTime = ReservingTime.findTime(request.getCloseTime());
 
             return Stadium.builder()
                     .member(member)
@@ -141,8 +154,8 @@ public class Stadium {
 
     public void setAll(StadiumDto.UpdateStadiumRequest request) {
         try {
-            String openTime = ReservingTime.findTime(request.getOpenTime());
-            String closeTime = ReservingTime.findTime(request.getCloseTime());
+            ReservingTime openTime = ReservingTime.findTime(request.getOpenTime());
+            ReservingTime closeTime = ReservingTime.findTime(request.getCloseTime());
 
             if (request.getName() != null) {
                 this.name = request.getName();

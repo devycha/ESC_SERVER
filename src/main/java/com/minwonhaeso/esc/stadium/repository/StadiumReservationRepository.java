@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface StadiumReservationRepository extends JpaRepository<StadiumReservation, Long> {
-    Page<StadiumReservation> findAllByMemberAndStatusAndReservingDateAfter(
+    Page<StadiumReservation> findAllByMemberAndStatusAndReservingDateAfterOrderByReservingDateDesc(
             Member member, StadiumReservationStatus status, LocalDate reservingDate, Pageable pageable);
     List<StadiumReservation> findAllByStadiumAndReservingDate(Stadium stadium, LocalDate reservingDate);
     Long countAllByMemberAndStadiumAndStatusIs(Member member, Stadium stadium, StadiumReservationStatus status);

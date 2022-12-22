@@ -2,10 +2,12 @@ package com.minwonhaeso.esc.stadium.model.dto;
 
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumTag;
-import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "체육관 ID", example = "1")
     private Long id;
+
+    @ApiModelProperty(value = "현재 접속한 사용자 아이디")
+    private Long memberId;
 
     @ApiModelProperty(value = "체육관 이름", example = "수원 국립 체육관")
     private String name;
@@ -61,6 +66,7 @@ public class StadiumInfoResponseDto {
     public static StadiumInfoResponseDto fromEntity(Stadium stadium) {
         return StadiumInfoResponseDto.builder()
                 .id(stadium.getId())
+                .memberId(stadium.getMember().getMemberId())
                 .name(stadium.getName())
                 .lat(stadium.getLat())
                 .lnt(stadium.getLnt())
@@ -70,8 +76,8 @@ public class StadiumInfoResponseDto {
                 .starAvg(stadium.getStarAvg())
                 .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
-                .openTime(ReservingTime.valueOf(stadium.getOpenTime()).getTime())
-                .closeTime(ReservingTime.valueOf(stadium.getCloseTime()).getTime())
+                .openTime(stadium.getOpenTime().getTime())
+                .closeTime(stadium.getCloseTime().getTime())
                 .rentalItems(stadium.getRentalStadiumItems().stream()
                         .map(StadiumItemDto.Response::fromEntity)
                         .collect(Collectors.toList()))

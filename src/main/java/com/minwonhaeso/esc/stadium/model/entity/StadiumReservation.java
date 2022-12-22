@@ -63,6 +63,10 @@ public class StadiumReservation {
     @ApiModelProperty(name = "결제 타입")
     private PaymentType paymentType;
 
+    public void executeReservation() {
+        this.status = StadiumReservationStatus.EXECUTED;
+    }
+
     public void cancelReservation() {
         this.status = StadiumReservationStatus.CANCELED;
     }
@@ -78,7 +82,7 @@ public class StadiumReservation {
                 .member(member)
                 .reservingDate(request.getReservingDate())
                 .reservingTimes(request.getReservingTimes().stream()
-                        .map(ReservingTime::valueOf)
+                        .map(time -> ReservingTime.findTime(time))
                         .collect(Collectors.toList()))
                 .price(price)
                 .headCount(request.getHeadCount())
@@ -86,6 +90,4 @@ public class StadiumReservation {
                 .paymentType(PaymentType.valueOf(request.getPaymentType()))
                 .build();
     }
-
-
 }
