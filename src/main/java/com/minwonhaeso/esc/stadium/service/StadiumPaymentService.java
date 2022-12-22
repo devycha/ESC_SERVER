@@ -6,7 +6,6 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.facade.RedissonLockReservingTimeFacade;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto.PaymentConfirmResponse;
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
 import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.PaymentType;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
@@ -15,7 +14,6 @@ import com.minwonhaeso.esc.stadium.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -25,8 +23,7 @@ import static com.minwonhaeso.esc.error.type.AuthErrorCode.*;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
 import static com.minwonhaeso.esc.member.model.type.PaymentExpirationEnums.PAYMENT_ACCESS_TIME;
 import static com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto.*;
-import static com.minwonhaeso.esc.util.HolidayUtil.isHoliday;
-import static com.minwonhaeso.esc.util.HolidayUtil.isWeekend;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -98,7 +95,7 @@ public class StadiumPaymentService {
                 .paymentType(PaymentType.valueOf(request.getPaymentType()))
                 .build();
         stadiumReservationRepository.save(reservation);
-        // Create Item Reservation
+        // 예약 물품 생성
         List<StadiumReservationItem> items = new ArrayList<>();
         if (stadiumPayment.getItems().size() > 0) {
             for (int i = 0; i < stadiumPayment.getItems().size(); i++) {

@@ -25,8 +25,4 @@ public class StadiumLike {
     @ManyToOne
     private Stadium stadium;
 
-    public StadiumLike(Member member, Stadium stadium) {
-        this.member = member;
-        this.stadium = stadium;
-    }
 }
