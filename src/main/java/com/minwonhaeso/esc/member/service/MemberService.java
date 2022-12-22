@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.minwonhaeso.esc.error.type.AuthErrorCode.*;
@@ -101,10 +102,14 @@ public class MemberService {
         Member member = memberRepository.findByEmail(loginDto.getEmail()).
                 orElseThrow(() -> new AuthException(MemberNotFound));
         checkPassword(loginDto.getPassword(), member.getPassword());
+        if(!Objects.equals(member.getType().name(), loginDto.getType())){
+            throw new AuthException(MemberTypeNotMatch);
+        }
         String email = member.getEmail();
         String accessToken = jwtTokenUtil.generateAccessToken(email);
         RefreshToken refreshToken = jwtTokenUtil.saveRefreshToken(email);
-        return LoginDto.Response.of(member.getMemberId(), email, member.getNickname(), member.getImgUrl(), accessToken, refreshToken.getRefreshToken());
+        return LoginDto.Response.of(member.getMemberId(), email, member.getNickname(), member.getImgUrl(), accessToken,
+                refreshToken.getRefreshToken(),member.getType().name());
     }
 
     private void checkPassword(String rawPassword, String findMemberPassword) {

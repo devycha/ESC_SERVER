@@ -10,6 +10,7 @@ public enum AuthErrorCode {
     MemberNotFound(HttpStatus.NOT_FOUND,"없는 회원 정보입니다."),
     EmailAuthNotYet(HttpStatus.BAD_REQUEST, "이메일 인증을 먼저 해주세요."),
     EmailAlreadySignUp(HttpStatus.BAD_REQUEST, "사용할 수 없는 이메일입니다."),
+    MemberTypeNotMatch(HttpStatus.BAD_REQUEST, "다른 타입으로 로그인해주세요."),
     EmailAuthTimeOut(HttpStatus.BAD_REQUEST, "인증 시간이 만료되었습니다. 다시 인증해주세요."),
     EmailNotMatched(HttpStatus.BAD_REQUEST, "이메일이 정확하지 않습니다."),
     PasswordNotEqual(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),

@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,7 +22,7 @@ public class StadiumLikeController {
 
     private final StadiumLikeService stadiumLikeService;
 
-    @ApiOperation(value = "찜하기 or 취소", notes = "ON 혹은 OFF type을 받아 찜하기와 찜하기 취소 작업을 진행합니다.")
+    @ApiOperation(value = "찜하기 or 취소", notes = "찜하기와 찜하기 취소 작업을 진행합니다.")
     @PostMapping("/{stadiumId}/likes")
     public ResponseEntity<?> likes(@PathVariable(value = "stadiumId") Long stadiumId,
                                    @AuthenticationPrincipal PrincipalDetail principalDetail){

@@ -1,12 +1,13 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
-import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+
 
 import javax.persistence.Id;
 import java.time.LocalDate;
@@ -30,7 +31,8 @@ public class StadiumPayment {
 
     private int headCount;
 
-    private List<StadiumReservationDto.ItemResponse> items;
+    private List<StadiumPaymentDto.ItemRequest> items;
+
 
     private List<String> reservedTimes;
 
