@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 import static com.minwonhaeso.esc.error.type.ReviewErrorCode.*;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
 import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIEW;
@@ -27,7 +29,6 @@ import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIE
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-
     private final StadiumRepository stadiumRepository;
     private final StadiumReservationRepository stadiumReservationRepository;
     private final NotificationService notificationService;
@@ -76,7 +77,7 @@ public class ReviewService {
         Stadium stadium = findByStadiumId(stadiumId);
         Review review = findByIdAndStadium(reviewId, stadium);
 
-        if (review.getMember().getMemberId() != member.getMemberId()) {
+        if (!Objects.equals(review.getMember().getMemberId(), member.getMemberId())) {
             throw new ReviewException(UnAuthorizedAccess);
         }
 
@@ -88,7 +89,7 @@ public class ReviewService {
         Stadium stadium = findByStadiumId(stadiumId);
         Review review = findByIdAndStadium(reviewId, stadium);
 
-        if (review.getMember().getMemberId() != member.getMemberId()) {
+        if (!Objects.equals(review.getMember().getMemberId(), member.getMemberId())) {
             throw new ReviewException(UnAuthorizedAccess);
         }
 
