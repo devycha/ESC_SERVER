@@ -30,7 +30,6 @@ public class StadiumPaymentService {
     private final StadiumRepository stadiumRepository;
     private final StadiumReservationItemRepository stadiumReservationItemRepository;
     private final StadiumReservationRepository stadiumReservationRepository;
-    private final StadiumPaymentRepository stadiumPaymentRepository;
     private final StadiumItemRepository stadiumItemRepository;
     private final RedissonLockReservingTimeFacade redissonLockReservingTimeFacade;
 
