@@ -14,34 +14,16 @@ import java.util.List;
 public class StadiumPaymentDto {
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class PaymentConfirmRequest{
+    public static class PaymentRequest {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate date;
         private String startTime;
         private String endTime;
-        private int pricePerHalfHour;
-        private int headCount;
-        private List<ItemRequest> items;
         private List<String> reservedTimes;
-
-    }
-    @Data
-    @Builder
-    public static class PaymentConfirmResponse{
-        private Long stadiumId;
-        private String name;
-        private LocalDate date;
-        private String startTime;
-        private String endTime;
         private int headCount;
-        private int price;
-    }
-
-    @Data
-    public static class PaymentRequest {
+        private int pricePerHalfHour;
+        private List<ItemRequest> items;
+        private int totalPrice;
         private String email;
         private String paymentType;
     }
