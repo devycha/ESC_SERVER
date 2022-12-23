@@ -73,6 +73,7 @@ public class StadiumDto {
         private Double lat;
         private Double lnt;
         private String address;
+        private String detailAddress;
         private Integer weekdayPricePerHalfHour;
         private Integer holidayPricePerHalfHour;
         private String openTime;

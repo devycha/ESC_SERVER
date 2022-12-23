@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StadiumSearchRepository extends ElasticsearchRepository<StadiumDocument, Long> {
     Page<StadiumDocument> findByName(String name, Pageable pageable);
-    Page<StadiumDocument> findByNameLikeOrAddressLike(String name, String address, Pageable pageable);
+    Page<StadiumDocument> findByNameContainsIgnoreCaseOrAddressContainsIgnoreCase(String name, String address, Pageable pageable);
 }
 
 

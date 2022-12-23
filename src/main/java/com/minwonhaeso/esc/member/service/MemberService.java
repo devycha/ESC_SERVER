@@ -129,7 +129,7 @@ public class MemberService {
 
     public TokenDto reissue(String refreshToken) {
         refreshToken = resolveToken(refreshToken);
-        String username = getCurrentUsername();
+        String username = getCurrentUsernameInRefreshToken(refreshToken);
         RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(
                 () -> new AuthException(AccessTokenAlreadyExpired));
         if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
@@ -195,6 +195,14 @@ public class MemberService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         return principal.getUsername();
+    }
+
+    private String getCurrentUsernameInRefreshToken(String refreshToken) {
+        if (jwtTokenUtil.isTokenExpired(refreshToken)) {
+            throw new AuthException(AccessTokenAlreadyExpired);
+        }
+
+        return jwtTokenUtil.getUsername(refreshToken);
     }
 
     public String changePasswordMail(String email) {

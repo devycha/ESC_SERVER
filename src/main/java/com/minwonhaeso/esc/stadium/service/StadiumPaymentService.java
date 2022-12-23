@@ -47,7 +47,7 @@ public class StadiumPaymentService {
                 .headCount(request.getHeadCount())
                 .items(request.getItems())
                 .reservedTimes(request.getReservedTimes().stream()
-                        .map(ReservingTime::findTime)
+                        .map(time -> ReservingTime.findTime(time).getTime())
                         .collect(Collectors.toList()))
                 .build();
         stadiumPaymentRepository.save(redis);
