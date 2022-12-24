@@ -23,7 +23,7 @@ public class ReviewController {
 
     @ApiOperation(value = "리뷰 조회", notes = "사용자(일반&매니저)가 리뷰를 조회한다.")
     @GetMapping("/{stadiumId}/reviews")
-    public ResponseEntity<?> getAllReviews(
+    public ResponseEntity<Page<ReviewDto.Response>> getAllReviews(
             @PathVariable Long stadiumId,
             Pageable pageable
     ) {
@@ -34,7 +34,7 @@ public class ReviewController {
     @ApiOperation(value = "리뷰 등록", notes = "사용자(일반)가 체육관 ID에 해당하는 리뷰를 등록한다.")
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/{stadiumId}/reviews")
-    public ResponseEntity<?> createReview(
+    public ResponseEntity<ReviewDto.Response> createReview(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
             @RequestBody ReviewDto.Request request
@@ -47,7 +47,7 @@ public class ReviewController {
     @ApiOperation(value = "리뷰 삭제", notes = "사용자(일반)가 등록한 리뷰를 삭제한다.")
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{stadiumId}/reviews/{reviewId}")
-    public ResponseEntity<?> deleteReview(
+    public ResponseEntity<Void> deleteReview(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
             @PathVariable Long reviewId
@@ -60,7 +60,7 @@ public class ReviewController {
     @ApiOperation(value = "리뷰 수정", notes = "사용자(일반)가 등록한 리뷰를 수정한다.")
     @PreAuthorize("hasRole('ROLE_USER')")
     @PatchMapping("/{stadiumId}/reviews/{reviewId}")
-    public ResponseEntity<?> updateReview(
+    public ResponseEntity<ReviewDto.Response> updateReview(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
             @PathVariable Long reviewId,
