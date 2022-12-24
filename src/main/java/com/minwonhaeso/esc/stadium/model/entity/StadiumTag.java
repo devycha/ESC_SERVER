@@ -1,7 +1,6 @@
 package com.minwonhaeso.esc.stadium.model.entity;
 
 
-import com.minwonhaeso.esc.stadium.model.dto.StadiumTagDto;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

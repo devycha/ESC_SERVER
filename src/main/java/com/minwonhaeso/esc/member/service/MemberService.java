@@ -2,12 +2,11 @@ package com.minwonhaeso.esc.member.service;
 
 
 import com.minwonhaeso.esc.error.exception.AuthException;
-import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.mail.MailService;
 import com.minwonhaeso.esc.member.model.dto.*;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
-import com.minwonhaeso.esc.member.repository.MemberEmailRepository;
+import com.minwonhaeso.esc.member.repository.redis.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
