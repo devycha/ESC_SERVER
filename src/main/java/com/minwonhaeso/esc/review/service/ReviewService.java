@@ -15,8 +15,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 import static com.minwonhaeso.esc.error.type.ReviewErrorCode.*;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
@@ -27,7 +32,6 @@ import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIE
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-
     private final StadiumRepository stadiumRepository;
     private final StadiumReservationRepository stadiumReservationRepository;
     private final NotificationService notificationService;
@@ -76,7 +80,7 @@ public class ReviewService {
         Stadium stadium = findByStadiumId(stadiumId);
         Review review = findByIdAndStadium(reviewId, stadium);
 
-        if (review.getMember().getMemberId() != member.getMemberId()) {
+        if (!Objects.equals(review.getMember().getMemberId(), member.getMemberId())) {
             throw new ReviewException(UnAuthorizedAccess);
         }
 
@@ -88,7 +92,7 @@ public class ReviewService {
         Stadium stadium = findByStadiumId(stadiumId);
         Review review = findByIdAndStadium(reviewId, stadium);
 
-        if (review.getMember().getMemberId() != member.getMemberId()) {
+        if (!Objects.equals(review.getMember().getMemberId(), member.getMemberId())) {
             throw new ReviewException(UnAuthorizedAccess);
         }
 
@@ -97,6 +101,17 @@ public class ReviewService {
         log.info("회원 번호 [ " + member.getMemberId() + " ] - [ " + reviewId + " ] 리뷰를 수정하였습니다.");
 
         return ReviewDto.Response.fromEntity(review);
+    }
+
+    @Scheduled(cron = "${scheduler.update.starAvg}")
+    public void updateStarAvg() {
+        List<Stadium> stadiums = stadiumRepository.findAll();
+        for(Stadium stadium : stadiums) {
+            Double starAvg = reviewRepository.findStarAvg(stadium);
+            stadium.setStarAvg(starAvg);
+            stadiumRepository.save(stadium);
+        }
+        log.info("[" + LocalDateTime.now() + "] 체육관 평점이 업데이트 되었습니다.");
     }
 
     private Stadium findByStadiumId(Long stadiumId) {
