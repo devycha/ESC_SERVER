@@ -33,7 +33,6 @@ public class StadiumPaymentService {
     private final StadiumItemRepository stadiumItemRepository;
     private final RedissonLockReservingTimeFacade redissonLockReservingTimeFacade;
 
-
     public Map<String, String> payment(Member member, Long stadiumId, StadiumPaymentDto.PaymentRequest request) {
         if (!member.getEmail().equals(request.getEmail())) throw new AuthException(EmailNotMatched);
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(() -> new StadiumException(StadiumNotFound));

@@ -177,6 +177,10 @@ public class Stadium {
                 this.address = request.getAddress();
             }
 
+            if (request.getDetailAddress() != null) {
+                this.detailAddress = request.getDetailAddress();
+            }
+
             if (request.getWeekdayPricePerHalfHour() != null) {
                 this.weekdayPricePerHalfHour = request.getWeekdayPricePerHalfHour();
             }

@@ -3,6 +3,7 @@ package com.minwonhaeso.esc.stadium.service;
 import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.facade.RedissonLockReservingTimeFacade;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumInfoResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.*;
 import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
@@ -51,12 +52,6 @@ public class StadiumReservationService {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
 
-        // 해당 스타디움에서 빌릴 수 있는 아이템 정보들
-        List<ItemResponse> rentalItems =
-                stadiumItemRepository.findAllByStadium(stadium).stream()
-                        .map(ItemResponse::fromEntity)
-                        .collect(Collectors.toList());
-
         // 해당 스타디움의 해당 날짜에 이미 예약된 시간들
         List<String> reservedTimes = new ArrayList<>();
         stadiumReservationRepository
@@ -72,12 +67,11 @@ public class StadiumReservationService {
         return ReservationStadiumInfoResponse.builder()
                 .openTime(stadium.getOpenTime().getTime())
                 .closeTime(stadium.getCloseTime().getTime())
-                .stadium(stadium)
+                .stadium(StadiumInfoResponseDto.fromEntity(stadium))
                 .date(date.toString())
                 .pricePerHalfHour(isHoliday(date)
                         ? stadium.getHolidayPricePerHalfHour()
                         : stadium.getWeekdayPricePerHalfHour())
-                .rentalItems(rentalItems)
                 .reservedTimes(reservedTimes)
                 .build();
     }
@@ -89,9 +83,8 @@ public class StadiumReservationService {
             Long reservationId
     ) {
         StadiumReservation reservation = stadiumReservationRepository
-                .findById(reservationId).orElseThrow(
-                        () -> new StadiumException(ReservationNotFound)
-                );
+                .findById(reservationId).orElseThrow(() ->
+                        new StadiumException(ReservationNotFound));
 
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound));
@@ -242,7 +235,6 @@ public class StadiumReservationService {
         return false;
     }
 
-    // TODO: Check Price
     public PriceResponse getPrice(
             Long stadiumId,
             LocalDate date,
