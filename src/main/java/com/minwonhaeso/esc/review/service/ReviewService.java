@@ -65,7 +65,7 @@ public class ReviewService {
         reviewRepository.save(review);
         log.info("회원 번호 [ " + member.getMemberId() + " ] -  리뷰를 작성하였습니다.");
 
-        notificationService.createNotification(REVIEW, stadiumId, 0L,
+        notificationService.createNotification(REVIEW, stadiumId,
                 "체육관 [ " + stadium.getName() + " ]에 새로운 리뷰가 등록되었습니다.", stadium.getMember());
         log.info("회원 번호 [ " + stadium.getMember().getMemberId() + " ] 로 알람이 발송되었습니다.");
 

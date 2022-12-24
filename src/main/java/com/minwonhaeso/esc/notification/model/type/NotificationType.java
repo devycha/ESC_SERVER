@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum NotificationType {
-    REVIEW("/stadiums/%d/info"),
-    RESERVATION("/stadiums/%d/reservations/%d");
+    REVIEW("/stadium/detail/%d"),
+    RESERVATION("/me/rental");
 
     private final String url;
 }

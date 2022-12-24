@@ -27,14 +27,14 @@ public class StadiumUserController {
 
     @ApiOperation(value = "체육관 조회", notes = "사용자(일반)가 체육관을 조회한다.")
     @GetMapping()
-    public ResponseEntity<?> getAllStadiums(Pageable pageable) {
+    public ResponseEntity<Page<StadiumResponseDto>> getAllStadiums(Pageable pageable) {
         Page<StadiumResponseDto> stadiums = stadiumService.getAllStadiums(pageable);
         return ResponseEntity.ok().body(stadiums);
     }
 
     @ApiOperation(value = "체육관 상세 정보 조회", notes = "사용자(일반)가 체육관 상세 정보를 조회한다.")
     @GetMapping("/{stadiumId}/info")
-    public ResponseEntity<?> getStadiumInfo(
+    public ResponseEntity<StadiumInfoResponseDto> getStadiumInfo(
             @PathVariable Long stadiumId
     ) {
         StadiumInfoResponseDto stadium = stadiumService.getStadiumInfo(stadiumId);
@@ -43,7 +43,7 @@ public class StadiumUserController {
 
     @ApiOperation(value = "가까운 체육관 조회", notes = "사용자(일반)의 위도 경도를 기준으로 가까운 체육관을 조회한다.")
     @GetMapping("/near-loc")
-    public ResponseEntity<?> getAllStadiumsNearLocation(
+    public ResponseEntity<List<StadiumResponseDto>> getAllStadiumsNearLocation(
             @RequestParam Double lnt, @RequestParam Double lat, Pageable pageable) {
         lnt = lnt == null ? DEFAULT_LNT : lnt;
         lat = lat == null ? DEFAULT_LAT : lat;
@@ -53,7 +53,7 @@ public class StadiumUserController {
 
     @ApiOperation(value = "체육관 검색", notes = "검색어를 입력하여 체육관을 조회한다.")
     @GetMapping("/search")
-    public ResponseEntity<?> searchStadium(
+    public ResponseEntity<Page<StadiumDocument>> searchStadium(
             @RequestParam String searchValue,
             Pageable pageable) {
         Page<StadiumDocument> stadiumDocuments = stadiumSearchService.search(searchValue, pageable);

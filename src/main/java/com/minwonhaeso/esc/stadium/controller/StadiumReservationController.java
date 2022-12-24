@@ -9,6 +9,7 @@ import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.*;
 import com.minwonhaeso.esc.stadium.service.StadiumReservationService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,9 +21,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+import static com.minwonhaeso.esc.notification.model.type.NotificationType.RESERVATION;
+import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIEW;
+
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/stadiums")
 public class StadiumReservationController {
     private final StadiumReservationService stadiumReservationService;
@@ -90,9 +95,10 @@ public class StadiumReservationController {
         Member member = principalDetail.getMember();
         StadiumReservationDto.CreateReservationResponse reservationInfo =
                 stadiumReservationService.createReservation(member, stadiumId, request);
-        notificationService.createNotification(
-                NotificationType.RESERVATION, stadiumId, reservationInfo.getReservationId(),
-                "새로운 예약이 있습니다.", member);
+
+        notificationService.createNotification(RESERVATION, stadiumId,
+                "체육관 [ " + reservationInfo.getStadiumName() + " ]에 새로운 리뷰가 등록되었습니다.", member);
+        log.info("회원 번호 [ " + member.getMemberId() + " ] 로 알람이 발송되었습니다.");
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationInfo);
     }
 
