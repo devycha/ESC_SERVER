@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-import static com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto.*;
-
 @RestController
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequiredArgsConstructor
@@ -22,13 +20,13 @@ import static com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto.*;
 public class StadiumPaymentController {
     private final StadiumPaymentService reservationService;
 
-    @ApiOperation(value = "결제", notes = "결제 타입과, 이메일을 입력 받아 몇가지 확인 절차를 거친 후 결제를 진행합니다.")
+    @ApiOperation(value = "결제", notes = "예약 상세 정보들을 입력 받아 예약을 수행합니다.")
     @PostMapping("/{stadiumId}/payment")
-    public ResponseEntity<?> payment(@AuthenticationPrincipal PrincipalDetail principalDetail,
-                                     @PathVariable(value = "stadiumId") Long stadiumId,
-                                     @RequestBody StadiumPaymentDto.PaymentRequest request){
+    public ResponseEntity<Map<String, String>> payment(@AuthenticationPrincipal PrincipalDetail principalDetail,
+                                                       @PathVariable(value = "stadiumId") Long stadiumId,
+                                                       @RequestBody StadiumPaymentDto.PaymentRequest request) {
         Member member = principalDetail.getMember();
-        Map<String,String> result = reservationService.payment(member, stadiumId, request);
+        Map<String, String> result = reservationService.payment(member, stadiumId, request);
         return ResponseEntity.ok(result);
     }
 

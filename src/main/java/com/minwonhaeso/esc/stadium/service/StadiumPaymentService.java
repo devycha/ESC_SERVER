@@ -34,7 +34,6 @@ public class StadiumPaymentService {
     private final RedissonLockReservingTimeFacade redissonLockReservingTimeFacade;
 
 
-
     public Map<String, String> payment(Member member, Long stadiumId, StadiumPaymentDto.PaymentRequest request) {
         if (!member.getEmail().equals(request.getEmail())) throw new AuthException(EmailNotMatched);
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(() -> new StadiumException(StadiumNotFound));
@@ -61,7 +60,6 @@ public class StadiumPaymentService {
                 .paymentType(PaymentType.valueOf(request.getPaymentType()))
                 .build();
         stadiumReservationRepository.save(reservation);
-        // 예약 물품 생성
         List<StadiumReservationItem> items = new ArrayList<>();
         if (request.getItems().size() > 0) {
             for (int i = 0; i < request.getItems().size(); i++) {
