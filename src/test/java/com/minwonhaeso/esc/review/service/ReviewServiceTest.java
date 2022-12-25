@@ -11,6 +11,7 @@ import com.minwonhaeso.esc.review.model.dto.ReviewDto;
 import com.minwonhaeso.esc.review.model.entity.Review;
 import com.minwonhaeso.esc.review.repository.ReviewRepository;
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumReservationRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -103,8 +104,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         ReviewDto.Request request = ReviewDto.Request.builder()
@@ -150,8 +151,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         ReviewDto.Request request = ReviewDto.Request.builder()
@@ -201,8 +202,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         Review review = Review.builder()
@@ -278,8 +279,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         // given
@@ -328,8 +329,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         Review review = Review.builder()
@@ -377,8 +378,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         Review review = Review.builder()
@@ -465,8 +466,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         ReviewDto.Request request = ReviewDto.Request.builder()
@@ -520,8 +521,8 @@ class ReviewServiceTest {
                 .lnt(127.5)
                 .weekdayPricePerHalfHour(19000)
                 .holidayPricePerHalfHour(25000)
-                .openTime("09:00")
-                .closeTime("18:00")
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         Review review = Review.builder()

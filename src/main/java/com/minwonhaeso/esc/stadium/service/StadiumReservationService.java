@@ -39,9 +39,8 @@ public class StadiumReservationService {
     public Page<ReservationResponse> getAllReservationsByMember(
             Member member, Pageable pageable) {
         return stadiumReservationRepository
-                .findAllByMemberAndStatusAndReservingDateAfterOrderByReservingDateDesc(
+                .findAllByMemberAndReservingDateAfterOrderByReservingDateDesc(
                         member,
-                        StadiumReservationStatus.RESERVED,
                         LocalDate.now(),
                         pageable).map(ReservationResponse::fromEntity);
     }
@@ -116,11 +115,16 @@ public class StadiumReservationService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
+        if (reservation.getStatus() != StadiumReservationStatus.RESERVED) {
+            throw new StadiumException(CouldNotCancelReservation);
+        }
+
         reservation.cancelReservation();
         StadiumReservationCancel reservationCancel = StadiumReservationCancel.builder()
                 .reservation(reservation)
                 .price(reservation.getPrice())
                 .build();
+        stadiumReservationRepository.save(reservation);
         stadiumReservationCancelRepository.save(reservationCancel);
     }
 
@@ -210,7 +214,13 @@ public class StadiumReservationService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
+        if (!reservation.getReservingDate().isBefore(LocalDate.now())) {
+            throw new StadiumException(TooEarlyExecute);
+        }
+
         reservation.executeReservation();
+        System.out.println(reservation.getStatus());
+        stadiumReservationRepository.save(reservation);
     }
 
     private boolean isAlreadyReservedTimes(

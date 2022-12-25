@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.minwonhaeso.esc.error.type.NotificationErrorCode.UnAuthorizedAccess;
+import static com.minwonhaeso.esc.notification.model.type.NotificationType.RESERVATION;
+import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIEW;
 
 @RequiredArgsConstructor
 @Service
@@ -31,15 +33,14 @@ public class NotificationService {
     public void createNotification(
             NotificationType type,
             Long baseId,
-            Long serveId,
             String message,
             Member member
     ) {
         notificationRepository.save(Notification.builder()
                 .message(message)
-                .url(type == NotificationType.REVIEW ?
+                .url(type == REVIEW ?
                         String.format(type.getUrl(), baseId)
-                        : String.format(type.getUrl(), baseId, serveId))
+                        : RESERVATION.getUrl())
                 .isRead(false)
                 .type(type)
                 .receiver(member)
