@@ -1,5 +1,6 @@
 package com.minwonhaeso.esc.stadium.model.dto;
 
+import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumLike;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,8 @@ public class StadiumLikeResponseDto {
 
 
     public static StadiumLikeResponseDto fromEntity(StadiumLike stadiumLike) {
+        Stadium stadium = stadiumLike.getStadium();
+
         return StadiumLikeResponseDto.builder()
                 .stadiumId(stadiumLike.getId())
                 .name(stadiumLike.getStadium().getName())

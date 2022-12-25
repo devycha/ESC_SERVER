@@ -1,12 +1,14 @@
 package com.minwonhaeso.esc.security.auth.jwt;
 
+import com.minwonhaeso.esc.error.exception.AuthException;
+import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.service.CustomerMemberDetailsService;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.util.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.security.auth.message.AuthException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.minwonhaeso.esc.error.type.AuthErrorCode.AccessTokenAlreadyExpired;
 
 @Slf4j
 @Component
@@ -39,15 +42,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().equals("/members/auth/refresh-token");
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, AuthException {
         String accessToken = getToken(request);
         if (accessToken != null) {
             checkLogout(accessToken);
-            String username = jwtTokenUtil.getUsername(accessToken);
-            if (username != null) {
-                UserDetails userDetails = customerMemberDetailsService.loadUserByUsername(username);
-                validateAccessToken(accessToken, userDetails);
-                processSecurity(request, userDetails);
+            try {
+                String username = jwtTokenUtil.getUsername(accessToken);
+
+                if (username != null) {
+                    UserDetails userDetails = customerMemberDetailsService.loadUserByUsername(username);
+                    validateAccessToken(accessToken, userDetails);
+                    processSecurity(request, userDetails);
+                }
+
+            } catch (ExpiredJwtException e) {
+                response.sendError(AccessTokenAlreadyExpired.getStatusCode().value(),
+                        AccessTokenAlreadyExpired.getErrorMessage());
+                return;
             }
         }
         filterChain.doFilter(request, response);
@@ -65,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             claims = jwtTokenUtil.extractAllClaims(token.substring("Bearer ".length()));
         } catch (JwtException e) {
-            throw new AuthException("인증 토큰이 잘못되었습니다.");
+            throw new AuthException(AccessTokenAlreadyExpired);
         }
 
         Set<GrantedAuthority> roles = new HashSet<>();

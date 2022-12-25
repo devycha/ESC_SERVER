@@ -23,7 +23,9 @@ public class StadiumSearchService {
     public Page<StadiumDocument> search(
             String searchValue,
             Pageable pageable) {
-        return stadiumSearchRepository.findByNameLikeOrAddressLike(searchValue, searchValue, pageable);
+        return stadiumSearchRepository
+                .findByNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
+                        searchValue, searchValue, pageable);
     }
 
     @Transactional(readOnly = true)

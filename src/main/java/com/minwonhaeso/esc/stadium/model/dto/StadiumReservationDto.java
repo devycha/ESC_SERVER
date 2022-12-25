@@ -28,12 +28,11 @@ public class StadiumReservationDto {
     @Builder
     @ApiModel(value = "예약 내역 체육관 정보 Response")
     public static class ReservationStadiumInfoResponse {
-        private Stadium stadium;
+        private StadiumInfoResponseDto stadium;
         private String date;
         private String openTime;
         private String closeTime;
         private int pricePerHalfHour;
-        private List<ItemResponse> rentalItems;
         private List<String> reservedTimes;
     }
 

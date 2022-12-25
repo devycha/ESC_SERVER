@@ -21,7 +21,7 @@ public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "체육관 ID", example = "1")
     private Long id;
 
-    @ApiModelProperty(value = "현재 접속한 사용자 아이디")
+    @ApiModelProperty(value = "작성자 아이디")
     private Long memberId;
 
     @ApiModelProperty(value = "체육관 이름", example = "수원 국립 체육관")
@@ -57,10 +57,10 @@ public class StadiumInfoResponseDto {
     private List<StadiumImgDto> imgs;
     private List<String> tags;
 
-    @ApiModelProperty(value = "오픈 시간", example = "HH:MM:SS")
+    @ApiModelProperty(value = "오픈 시간", example = "HH:MM")
     private String openTime;
 
-    @ApiModelProperty(value = "마감 시간", example = "HH:MM:SS")
+    @ApiModelProperty(value = "마감 시간", example = "HH:MM")
     private String closeTime;
 
     public static StadiumInfoResponseDto fromEntity(Stadium stadium) {
