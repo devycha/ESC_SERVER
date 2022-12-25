@@ -68,6 +68,8 @@ public class StadiumReservationDto {
         private List<ItemResponse> items;
 
         public static ReservationInfoResponse fromEntity(StadiumReservation reservation) {
+            reservation.getReservingTimes().sort((a, b) -> a.ordinal() - b.ordinal());
+
             return ReservationInfoResponse.builder()
                     .reservationId(reservation.getId())
                     .stadiumId(reservation.getStadium().getId())

@@ -43,7 +43,7 @@ public class StadiumResponseDto {
     private Integer holidayPricePerHalfHour;
 
     @ApiModelProperty(value = "이미지", example = "['img_url1', 'img_url2', ...]")
-    private String img; // TODO: 이미지주소 + public_id도 포함 필요
+    private String imgUrl; // TODO: 이미지주소 + public_id도 포함 필요
     private List<String> tags;
 
 
@@ -57,7 +57,7 @@ public class StadiumResponseDto {
                 .starAvg(stadium.getStarAvg())
                 .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
-                .img(stadium.getImgs().isEmpty() ?
+                .imgUrl(stadium.getImgs().isEmpty() ?
                         null :
                         stadium.getImgs().get(0).getImgUrl())
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))

@@ -4,6 +4,7 @@ import com.minwonhaeso.esc.error.exception.NotificationException;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.notification.model.dto.NotificationDto;
 import com.minwonhaeso.esc.notification.model.dto.NotificationDto.CheckNotificationResponse;
+import com.minwonhaeso.esc.notification.model.dto.NotificationDto.ReadNotificationResponse;
 import com.minwonhaeso.esc.notification.model.entity.Notification;
 import com.minwonhaeso.esc.notification.model.type.NotificationType;
 import com.minwonhaeso.esc.notification.repository.NotificationRepository;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 
@@ -25,8 +25,15 @@ import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIE
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
-    public Page<NotificationDto.Response> getNotificationByMember(Member member, Pageable pageable) {
-        return notificationRepository.findAllByReceiverOrderByCreatedAtDesc(member, pageable)
+    public Page<NotificationDto.Response> getAllReadNotifications(Member member, Pageable pageable) {
+        return notificationRepository
+                .findAllByReceiverAndIsReadIsTrueOrderByCreatedAtDesc(member, pageable)
+                .map(NotificationDto.Response::fromEntity);
+    }
+
+    public Page<NotificationDto.Response> getAllUnreadNotifications(Member member, Pageable pageable) {
+        return notificationRepository
+                .findAllByReceiverAndIsReadIsFalseOrderByCreatedAtDesc(member, pageable)
                 .map(NotificationDto.Response::fromEntity);
     }
 
@@ -47,17 +54,18 @@ public class NotificationService {
                 .build());
     }
 
-    public void readNotification(Member member, Long notificationId) {
+    public ReadNotificationResponse readNotification(Member member, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(
                 () -> new NotificationException(UnAuthorizedAccess)
         );
 
         notification.readNotification();
         notificationRepository.save(notification);
+
+        return ReadNotificationResponse.builder().result(true).build();
     }
 
-    // TODO: 크론 주기 환경 변수
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "${scheduler.update.notification}")
     public void deleteNotification() {
         List<Notification> notifications = notificationRepository.findAll();
         for (Notification not : notifications) {

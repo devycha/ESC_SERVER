@@ -2,6 +2,7 @@ package com.minwonhaeso.esc.notification.controller;
 
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.notification.model.dto.NotificationDto;
+import com.minwonhaeso.esc.notification.model.dto.NotificationDto.ReadNotificationResponse;
 import com.minwonhaeso.esc.notification.service.NotificationService;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import lombok.RequiredArgsConstructor;
@@ -11,16 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notifications")
 public class NotificationController {
     private final NotificationService notificationService;
 
-    @GetMapping("/unread")
-    public ResponseEntity<?> checkUnReadNotification(
+    @GetMapping("/check/unread")
+    public ResponseEntity<NotificationDto.CheckNotificationResponse> checkUnReadNotification(
             @AuthenticationPrincipal PrincipalDetail principalDetail
     ) {
         Member member = principalDetail.getMember();
@@ -29,14 +28,25 @@ public class NotificationController {
         return ResponseEntity.ok().body(result);
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getAllNotifications(
+    @GetMapping("/read")
+    public ResponseEntity<Page<NotificationDto.Response>> getAllReadNotifications(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             Pageable pageable
     ) {
         Member member = principalDetail.getMember();
         Page<NotificationDto.Response> notifications =
-                notificationService.getNotificationByMember(member, pageable);
+                notificationService.getAllReadNotifications(member, pageable);
+        return ResponseEntity.ok().body(notifications);
+    }
+
+    @GetMapping("/unread")
+    public ResponseEntity<Page<NotificationDto.Response>> getAllUnreadNotifications(
+            @AuthenticationPrincipal PrincipalDetail principalDetail,
+            Pageable pageable
+    ) {
+        Member member = principalDetail.getMember();
+        Page<NotificationDto.Response> notifications =
+                notificationService.getAllUnreadNotifications(member, pageable);
         return ResponseEntity.ok().body(notifications);
     }
 
@@ -46,7 +56,8 @@ public class NotificationController {
             @PathVariable Long notificationId
     ) {
         Member member = principalDetail.getMember();
-        notificationService.readNotification(member, notificationId);
-        return ResponseEntity.ok().build();
+        ReadNotificationResponse result =
+                notificationService.readNotification(member, notificationId);
+        return ResponseEntity.ok().body(result);
     }
 }

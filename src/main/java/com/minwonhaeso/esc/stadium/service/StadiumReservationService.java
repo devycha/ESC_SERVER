@@ -39,10 +39,8 @@ public class StadiumReservationService {
     public Page<ReservationResponse> getAllReservationsByMember(
             Member member, Pageable pageable) {
         return stadiumReservationRepository
-                .findAllByMemberAndReservingDateAfterOrderByReservingDateDesc(
-                        member,
-                        LocalDate.now(),
-                        pageable).map(ReservationResponse::fromEntity);
+                .findAllByMemberOrderByReservingDateDesc(member, pageable)
+                .map(ReservationResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
@@ -219,7 +217,6 @@ public class StadiumReservationService {
         }
 
         reservation.executeReservation();
-        System.out.println(reservation.getStatus());
         stadiumReservationRepository.save(reservation);
     }
 
