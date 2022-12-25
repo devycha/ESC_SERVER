@@ -118,9 +118,9 @@ class StadiumServiceTest {
                 .name("Stadium Tag ID")
                 .build());
 
-        items.get(0).setStadium(stadium);
-        imgs.get(0).setStadium(stadium);
-        tags.get(0).setStadium(stadium);
+        stadium.setImgs(imgs);
+        stadium.setRentalStadiumItems(items);
+        stadium.setTags(tags);
     }
 
     @Test

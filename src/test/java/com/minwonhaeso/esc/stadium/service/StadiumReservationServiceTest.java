@@ -139,10 +139,9 @@ class StadiumReservationServiceTest {
                 .count(3)
                 .build());
 
-        items.get(0).setStadium(stadium);
-        imgs.get(0).setStadium(stadium);
-        tags.get(0).setStadium(stadium);
-        reservation.setItems(rentalItems);
+        stadium.setImgs(imgs);
+        stadium.setRentalStadiumItems(items);
+        stadium.setTags(tags);
     }
 
     @Test
