@@ -10,10 +10,7 @@ import com.minwonhaeso.esc.security.auth.jwt.JwtAuthenticationFilter;
 import com.minwonhaeso.esc.security.oauth2.type.ProviderType;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumInfoResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.model.entity.Stadium;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumImg;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumItem;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumTag;
+import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus;
 import com.minwonhaeso.esc.stadium.service.StadiumSearchService;
@@ -78,6 +75,7 @@ class StadiumUserControllerTest {
     private List<StadiumTag> tags;
     private PageRequest pageable;
     private Page<StadiumResponseDto> stadiums;
+    private Page<StadiumDocument> stadiumDocuments;
 
     @BeforeEach
     void beforeEach() {
@@ -140,6 +138,7 @@ class StadiumUserControllerTest {
 
         pageable = PageRequest.of(0, 20);
         stadiums = new PageImpl<>(List.of(StadiumResponseDto.fromEntity(stadium)), pageable, 0);
+        stadiumDocuments = new PageImpl<>(List.of(StadiumDocument.fromEntity(stadium)), pageable, 0);
     }
 
     @Test
@@ -217,8 +216,17 @@ class StadiumUserControllerTest {
 
     @Test
     @DisplayName("체육관 검색 성공")
-    void searchStadiumTest_Success() {
-//        given(stadiumSearchService.search(anyString(), any()))
-//                .willReturn()
+    void searchStadiumTest_Success() throws Exception {
+        // given
+        given(stadiumSearchService.search(anyString(), any()))
+                .willReturn(stadiumDocuments);
+
+        // then
+        mockMvc.perform(get("/stadiums/search?searchValue=체육관"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(stadium.getId()))
+                .andExpect(jsonPath("$.content[0].name").value(stadium.getName()))
+                .andExpect(jsonPath("$.content.size()").value(stadiums.getTotalElements()));
     }
 }
