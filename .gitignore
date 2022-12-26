@@ -37,7 +37,7 @@ out/
 .vscode/
 
 application.yml
-application-test.yml
+#application-test.yml
 **/test/http
 generated/
 #/src/main/resources/application.properties
