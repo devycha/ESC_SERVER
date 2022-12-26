@@ -14,5 +14,6 @@ import java.util.Optional;
 public interface StadiumLikeRepository extends JpaRepository<StadiumLike, Long> {
     Optional<StadiumLike> findByMemberAndStadium(Member member, Stadium stadium);
 
-    Page<StadiumLike> findByMember(Member member, Pageable pageable);
+    Page<StadiumLike> findAllByMember(Member member, Pageable pageable);
+
 }
