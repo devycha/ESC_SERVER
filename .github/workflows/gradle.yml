@@ -29,7 +29,8 @@ jobs:
           echo "$SCHEDULER_NOTIFICATION" >> application.properties
           echo "$SERVER_PORT" >> application.properties
           echo "$DB_URL\n$DB_USERNAME\n$DB_PWD" >> application.properties
-          echo "$REDIS_HOST\n$REDIS_PORT" >> application.properties
+          echo "$REDIS_HOST" >> application.properties
+          echo "spring.redis.port=$REDIS_PORT" >> application.properties
           echo "$JWT_SECRET" >> application.properties
           echo "$MAIL_HOST\n$MAIL_PORT\n$MAIL_USERNAME\n$MAIL_PWD" >> application.properties
           echo "$GOOGLE_CLIENT_ID\n$GOOGLE_CLIENT_SECRET" >> application.properties
