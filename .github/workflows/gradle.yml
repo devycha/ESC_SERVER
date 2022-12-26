@@ -28,7 +28,9 @@ jobs:
           echo "$SCHEDULER_STAR_AVG" >> application.properties
           echo "$SCHEDULER_NOTIFICATION" >> application.properties
           echo "$SERVER_PORT" >> application.properties
-          echo "$DB_URL\n$DB_USERNAME\n$DB_PWD" >> application.properties
+          echo "spring.datasource.url=$DB_URL" >> application.properties
+          echo "spring.datasource.username=$DB_USERNAME" >> application.properties
+          echo "spring.datasource.password=$DB_PWD" >> application.properties
           echo "$REDIS_HOST" >> application.properties
           echo "spring.redis.port=$REDIS_PORT" >> application.properties
           echo "$JWT_SECRET" >> application.properties
