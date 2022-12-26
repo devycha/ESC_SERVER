@@ -50,7 +50,7 @@ public class ReviewDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    private static class MemberResponse {
+    public static class MemberResponse {
         private Long id;
         private String email;
         private String nickname;

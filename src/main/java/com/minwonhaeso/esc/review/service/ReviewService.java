@@ -54,7 +54,7 @@ public class ReviewService {
         log.info("[Stadium - " + stadiumId + "] 사용 후, 작성하신 리뷰는 총 " + reviewCount + "번입니다.");
 
         if(reservationCount == 0) {
-            throw new ReviewException(NoReservationForReview);
+            throw new ReviewException(NoExecutedReservationForReview);
         } else if (reservationCount <= reviewCount) {
             throw new ReviewException(ReviewCountOverReservation);
         }
