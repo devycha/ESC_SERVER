@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.repository;
 
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.type.StadiumStatus;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class StadiumRepositorySupport extends QuerydslRepositorySupport {
     public List<Stadium> getAllStadiumsNearLocation(Double lnt, Double lat, Pageable pageable) {
         return queryFactory
                 .selectFrom(stadium)
+                .where(stadium.status.eq(StadiumStatus.AVAILABLE))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .orderBy(Expressions.stringTemplate("ST_Distance_Sphere({0}, {1})",

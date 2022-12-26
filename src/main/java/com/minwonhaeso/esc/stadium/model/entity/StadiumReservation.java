@@ -59,7 +59,10 @@ public class StadiumReservation {
     private StadiumReservationStatus status;
 
     @Builder.Default
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(
+            mappedBy = "reservation",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     private List<StadiumReservationItem> items = new ArrayList<>();
 
     @Column(nullable = false)

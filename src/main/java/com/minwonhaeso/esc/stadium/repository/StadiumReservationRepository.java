@@ -14,6 +14,8 @@ import java.util.List;
 
 @Repository
 public interface StadiumReservationRepository extends JpaRepository<StadiumReservation, Long> {
+    Page<StadiumReservation> findAllByMemberOrderByReservingDateDesc(
+            Member member, Pageable pageable);
     Page<StadiumReservation> findAllByMemberAndReservingDateAfterOrderByReservingDateDesc(
             Member member, LocalDate reservingDate, Pageable pageable);
     List<StadiumReservation> findAllByStadiumAndReservingDate(Stadium stadium, LocalDate reservingDate);

@@ -44,7 +44,7 @@ public class StadiumDocument {
     private Integer holidayPricePerHalfHour;
 
     @Field(type = FieldType.Text)
-    private String img;
+    private String imgUrl;
 
     @Field(type = FieldType.Text)
     private List<String> tags;
@@ -59,7 +59,7 @@ public class StadiumDocument {
                 .starAvg(stadium.getStarAvg())
                 .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
                 .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
-                .img(stadium.getImgs().isEmpty() ?
+                .imgUrl(stadium.getImgs().isEmpty() ?
                         null :
                         stadium.getImgs().get(0).getImgUrl())
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
