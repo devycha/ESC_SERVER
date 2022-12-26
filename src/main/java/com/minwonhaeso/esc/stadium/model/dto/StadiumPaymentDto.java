@@ -17,11 +17,8 @@ public class StadiumPaymentDto {
     public static class PaymentRequest {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate date;
-        private String openTime;
-        private String closeTime;
         private List<String> reservedTimes;
         private int headCount;
-        private int pricePerHalfHour;
         private List<ItemRequest> items;
         private int totalPrice;
         private String email;
