@@ -97,7 +97,7 @@ public class StadiumReservationController {
                 stadiumReservationService.createReservation(member, stadiumId, request);
 
         notificationService.createNotification(RESERVATION, stadiumId,
-                "체육관 [ " + reservationInfo.getStadiumName() + " ]에 새로운 리뷰가 등록되었습니다.", member);
+                "체육관 [ " + reservationInfo.getStadiumName() + " ]에 새로운 예약이 등록되었습니다.", member);
         log.info("회원 번호 [ " + member.getMemberId() + " ] 로 알람이 발송되었습니다.");
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationInfo);
     }

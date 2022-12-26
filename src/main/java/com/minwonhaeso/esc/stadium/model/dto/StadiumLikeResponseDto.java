@@ -27,11 +27,11 @@ public class StadiumLikeResponseDto {
         Stadium stadium = stadiumLike.getStadium();
 
         return StadiumLikeResponseDto.builder()
-                .stadiumId(stadiumLike.getId())
-                .name(stadiumLike.getStadium().getName())
-                .imgUrl(stadiumLike.getStadium().getImgs().get(0).getImgUrl())
-                .address(stadiumLike.getStadium().getAddress())
-                .starAvg(stadiumLike.getStadium().getStarAvg())
+                .stadiumId(stadium.getId())
+                .name(stadium.getName())
+                .imgUrl(stadium.getImgs().get(0).getImgUrl())
+                .address(stadium.getAddress())
+                .starAvg(stadium.getStarAvg())
                 .build();
     }
 }

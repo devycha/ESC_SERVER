@@ -93,9 +93,13 @@ public class StadiumService {
         if (stadium.getMember().getMemberId() != member.getMemberId()) {
             throw new StadiumException(UnAuthorizedAccess);
         }
-
-        stadiumSearchRepository.deleteById(stadiumId);
-        stadiumRepository.delete(stadium);
+//        // 진짜 삭제
+//        stadiumSearchRepository.deleteById(stadiumId);
+//        stadiumRepository.delete(stadium);
+        
+        stadium.deleteStadium();
+        stadiumRepository.save(stadium);
+        stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
     }
 
     public StadiumImgDto addStadiumImg(Member member, Long stadiumId, String imgUrl) {
