@@ -5,6 +5,7 @@ import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.review.model.entity.Review;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
+import com.minwonhaeso.esc.stadium.model.type.StadiumStatus;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -86,30 +87,41 @@ public class Stadium {
     @Builder.Default
     @OneToMany(
             mappedBy = "stadium",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            orphanRemoval = true)
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     private List<StadiumItem> rentalStadiumItems = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(
             mappedBy = "stadium",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            orphanRemoval = true)
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     private List<StadiumImg> imgs = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(
             mappedBy = "stadium",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            orphanRemoval = true)
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     private List<StadiumTag> tags = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "stadium",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            orphanRemoval = true)
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     @Column(name = "reviews")
     private List<Review> reviews;
+
+    @Builder.Default
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "stadium",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
+    private List<StadiumReservation> reservations = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private StadiumStatus status;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -143,6 +155,7 @@ public class Stadium {
                     .detailAddress(request.getDetailAddress())
                     .weekdayPricePerHalfHour(request.getWeekdayPricePerHalfHour())
                     .holidayPricePerHalfHour(request.getHolidayPricePerHalfHour())
+                    .status(StadiumStatus.AVAILABLE)
                     .openTime(openTime)
                     .closeTime(closeTime)
                     .build();
@@ -150,6 +163,10 @@ public class Stadium {
         } catch (NullPointerException e) {
             throw new StadiumException(TimeFormatNotAccepted);
         }
+    }
+
+    public void deleteStadium() {
+        this.status = StadiumStatus.DELETED;
     }
 
     public void setAll(StadiumDto.UpdateStadiumRequest request) {
@@ -224,6 +241,5 @@ public class Stadium {
         } catch (Exception e) {
             throw new StadiumException(TimeFormatNotAccepted);
         }
-
     }
 }
