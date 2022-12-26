@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @ApiModel(value = "체육관 정보 Response")
 public class StadiumResponseDto {
     @ApiModelProperty(value = "체육관 ID", example = "1")
-    private Long id;
+    private Long stadiumId;
 
     @ApiModelProperty(value = "체육관 이름", example = "수원 국립 체육관")
     private String name;
@@ -49,7 +49,7 @@ public class StadiumResponseDto {
 
     public static StadiumResponseDto fromEntity(Stadium stadium) {
         return StadiumResponseDto.builder()
-                .id(stadium.getId())
+                .stadiumId(stadium.getId())
                 .name(stadium.getName())
                 .lat(stadium.getLat())
                 .lnt(stadium.getLnt())

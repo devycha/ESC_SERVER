@@ -152,7 +152,7 @@ class StadiumManagerControllerTest {
         mockMvc.perform(get("/stadiums/manager").with(user(PrincipalDetail.of(member))))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(stadium.getId()))
+                .andExpect(jsonPath("$.content[0].stadiumId").value(stadium.getId()))
                 .andExpect(jsonPath("$.content[0].name").value(stadium.getName()))
                 .andExpect(jsonPath("$.content[0].lat").value(stadium.getLat()))
                 .andExpect(jsonPath("$.content[0].lnt").value(stadium.getLnt()))
@@ -160,7 +160,7 @@ class StadiumManagerControllerTest {
                 .andExpect(jsonPath("$.content[0].starAvg").value(stadium.getStarAvg()))
                 .andExpect(jsonPath("$.content[0].weekdayPricePerHalfHour").value(stadium.getWeekdayPricePerHalfHour()))
                 .andExpect(jsonPath("$.content[0].holidayPricePerHalfHour").value(stadium.getHolidayPricePerHalfHour()))
-                .andExpect(jsonPath("$.content[0].img").value(stadium.getImgs().get(0).getImgUrl()))
+                .andExpect(jsonPath("$.content[0].imgUrl").value(stadium.getImgs().get(0).getImgUrl()))
                 .andExpect(jsonPath("$.content[0].tags.size()").value(stadium.getTags().size()));
     }
 }

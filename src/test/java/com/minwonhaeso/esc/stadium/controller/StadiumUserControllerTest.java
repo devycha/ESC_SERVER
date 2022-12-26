@@ -151,7 +151,7 @@ class StadiumUserControllerTest {
         mockMvc.perform(get("/stadiums"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(stadium.getId()))
+                .andExpect(jsonPath("$.content[0].stadiumId").value(stadium.getId()))
                 .andExpect(jsonPath("$.content[0].name").value(stadium.getName()))
                 .andExpect(jsonPath("$.content.size()").value(stadiums.getTotalElements()));
     }
@@ -196,7 +196,7 @@ class StadiumUserControllerTest {
         mockMvc.perform(get("/stadiums/near-loc?lat=37.5&lnt=127.5"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(stadium.getId()))
+                .andExpect(jsonPath("$[0].stadiumId").value(stadium.getId()))
                 .andExpect(jsonPath("$[0].name").value(stadium.getName()));
     }
 

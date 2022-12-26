@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,12 +120,15 @@ class StadiumReservationServiceTest {
                 .name("Stadium Tag ID")
                 .build());
 
+        List<ReservingTime> reservingTimes = new ArrayList<>(
+                List.of(ReservingTime.RT20, ReservingTime.RT21)
+        );
         reservation = StadiumReservation.builder()
                 .id(1L)
                 .stadium(stadium)
                 .member(member)
                 .reservingDate(LocalDate.now())
-                .reservingTimes(List.of(ReservingTime.RT20, ReservingTime.RT21))
+                .reservingTimes(reservingTimes)
                 .price(10000)
                 .headCount(3)
                 .status(StadiumReservationStatus.RESERVED)
