@@ -23,6 +23,7 @@ jobs:
       # 환경변수 파일 생성
       - name: Generate Environment Variable File
         run: |
+          cd ./src/main/resources
           echo "$ES_URL\n$ES_CLUSTER_NAME" >> application.properties
           echo "$SCHEDULER_STAR_AVG" >> application.properties
           echo "$SCHEDULER_NOTIFICATION" >> application.properties
