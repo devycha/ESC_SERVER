@@ -34,7 +34,6 @@ dependencies{
     implementation 'org.springframework.data:spring-data-elasticsearch:4.3.10'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.redisson:redisson-spring-boot-starter:3.17.4'
     implementation 'com.ibm.icu:icu4j:51.1'
     implementation "com.querydsl:querydsl-core" // querydsl
