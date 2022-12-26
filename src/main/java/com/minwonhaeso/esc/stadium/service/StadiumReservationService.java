@@ -212,7 +212,7 @@ public class StadiumReservationService {
             throw new StadiumException(UnAuthorizedAccess);
         }
 
-        if (!reservation.getReservingDate().isBefore(LocalDate.now())) {
+        if (reservation.getReservingDate().isAfter(LocalDate.now().plusDays(1))) {
             throw new StadiumException(TooEarlyExecute);
         }
 

@@ -160,7 +160,7 @@ class StadiumManagerControllerTest {
                 .andExpect(jsonPath("$.content[0].starAvg").value(stadium.getStarAvg()))
                 .andExpect(jsonPath("$.content[0].weekdayPricePerHalfHour").value(stadium.getWeekdayPricePerHalfHour()))
                 .andExpect(jsonPath("$.content[0].holidayPricePerHalfHour").value(stadium.getHolidayPricePerHalfHour()))
-                .andExpect(jsonPath("$.content[0].img").value(stadium.getImgs().get(0).getImgUrl()))
+                .andExpect(jsonPath("$.content[0].imgUrl").value(stadium.getImgs().get(0).getImgUrl()))
                 .andExpect(jsonPath("$.content[0].tags.size()").value(stadium.getTags().size()));
     }
 }
