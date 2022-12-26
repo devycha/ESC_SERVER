@@ -152,7 +152,7 @@ class StadiumManagerControllerTest {
         mockMvc.perform(get("/stadiums/manager").with(user(PrincipalDetail.of(member))))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(stadium.getId()))
+                .andExpect(jsonPath("$.content[0].stadiumId").value(stadium.getId()))
                 .andExpect(jsonPath("$.content[0].name").value(stadium.getName()))
                 .andExpect(jsonPath("$.content[0].lat").value(stadium.getLat()))
                 .andExpect(jsonPath("$.content[0].lnt").value(stadium.getLnt()))
