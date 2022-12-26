@@ -23,6 +23,7 @@ jobs:
       # 환경변수 파일 생성
       - name: Generate Environment Variable File
         run: |
+          mkdir ./src/main/resources
           touch ./src/main/resources/application.properties
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
           cat ./src/main/resources/application.properties
