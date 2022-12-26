@@ -32,7 +32,6 @@ jobs:
           echo "spring.datasource.url=$DB_URL" >> application.properties
           echo "spring.datasource.username=$DB_USERNAME" >> application.properties
           echo "spring.datasource.password=$DB_PWD" >> application.properties
-          echo "$REDIS_HOST"
           echo "spring.redis.host=$REDIS_HOST" >> application.properties
           echo "spring.redis.port=$REDIS_PORT" >> application.properties
           echo "spring.jwt.secret=$JWT_SECRET" >> application.properties
@@ -49,32 +48,23 @@ jobs:
           echo "spring.security.oauth2.client.registration.kakao.client-id=$KAKAO_CLIENT_ID" >> application.properties
           echo "spring.security.oauth2.client.registration.kakao.client-secret=$KAKAO_CLIENT_SECRET" >> application.properties
           echo "spring.security.oauth2.client.registration.kakao.scope=$KAKAO_SCOPE" >> application.properties
-          echo "spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID}" >> application.properties
-          echo "spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET}" >> application.properties
-          echo "spring.security.oauth2.client.registration.google.scope=${GOOGLE_SCOPE}" >> application.properties
-          echo "spring.security.oauth2.client.registration.naver.client-id=${NAVER_CLIENT_ID}" >> application.properties
-          echo "spring.security.oauth2.client.registration.naver.client-secret=${NAVER_CLIENT_SECRET}" >> application.properties
-          echo "spring.security.oauth2.client.registration.naver.scope=${NAVER_SCOPE}" >> application.properties
-          echo "spring.security.oauth2.client.registration.naver.client-name=${NAVER_CLIENT_NAME}" >> application.properties
-          echo "spring.security.oauth2.client.registration.naver.authorization-grant-type=${NAVER_GRANT_TYPE}" >> application.properties
-          echo "spring.security.oauth2.client.registration.naver.redirect-uri=${NAVER_REDIRECT_URI}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=${KAKAO_GRANT_TYPE}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-id=${KAKAO_CLIENT_ID}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-secret=${KAKAO_CLIENT_SECRET}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.redirect-uri=${KAKAO_REDIRECT_URI}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.scope=${KAKAO_SCOPE}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-authentication-method=${KAKAO_AUTH_METHOD}" >> application.properties
-          echo "spring.security.oauth2.client.registration.kakao.client-name=${KAKAO_CLIENT_NAME}" >> application.properties
-          echo "spring.security.oauth2.client.provider.naver.authorization-uri=${NAVER_AUTH_URI}" >> application.properties
-          echo "spring.security.oauth2.client.provider.naver.token-uri=${NAVER_TOKEN_URI}" >> application.properties
-          echo "spring.security.oauth2.client.provider.naver.user-info-uri=${NAVER_USER_INFO_URI}" >> application.properties
-          echo "spring.security.oauth2.client.provider.naver.user-name-attribute=${NAVER_ATTRIBUTE}" >> application.properties
-          echo "spring.security.oauth2.client.provider.kakao.authorization-uri=${KAKAO_AUTH_URI}" >> application.properties
-          echo "spring.security.oauth2.client.provider.kakao.token-uri=${KAKAO_TOKEN_URI}" >> application.properties
-          echo "spring.security.oauth2.client.provider.kakao.user-info-uri=${KAKAO_USER_INFO_URI}" >> application.properties
-          echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=${KAKAO_ATTRIBUTE}" >> application.properties
-          echo "targetUrl.success=${TARGET_URL_SUCCESS}" >> application.properties
-          echo "targetUrl.fail=${TARGET_URL_FAIL}" >> application.properties          
+          echo "spring.security.oauth2.client.registration.naver.client-name=$NAVER_CLIENT_NAME" >> application.properties
+          echo "spring.security.oauth2.client.registration.naver.authorization-grant-type=$NAVER_GRANT_TYPE" >> application.properties
+          echo "spring.security.oauth2.client.registration.naver.redirect-uri=$NAVER_REDIRECT_URI" >> application.properties
+          echo "spring.security.oauth2.client.registration.kakao.authorization-grant-type=$KAKAO_GRANT_TYPE" >> application.propertieses
+          echo "spring.security.oauth2.client.registration.kakao.redirect-uri=$KAKAO_REDIRECT_URI" >> application.properties
+          echo "spring.security.oauth2.client.registration.kakao.client-authentication-method=$KAKAO_AUTH_METHOD" >> application.properties
+          echo "spring.security.oauth2.client.registration.kakao.client-name=$KAKAO_CLIENT_NAME" >> application.properties
+          echo "spring.security.oauth2.client.provider.naver.authorization-uri=$NAVER_AUTH_URI" >> application.properties
+          echo "spring.security.oauth2.client.provider.naver.token-uri=$NAVER_TOKEN_URI" >> application.properties
+          echo "spring.security.oauth2.client.provider.naver.user-info-uri=$NAVER_USER_INFO_URI" >> application.properties
+          echo "spring.security.oauth2.client.provider.naver.user-name-attribute=$NAVER_ATTRIBUTE" >> application.properties
+          echo "spring.security.oauth2.client.provider.kakao.authorization-uri=$KAKAO_AUTH_URI" >> application.properties
+          echo "spring.security.oauth2.client.provider.kakao.token-uri=$KAKAO_TOKEN_URI" >> application.properties
+          echo "spring.security.oauth2.client.provider.kakao.user-info-uri=$KAKAO_USER_INFO_URI" >> application.properties
+          echo "spring.security.oauth2.client.provider.kakao.user-name-attribute=$KAKAO_ATTRIBUTE" >> application.properties
+          echo "targetUrl.success=$TARGET_URL_SUCCESS" >> application.properties
+          echo "targetUrl.fail=$TARGET_URL_FAIL" >> application.properties          
 
         env:
           ES_URL: ${{ secrets.ES_URL }}
@@ -97,11 +87,27 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+          NAVER_SCOPE: ${{ secrets.NAVER_SCOPE }}
+          NAVER_TOKEN_URI: ${{ secrets.NAVER_TOKEN_URI }}
+          NAVER_GRANT_TYPE: ${{ secrets.NAVER_GRANT_TYPE }}
+          NAVER_CLIENT_NAME: ${{ secrets.NAVER_CLIENT_NAME }}
+          NAVER_USER_INFO_URI: ${{ secrets.NAVER_USER_INFO_URI }}
+          NAVER_AUTH_URI: ${{ secrets.NAVER_AUTH_URI }}
+          NAVER_ATTRIBUTE: ${{ secrets.NAVER_ATTRIBUTE }}
           KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_GRANT_TYPE: ${{ secrets.KAKAO_GRANT_TYPE }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          KAKAO_SCOPE: ${{ secrets.KAKAO_SCOPE }}
+          KAKAO_TOKEN_URI: ${{ secrets.KAKAO_TOKEN_URI }}
+          KAKAO_USER_INFO_URI: ${{ secrets.KAKAO_USER_INFO_URI }}
+          KAKAO_AUTH_URI: ${{ secrets.KAKAO_AUTH_URI }}
+          KAKAO_ATTRIBUTE: ${{ secrets.KAKAO_ATTRIBUTE }}
+          KAKAO_CLIENT_NAME: ${{ secrets.KAKAO_CLIENT_NAME }}
+          KAKAO_AUTH_METHOD: ${{ secrets.KAKAO_AUTH_METHOD }}
           TARGET_URL_SUCCESS: ${{ secrets.TARGET_URL_SUCCESS }}
           TARGET_URL_FAIL: ${{ secrets.TARGET_URL_FAIL }}
+
 
       - name: Set up JDK 11
         uses: actions/setup-java@v3
