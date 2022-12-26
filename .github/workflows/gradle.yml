@@ -32,6 +32,7 @@ jobs:
           echo "spring.datasource.url=$DB_URL" >> application.properties
           echo "spring.datasource.username=$DB_USERNAME" >> application.properties
           echo "spring.datasource.password=$DB_PWD" >> application.properties
+          echo "$REDIS_HOST"
           echo "spring.redis.host=$REDIS_HOST" >> application.properties
           echo "spring.redis.port=$REDIS_PORT" >> application.properties
           echo "spring.jwt.secret=$JWT_SECRET" >> application.properties
