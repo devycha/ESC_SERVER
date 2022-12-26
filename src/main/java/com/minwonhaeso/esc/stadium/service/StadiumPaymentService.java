@@ -36,11 +36,7 @@ public class StadiumPaymentService {
     public Map<String, String> payment(Member member, Long stadiumId, StadiumPaymentDto.PaymentRequest request) {
         if (!member.getEmail().equals(request.getEmail())) throw new AuthException(EmailNotMatched);
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(() -> new StadiumException(StadiumNotFound));
-        try {
-            redissonLockReservingTimeFacade.lock(stadiumId, request.getDate());
-        } catch (StadiumException e) {
-            throw e;
-        }
+        redissonLockReservingTimeFacade.lock(stadiumId, request.getDate());
 
         List<ReservingTime> reservingTimes = request.getReservedTimes().stream()
                 .map(ReservingTime::findTime)

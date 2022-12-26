@@ -11,7 +11,7 @@ public enum AuthErrorCode {
     EmailAuthNotYet(HttpStatus.BAD_REQUEST, "이메일 인증을 먼저 해주세요."),
     EmailAlreadySignUp(HttpStatus.BAD_REQUEST, "사용할 수 없는 이메일입니다."),
     MemberTypeNotMatch(HttpStatus.BAD_REQUEST, "다른 타입으로 로그인해주세요."),
-    EmailAuthTimeOut(HttpStatus.UNAUTHORIZED, "인증 시간이 만료되었습니다. 다시 인증해주세요."),
+    EmailAuthTimeOut(HttpStatus.CONFLICT, "인증 시간이 만료되었습니다. 다시 인증해주세요."),
     EmailNotMatched(HttpStatus.BAD_REQUEST, "이메일이 정확하지 않습니다."),
     PasswordNotEqual(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     MemberNotLogIn(HttpStatus.UNAUTHORIZED, "로그인을 해주세요."),

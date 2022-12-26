@@ -35,7 +35,7 @@ public class MemberController {
      **/
     @ApiOperation(value = "이메일 중복 확인", notes = "입력 받은 이메일의 회원이 이미 존재하는지 확인한다.")
     @PostMapping("/email-dup")
-    public ResponseEntity<Map<String, String>> emailDuplicated(@RequestBody Map<String, String> email) {
+    public ResponseEntity<Map<String,String>> emailDuplicated(@RequestBody Map<String, String> email) {
         Map<String, String> result = memberService.emailDuplicateYn(email.get("email"));
         return ResponseEntity.ok(result);
     }
@@ -45,7 +45,7 @@ public class MemberController {
      **/
     @ApiOperation(value = "이메일 인증 코드 전송", notes = "이메일로 회원가입을 위한 코드를 전송합니다.")
     @PostMapping("/email-auth")
-    public ResponseEntity<Map<String, String>> deliverEmailAuthCode(@RequestBody Map<String, String> email) {
+    public ResponseEntity<Map<String,String>> deliverEmailAuthCode(@RequestBody Map<String, String> email) {
         memberService.deliverEmailAuthCode(email.get("email"));
         Map<String, String> result = memberService.successMessage("이메일 인증 코드를 전송했습니다.");
         return ResponseEntity.ok(result);
@@ -56,7 +56,7 @@ public class MemberController {
      **/
     @ApiOperation(value = "메일 인증", notes = "메일 인증 코드가 맞는지 확인합니다.")
     @PostMapping("/email-authentication")
-    public ResponseEntity<Map<String, String>> emailAuthentication(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String,String>> emailAuthentication(@RequestBody Map<String, String> request) {
         String key = request.get("key");
         Map<String, String> result = memberService.emailAuthentication(key);
         return ResponseEntity.ok(result);
@@ -77,7 +77,7 @@ public class MemberController {
      **/
     @ApiOperation(value = "로그아웃", notes = "사용자의 로그아웃")
     @PostMapping("/auth/logout")
-    public ResponseEntity<Map<String, String>> logout(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<Map<String,String>> logout(@RequestHeader("Authorization") String accessToken) {
         String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
         Map<String, String> result = memberService.logout(TokenDto.of(accessToken), username);
         return ResponseEntity.ok(result);

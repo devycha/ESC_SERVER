@@ -2,22 +2,56 @@ package com.minwonhaeso.esc.member.service;
 
 import com.minwonhaeso.esc.error.exception.AuthException;
 import com.minwonhaeso.esc.error.type.AuthErrorCode;
+import com.minwonhaeso.esc.mail.MailService;
 import com.minwonhaeso.esc.member.model.dto.SignDto;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
+import com.minwonhaeso.esc.member.repository.redis.MemberEmailRepository;
+import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
+import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
+import com.minwonhaeso.esc.util.JwtTokenUtil;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
-    @Autowired
-    private MemberService memberService;
-    @Autowired
-    private MemberRepository memberRepository;
+    @InjectMocks
+    public MemberService memberService;
+
+    @Mock
+    public MemberRepository memberRepository;
+
+    @Mock
+    public MailService mailService;
+    @Mock
+    public PasswordEncoder passwordEncoder;
+    @Mock
+    public MemberEmailRepository memberEmailRepository;
+    @Mock
+    public RefreshTokenRedisRepository refreshTokenRedisRepository;
+    @Mock
+    public LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    @Mock
+    public JwtTokenUtil jwtTokenUtil;
+
+    @Before("")
+    public void setup(){
+        MockitoAnnotations.initMocks(this);
+        memberService = new MemberService(memberRepository,passwordEncoder,mailService,memberEmailRepository,refreshTokenRedisRepository,logoutAccessTokenRedisRepository,jwtTokenUtil);
+    }
 
     @Test
     @DisplayName("이메일 인증부터 회원가입까지의 스토리 Test")
