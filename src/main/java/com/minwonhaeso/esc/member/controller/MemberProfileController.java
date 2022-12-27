@@ -3,6 +3,7 @@ package com.minwonhaeso.esc.member.controller;
 import com.minwonhaeso.esc.member.model.dto.CPasswordDto;
 import com.minwonhaeso.esc.member.model.dto.InfoDto;
 import com.minwonhaeso.esc.member.model.dto.PatchInfo;
+import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.service.MemberService;
 import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import io.swagger.annotations.ApiOperation;
@@ -25,8 +26,9 @@ public class MemberProfileController {
      **/
     @ApiOperation(value = "회원 상세 정보", notes = "회원 정보 페이지에 필요한 상세 정보를 보여줍니다.")
     @PostMapping("/info")
-    public ResponseEntity<InfoDto.Response> info(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(memberService.info(userDetails));
+    public ResponseEntity<InfoDto.Response> info(@AuthenticationPrincipal PrincipalDetail principalDetail) {
+        Member member = principalDetail.getMember();
+        return ResponseEntity.ok(memberService.info(member));
     }
 
     /**
@@ -34,9 +36,10 @@ public class MemberProfileController {
      **/
     @ApiOperation(value = "회원 정보 수정", notes = "프로필 사진과 닉네임 정보를 수정합니다.")
     @PatchMapping("/info")
-    public ResponseEntity<PatchInfo.Request> patchInfo(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<PatchInfo.Request> patchInfo(@AuthenticationPrincipal PrincipalDetail principalDetail,
                                                        @RequestBody PatchInfo.Request request) {
-        return ResponseEntity.ok(memberService.patchInfo(userDetails, request));
+        Member member = principalDetail.getMember();
+        return ResponseEntity.ok(memberService.patchInfo(member, request));
     }
 
     /**
@@ -44,8 +47,9 @@ public class MemberProfileController {
      **/
     @ApiOperation(value = "회원 탈퇴", notes = "해당 서비스를 탈퇴합니다.")
     @DeleteMapping("/info")
-    public ResponseEntity<Map<String, String>> delete(@AuthenticationPrincipal PrincipalDetail userDetails) {
-        Map<String, String> result = memberService.deleteMember(userDetails);
+    public ResponseEntity<Map<String, String>> delete(@AuthenticationPrincipal PrincipalDetail principalDetail) {
+        Member member = principalDetail.getMember();
+        Map<String, String> result = memberService.deleteMember(member);
         return ResponseEntity.ok(result);
     }
 

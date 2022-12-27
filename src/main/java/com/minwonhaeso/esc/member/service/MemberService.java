@@ -10,7 +10,6 @@ import com.minwonhaeso.esc.member.model.entity.MemberEmail;
 import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.minwonhaeso.esc.member.repository.redis.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
-import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
@@ -24,9 +23,7 @@ import com.minwonhaeso.esc.stadium.repository.StadiumReservationRepository;
 import com.minwonhaeso.esc.util.AuthUtil;
 import com.minwonhaeso.esc.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -86,7 +83,7 @@ public class MemberService {
         return successMessage("사용 가능한 이메일입니다.");
     }
 
-    public String deliverEmailAuthCode(String email) {
+    public void deliverEmailAuthCode(String email) {
         String uuid = AuthUtil.generateEmailAuthNum();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
@@ -94,7 +91,6 @@ public class MemberService {
         String content = "<p>이메일 인증 코드 : " + uuid + "</p>";
         mailService.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
-        return memberEmail.getId();
     }
 
     public Map<String, String> emailAuthentication(String key) {
@@ -152,12 +148,7 @@ public class MemberService {
         return TokenDto.of(jwtTokenUtil.generateAccessToken(username), refreshToken);
     }
 
-    public InfoDto.Response info(UserDetails user) {
-        if (user.getUsername() == null) {
-            throw new AuthException(MemberNotLogIn);
-        }
-        Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new AuthException(MemberNotLogIn));
+    public InfoDto.Response info(Member member) {
         return InfoDto.Response.builder()
                 .id(member.getMemberId())
                 .nickname(member.getNickname())
@@ -168,9 +159,7 @@ public class MemberService {
                 .build();
     }
 
-    public PatchInfo.Request patchInfo(UserDetails user, PatchInfo.Request request) {
-        Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new AuthException(MemberNotLogIn));
+    public PatchInfo.Request patchInfo(Member member, PatchInfo.Request request) {
         if (request.getNickname() != null) {
             member.setNickname(request.getNickname());
         }
@@ -182,12 +171,11 @@ public class MemberService {
         return request;
     }
 
-    public Map<String, String> deleteMember(PrincipalDetail user) {
-        Member member = user.getMember();
+    public Map<String, String> deleteMember(Member member) {
         MemberType type = member.getType();
         if(member.getStatus() != STOP) {
             if (type == MANAGER) {
-                List<Stadium> stadiums = stadiumRepository.findByMember(member);
+                List<Stadium> stadiums = stadiumRepository.findAllByMember(member);
                 for (Stadium stadium : stadiums) {
                     if (stadium.getReservations().size() != 0) {
                         throw new StadiumException(HasReservation);
@@ -216,11 +204,6 @@ public class MemberService {
         return jwtTokenUtil.getRemainMilliSeconds(refreshToken) < JwtExpirationEnums.REISSUE_EXPIRATION_TIME.getValue();
     }
 
-    private String getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails principal = (UserDetails) authentication.getPrincipal();
-        return principal.getUsername();
-    }
 
     private String getCurrentUsernameInRefreshToken(String refreshToken) {
         if (jwtTokenUtil.isTokenExpired(refreshToken)) {
@@ -230,7 +213,7 @@ public class MemberService {
         return jwtTokenUtil.getUsername(refreshToken);
     }
 
-    public String changePasswordMail(String email) {
+    public void changePasswordMail(String email) {
         String uuid = AuthUtil.generateEmailAuthNum();
         Long emailExpiredTime = 1000L * 60 * 60 * 2;
         MemberEmail memberEmail = MemberEmail.createEmailAuthKey(email, uuid, emailExpiredTime);
@@ -238,16 +221,15 @@ public class MemberService {
         String content = "<p>비밀번호 변경 코드: " + uuid + "</p>";
         mailService.sendMail(email, subject, content);
         memberEmailRepository.save(memberEmail);
-        return uuid;
     }
 
     public Map<String, String> changePasswordMailAuth(String key) {
         MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
                 () -> new AuthException(EmailAuthTimeOut));
-        memberEmailRepository.delete(memberEmail);
         if (!memberEmail.getId().equals(key)) {
             throw new AuthException(AuthKeyNotMatch);
         }
+        memberEmailRepository.delete(memberEmail);
         return successMessage("메일 인증이 완료되었습니다.");
     }
 
