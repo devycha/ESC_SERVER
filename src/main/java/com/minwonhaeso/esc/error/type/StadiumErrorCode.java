@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum StadiumErrorCode {
     StadiumNotFound(HttpStatus.BAD_REQUEST, "일치하는 체육관 정보가 존재하지 않습니다."),
     ReservationNotFound(HttpStatus.BAD_REQUEST, "일치하는 예약 정보가 존재하지 않습니다."),
+    HasReservation(HttpStatus.BAD_REQUEST, "예약 정보가 존재합니다."),
     ItemNotFound(HttpStatus.BAD_REQUEST, "일치하는 아이템 정보가 존재하지 않습니다."),
     StadiumReservationNotMatch(HttpStatus.BAD_REQUEST, "해당 체육관에 존재하는 예약이 아닙니다."),
     UnAuthorizedAccess(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),

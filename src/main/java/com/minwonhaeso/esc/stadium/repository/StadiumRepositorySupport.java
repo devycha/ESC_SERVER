@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.repository;
 
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumLike;
 import com.minwonhaeso.esc.stadium.model.type.StadiumStatus;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.minwonhaeso.esc.stadium.model.entity.QStadium.stadium;
+import static com.minwonhaeso.esc.stadium.model.entity.QStadiumLike.stadiumLike;
 
 @Repository
 public class StadiumRepositorySupport extends QuerydslRepositorySupport {
@@ -31,5 +33,14 @@ public class StadiumRepositorySupport extends QuerydslRepositorySupport {
                         Expressions.stringTemplate("POINT({0}, {1})", lnt, lat),
                         Expressions.stringTemplate("POINT({0}, {1})", stadium.lnt, stadium.lat)
                 ).asc()).fetch();
+    }
+    public List<StadiumLike> getAllAvailableLikeStadium(Long memberId,Pageable pageable){
+        return queryFactory
+                .selectFrom(stadiumLike)
+                .where(stadiumLike.stadium.status.eq(StadiumStatus.AVAILABLE))
+                .where(stadiumLike.member.memberId.eq(memberId))
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .fetch();
     }
 }

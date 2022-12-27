@@ -8,6 +8,7 @@ import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.repository.StadiumLikeRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
+import com.minwonhaeso.esc.stadium.repository.StadiumRepositorySupport;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,12 +34,14 @@ class StadiumLikeServiceTest {
     public StadiumLikeRepository stadiumLikeRepository;
     @Mock
     public StadiumRepository stadiumRepository;
+    @Mock
+    public StadiumRepositorySupport stadiumRepositorySupport;
 
 
     @Before("")
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        stadiumLikeService = new StadiumLikeService(stadiumLikeRepository, stadiumRepository);
+        stadiumLikeService = new StadiumLikeService(stadiumLikeRepository, stadiumRepositorySupport, stadiumRepository);
     }
 
     @Test
@@ -92,48 +95,6 @@ class StadiumLikeServiceTest {
         assertEquals(exception.getErrorCode(), StadiumErrorCode.StadiumNotFound);
     }
 
-//    /* list단위 테스트는 컨트롤러 테스트 코드에서 작성하자
-//    @Test
-//    void likeList_Success(){
-//        Member member = Member.builder()
-//                .memberId(3L)
-//                .name("제로")
-//                .password("1111")
-//                .email("test@gmail.com")
-//                .build();
-//        Stadium stadium = Stadium.builder()
-//                .id(1L)
-//                .name("ESC 체육관")
-//                .phone("010-1234-5678")
-//                .address("경기도 광교")
-//                .detailAddress("123-456")
-//                .lat(36.5)
-//                .lnt(127.5)
-//                .weekdayPricePerHalfHour(19000)
-//                .holidayPricePerHalfHour(25000)
-//                .openTime(ReservingTime.RT19)
-//                .closeTime(ReservingTime.RT37)
-//                .build();
-//        StadiumLike like = StadiumLike.builder()
-//                .stadium(stadium)
-//                .member(member)
-//                .id(1L)
-//                .build();
-//        stadiumLikeRepository.save(like);
-//        Pageable page = Mockito.mock(Pageable.class);
-//        Page<StadiumLike> pageLike = Mockito.mock(Page.class);
-//        Mockito.when(stadiumLikeRepository.findAllByMember(member,page)).thenReturn(pageLike);
-//        //given
-//        given(stadiumRepository.findById(anyLong()))
-//                .willReturn(Optional.of(stadium));
-////        given(stadiumLikeRepository.findById(1L)).willReturn(Optional.of(like));
-//        given(stadiumLikeRepository.findAllByMember(member,page))
-//                .willReturn(pageLike);
-//        //when
-//        Page<StadiumLikeResponseDto> list =  stadiumLikeService.likeList(member,page);
-//        //then
-//        assertNotNull(list);
-//    }*/
 
 
 }
