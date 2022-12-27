@@ -14,7 +14,6 @@ import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumReservationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,38 +52,18 @@ class ReviewServiceTest {
     @InjectMocks
     private ReviewService reviewService;
 
-    private Member member;
-    private Stadium stadium;
-    private final Long stadiumId = 1L;
-    private final Long reviewId = 1L;
+    @Test
+    @DisplayName("리뷰 작성 실패 - 존재하지 않는 체육관")
+    void createReviewFail_StadiumNotFound() {
+        Long stadiumId = 1L;
 
-    @BeforeEach
-    void beforeEach() {
-        member = Member.builder()
+        Member member = Member.builder()
                 .memberId(1L)
                 .name("제로")
                 .password("1111")
                 .email("test@gmail.com")
                 .build();
 
-        stadium = Stadium.builder()
-                .id(1L)
-                .name("ESC 체육관")
-                .phone("010-1234-5678")
-                .address("경기도 광교")
-                .detailAddress("123-456")
-                .lat(36.5)
-                .lnt(127.5)
-                .weekdayPricePerHalfHour(19000)
-                .holidayPricePerHalfHour(25000)
-                .openTime(ReservingTime.findTime("09:00"))
-                .closeTime(ReservingTime.findTime("18:00"))
-                .build();
-    }
-
-    @Test
-    @DisplayName("리뷰 작성 실패 - 존재하지 않는 체육관")
-    void createReviewFail_StadiumNotFound() {
         ReviewDto.Request request = ReviewDto.Request.builder()
                 .star(4.0)
                 .comment("쾌적합니다")
@@ -106,6 +85,29 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 작성 실패 - 존재하지 않는 체육관 사용 내역")
     void createReviewFail_NoReservationForReview() {
+        Long stadiumId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
+                .build();
+
         ReviewDto.Request request = ReviewDto.Request.builder()
                 .star(4.0)
                 .comment("쾌적합니다")
@@ -130,6 +132,29 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 작성 실패 - 리뷰 작성 가능 횟수 초과")
     void createReviewFail_ReviewCountOverReservation() {
+        Long stadiumId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
+                .build();
+
         ReviewDto.Request request = ReviewDto.Request.builder()
                 .star(4.0)
                 .comment("쾌적합니다")
@@ -157,6 +182,30 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 삭제 성공")
     void deleteReviewSuccess() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
+                .build();
+
         Review review = Review.builder()
                 .star(4.0)
                 .comment("쾌적합니다")
@@ -184,6 +233,16 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 삭제 실패 - 존재하지 않는 체육관")
     void deleteReviewFail_StadiumNotFound() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
         // given
         given(stadiumRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -200,6 +259,30 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 삭제 실패 - 존재하지 않는 리뷰")
     void deleteReviewFail_ReviewNotFound() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
+                .build();
+
         // given
         given(stadiumRepository.findById(anyLong()))
                 .willReturn(Optional.of(stadium));
@@ -219,11 +302,35 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 삭제 실패 - 리뷰 작성자 미일치")
     void deleteReviewFail_UnAuthorizedAccess() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
         Member member1 = Member.builder()
                 .memberId(2L)
                 .name("제로1")
                 .password("1111")
                 .email("test1@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         Review review = Review.builder()
@@ -251,6 +358,30 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 수정 성공")
     void updateReviewSuccess() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
+                .build();
+
         Review review = Review.builder()
                 .id(1L)
                 .star(4.0)
@@ -284,6 +415,16 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 수정 실패 - 존재하지 않는 체육관")
     void updateReviewFail_StadiumNotFound() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
         ReviewDto.Request request = ReviewDto.Request.builder()
                 .star(3.0)
                 .comment("시설이 제대로 관리되는 것 같지 않습니다")
@@ -305,6 +446,30 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 수정 실패 - 존재하지 않는 리뷰")
     void updateReviewFail_ReviewNotFound() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
+                .build();
+
         ReviewDto.Request request = ReviewDto.Request.builder()
                 .star(3.0)
                 .comment("시설이 제대로 관리되는 것 같지 않습니다")
@@ -329,11 +494,35 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 수정 실패 - 리뷰 작성자 미일치")
     void updateReviewFail_UnAuthorizedAccess() {
+        Long stadiumId = 1L;
+        Long reviewId = 1L;
+
+        Member member = Member.builder()
+                .memberId(1L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+
         Member member1 = Member.builder()
                 .memberId(2L)
                 .name("제로1")
                 .password("1111")
                 .email("test1@gmail.com")
+                .build();
+
+        Stadium stadium = Stadium.builder()
+                .id(1L)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.findTime("09:00"))
+                .closeTime(ReservingTime.findTime("18:00"))
                 .build();
 
         Review review = Review.builder()
