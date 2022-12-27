@@ -4,6 +4,7 @@ import com.minwonhaeso.esc.member.model.dto.CPasswordDto;
 import com.minwonhaeso.esc.member.model.dto.InfoDto;
 import com.minwonhaeso.esc.member.model.dto.PatchInfo;
 import com.minwonhaeso.esc.member.service.MemberService;
+import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class MemberProfileController {
      **/
     @ApiOperation(value = "회원 탈퇴", notes = "해당 서비스를 탈퇴합니다.")
     @DeleteMapping("/info")
-    public ResponseEntity<Map<String, String>> delete(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Map<String, String>> delete(@AuthenticationPrincipal PrincipalDetail userDetails) {
         Map<String, String> result = memberService.deleteMember(userDetails);
         return ResponseEntity.ok(result);
     }

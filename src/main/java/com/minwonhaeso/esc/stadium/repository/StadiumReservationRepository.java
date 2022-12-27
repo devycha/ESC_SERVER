@@ -20,4 +20,6 @@ public interface StadiumReservationRepository extends JpaRepository<StadiumReser
             Member member, LocalDate reservingDate, Pageable pageable);
     List<StadiumReservation> findAllByStadiumAndReservingDate(Stadium stadium, LocalDate reservingDate);
     Long countAllByMemberAndStadiumAndStatusIs(Member member, Stadium stadium, StadiumReservationStatus status);
+
+    List<StadiumReservation> findALlByMember(Member member);
 }

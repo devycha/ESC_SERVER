@@ -17,5 +17,6 @@ public interface StadiumRepository extends JpaRepository<Stadium, Long> {
     @Override
     Page<Stadium> findAll(Pageable pageable);
     Page<Stadium> findByMember(Member member, Pageable pageable);
+    List<Stadium> findByMember(Member member);
 
 }

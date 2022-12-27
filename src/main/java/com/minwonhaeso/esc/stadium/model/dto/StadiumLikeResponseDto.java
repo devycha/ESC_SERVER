@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.minwonhaeso.esc.stadium.model.type.StadiumStatus.*;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +27,10 @@ public class StadiumLikeResponseDto {
 
     public static StadiumLikeResponseDto fromEntity(StadiumLike stadiumLike) {
         Stadium stadium = stadiumLike.getStadium();
-
+        if (stadium.getStatus() == DELETED
+                || stadium.getStatus() == BANNED) {
+            return null;
+        }
         return StadiumLikeResponseDto.builder()
                 .stadiumId(stadium.getId())
                 .name(stadium.getName())

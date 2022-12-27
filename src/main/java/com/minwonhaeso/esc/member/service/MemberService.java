@@ -2,17 +2,25 @@ package com.minwonhaeso.esc.member.service;
 
 
 import com.minwonhaeso.esc.error.exception.AuthException;
+import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.mail.MailService;
 import com.minwonhaeso.esc.member.model.dto.*;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.member.model.entity.MemberEmail;
+import com.minwonhaeso.esc.member.model.type.MemberType;
 import com.minwonhaeso.esc.member.repository.redis.MemberEmailRepository;
 import com.minwonhaeso.esc.member.repository.MemberRepository;
+import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.security.auth.jwt.JwtExpirationEnums;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessToken;
 import com.minwonhaeso.esc.security.auth.redis.LogoutAccessTokenRedisRepository;
 import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
+import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumReservation;
+import com.minwonhaeso.esc.stadium.model.type.StadiumStatus;
+import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
+import com.minwonhaeso.esc.stadium.repository.StadiumReservationRepository;
 import com.minwonhaeso.esc.util.AuthUtil;
 import com.minwonhaeso.esc.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +32,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.minwonhaeso.esc.error.type.AuthErrorCode.*;
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
+import static com.minwonhaeso.esc.member.model.type.MemberStatus.*;
+import static com.minwonhaeso.esc.member.model.type.MemberType.*;
+import static com.minwonhaeso.esc.member.model.type.MemberType.MANAGER;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +51,8 @@ public class MemberService {
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final StadiumRepository stadiumRepository;
+    private final StadiumReservationRepository stadiumReservationRepository;
 
     @Transactional( isolation = Isolation.SERIALIZABLE)
     public SignDto.Response signUser(SignDto.Request signDto) {
@@ -175,11 +186,30 @@ public class MemberService {
         return request;
     }
 
-    public Map<String, String> deleteMember(UserDetails user) {
-        Member member = memberRepository.findByEmail(user.getUsername())
-                .orElseThrow(() -> new AuthException(MemberNotLogIn));
-        memberRepository.delete(member);
-        return successMessage("탈퇴에 성공했습니다.");
+    public Map<String, String> deleteMember(PrincipalDetail user) {
+        Member member = user.getMember();
+        MemberType type = member.getType();
+        if(member.getStatus() != STOP) {
+            if (type == MANAGER) {
+                List<Stadium> stadiums = stadiumRepository.findByMember(member);
+                for (Stadium stadium : stadiums) {
+                    if (stadium.getReservations().size() != 0) {
+                        throw new StadiumException(HasReservation);
+                    }
+                    stadium.setStatus(StadiumStatus.DELETED);
+                }
+                stadiumRepository.saveAll(stadiums);
+            }
+            if (type == USER) {
+                List<StadiumReservation> reservations = stadiumReservationRepository.findALlByMember(member);
+                if (reservations.size() != 0) {
+                    throw new StadiumException(HasReservation);
+                }
+                member.setStatus(STOP);
+            }
+            memberRepository.save(member);
+            return successMessage("탈퇴에 성공했습니다.");
+        }else throw new AuthException(AlreadyStopMember);
     }
 
     public String resolveToken(String token) {
