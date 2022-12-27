@@ -17,6 +17,7 @@ import com.minwonhaeso.esc.security.auth.redis.RefreshToken;
 import com.minwonhaeso.esc.security.auth.redis.RefreshTokenRedisRepository;
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumReservation;
+import com.minwonhaeso.esc.stadium.model.type.StadiumReservationStatus;
 import com.minwonhaeso.esc.stadium.model.type.StadiumStatus;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumReservationRepository;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.minwonhaeso.esc.error.type.AuthErrorCode.*;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
@@ -184,7 +186,12 @@ public class MemberService {
                 stadiumRepository.saveAll(stadiums);
             }
             if (type == USER) {
-                List<StadiumReservation> reservations = stadiumReservationRepository.findALlByMember(member);
+                List<StadiumReservation> reservations =
+                        stadiumReservationRepository.findALlByMember(member)
+                        .stream().filter(stadiumReservation
+                                    -> stadiumReservation.getStatus() != StadiumReservationStatus.RESERVED)
+                        .collect(Collectors.toList());
+
                 if (reservations.size() != 0) {
                     throw new StadiumException(HasReservation);
                 }

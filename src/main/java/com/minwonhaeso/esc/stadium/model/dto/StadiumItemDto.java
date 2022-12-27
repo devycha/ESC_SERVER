@@ -27,7 +27,6 @@ public class StadiumItemDto {
     @AllArgsConstructor
     @Builder
     public static class UpdateItemRequest {
-        private Long id;
         private String name;
         private String publicId;
         private String imgUrl;

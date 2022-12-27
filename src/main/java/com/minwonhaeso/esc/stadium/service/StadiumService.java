@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.UnAuthorizedAccess;
+import static com.minwonhaeso.esc.stadium.model.type.StadiumStatus.AVAILABLE;
 
 
 @RequiredArgsConstructor
@@ -53,7 +55,7 @@ public class StadiumService {
 
     @Transactional(readOnly = true)
     public Page<StadiumResponseDto> getAllStadiumsByManager(Member member, Pageable pageable) {
-        return stadiumRepository.findByMember(member, pageable).map(StadiumResponseDto::fromEntity);
+        return stadiumRepository.findByMemberAndStatus(member, AVAILABLE, pageable).map(StadiumResponseDto::fromEntity);
     }
 
     @Transactional
@@ -146,10 +148,12 @@ public class StadiumService {
         if (stadium.getMember().getMemberId() != member.getMemberId()) {
             throw new StadiumException(UnAuthorizedAccess);
         }
+
         stadiumTagRepository.deleteAll(stadium.getTags());
         stadiumImgRepository.deleteAll(stadium.getImgs());
         stadiumItemRepository.deleteAll(stadium.getRentalStadiumItems());
         stadium.setAll(request);
+        System.out.println(request.getRentalItems());
         stadiumTagRepository.saveAll(stadium.getTags());
         stadiumImgRepository.saveAll(stadium.getImgs());
         stadiumItemRepository.saveAll(stadium.getRentalStadiumItems());
