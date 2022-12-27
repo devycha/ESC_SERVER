@@ -2,7 +2,6 @@ package com.minwonhaeso.esc.stadium.service;
 
 import com.minwonhaeso.esc.error.exception.StadiumException;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumDocument;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepositorySupport;
 import com.minwonhaeso.esc.stadium.repository.StadiumSearchRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +22,13 @@ public class StadiumSearchService {
     private final StadiumRepositorySupport stadiumRepositorySupport;
 
     @Transactional(readOnly = true)
-    public Page<StadiumDocument> search(
+    public Page<StadiumResponseDto> search(
             String searchValue,
             Pageable pageable) {
         return stadiumSearchRepository
                 .findByNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
-                        searchValue, searchValue, pageable);
+                        searchValue, searchValue, pageable)
+                .map(StadiumResponseDto::fromDocument);
     }
 
     @Transactional(readOnly = true)

@@ -22,6 +22,8 @@ public class StadiumLikeResponseDto {
 
     private String imgUrl;
 
+    private boolean like;
+
 
     public static StadiumLikeResponseDto fromEntity(StadiumLike stadiumLike) {
         Stadium stadium = stadiumLike.getStadium();
@@ -32,6 +34,7 @@ public class StadiumLikeResponseDto {
                 .imgUrl(stadium.getImgs().get(0).getImgUrl())
                 .address(stadium.getAddress())
                 .starAvg(stadium.getStarAvg())
+                .like(true)
                 .build();
     }
 }

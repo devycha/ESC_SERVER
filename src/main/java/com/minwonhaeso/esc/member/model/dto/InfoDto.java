@@ -15,6 +15,5 @@ public class InfoDto {
         private String name;
         private String email;
         private String imgUrl;
-        private String password;
     }
 }

@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,10 +41,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomerMemberDetailsService customerMemberDetailsService;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    private final String[] baseUrl = {
+            "/members/auth/login",
+            "/members/auth/refresh-token",
+            "/stadiums",
+            "/stadiums/near-loc",
+            "/members/profiles/password/config"
+    };
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI().equals("/members/auth/refresh-token");
+        return Arrays.stream(baseUrl).anyMatch(url -> url.equalsIgnoreCase(request.getRequestURI()));
     }
 
     @Override

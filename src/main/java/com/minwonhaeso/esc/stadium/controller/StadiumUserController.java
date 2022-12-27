@@ -1,8 +1,9 @@
 package com.minwonhaeso.esc.stadium.controller;
 
+import com.minwonhaeso.esc.member.model.entity.Member;
+import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumInfoResponseDto;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
-import com.minwonhaeso.esc.stadium.model.entity.StadiumDocument;
 import com.minwonhaeso.esc.stadium.service.StadiumSearchService;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import io.swagger.annotations.ApiOperation;
@@ -10,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,9 +36,18 @@ public class StadiumUserController {
     @ApiOperation(value = "체육관 상세 정보 조회", notes = "사용자(일반)가 체육관 상세 정보를 조회한다.")
     @GetMapping("/{stadiumId}/info")
     public ResponseEntity<StadiumInfoResponseDto> getStadiumInfo(
+            @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId
     ) {
-        StadiumInfoResponseDto stadium = stadiumService.getStadiumInfo(stadiumId);
+        Member member = null;
+
+        try {
+            member = principalDetail.getMember();
+        } catch (Exception e) {
+
+        }
+
+        StadiumInfoResponseDto stadium = stadiumService.getStadiumInfo(stadiumId, member);
         return ResponseEntity.ok().body(stadium);
     }
 
@@ -53,10 +63,10 @@ public class StadiumUserController {
 
     @ApiOperation(value = "체육관 검색", notes = "검색어를 입력하여 체육관을 조회한다.")
     @GetMapping("/search")
-    public ResponseEntity<Page<StadiumDocument>> searchStadium(
+    public ResponseEntity<Page<StadiumResponseDto>> searchStadium(
             @RequestParam String searchValue,
             Pageable pageable) {
-        Page<StadiumDocument> stadiumDocuments = stadiumSearchService.search(searchValue, pageable);
+        Page<StadiumResponseDto> stadiumDocuments = stadiumSearchService.search(searchValue, pageable);
         return ResponseEntity.ok().body(stadiumDocuments);
     }
 }

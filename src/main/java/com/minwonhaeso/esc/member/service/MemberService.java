@@ -157,7 +157,6 @@ public class MemberService {
                 .email(member.getEmail())
                 .imgUrl(member.getImgUrl())
                 .name(member.getName())
-                .password(member.getPassword())
                 .build();
     }
 

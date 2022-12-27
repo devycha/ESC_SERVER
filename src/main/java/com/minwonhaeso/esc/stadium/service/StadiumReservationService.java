@@ -52,14 +52,14 @@ public class StadiumReservationService {
         // 해당 스타디움의 해당 날짜에 이미 예약된 시간들
         List<String> reservedTimes = new ArrayList<>();
         stadiumReservationRepository
-                .findAllByStadiumAndReservingDate(stadium, date)
-                .forEach(reservation -> {
-                    reservation.getReservingTimes().forEach(
-                            reservingTime -> {
-                                reservedTimes.add(reservingTime.getTime());
-                            }
-                    );
-                });
+            .findAllByStadiumAndReservingDate(stadium, date)
+            .forEach(reservation -> {
+                reservation.getReservingTimes().forEach(
+                        reservingTime -> {
+                            reservedTimes.add(reservingTime.getTime());
+                        }
+                );
+            });
 
         return ReservationStadiumInfoResponse.builder()
                 .openTime(stadium.getOpenTime().getTime())
@@ -97,6 +97,47 @@ public class StadiumReservationService {
         return ReservationInfoResponse.fromEntity(reservation);
     }
 
+    @Transactional(readOnly = true)
+    public Page<StadiumReservationUserResponse> getAllReservationUsersByManager (
+            Member member, Long stadiumId, Pageable pageable
+    ) {
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        if (!stadium.getMember().getMemberId().equals(member.getMemberId())) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
+
+
+        return stadiumReservationRepository
+                .findAllByStadiumOrderByReservingDateDesc(stadium, pageable)
+                .map(StadiumReservationUserResponse::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationInfoResponse getReservationInfoByManager(
+            Member member,
+            Long stadiumId,
+            Long reservationId
+    ) {
+        StadiumReservation reservation = stadiumReservationRepository
+                .findById(reservationId).orElseThrow(() ->
+                        new StadiumException(ReservationNotFound));
+
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
+                () -> new StadiumException(StadiumNotFound));
+
+        if (!reservation.getStadium().getId().equals(stadiumId)) {
+            throw new StadiumException(StadiumReservationNotMatch);
+        }
+
+        if (!stadium.getMember().getMemberId().equals(member.getMemberId())) {
+            throw new StadiumException(UnAuthorizedAccess);
+        }
+
+        return ReservationInfoResponse.fromEntity(reservation);
+    }
+
     public void deleteReservation(Member member, Long stadiumId, Long reservationId) {
         StadiumReservation reservation = stadiumReservationRepository
                 .findById(reservationId).orElseThrow(() ->
@@ -122,6 +163,7 @@ public class StadiumReservationService {
                 .reservation(reservation)
                 .price(reservation.getPrice())
                 .build();
+
         stadiumReservationRepository.save(reservation);
         stadiumReservationCancelRepository.save(reservationCancel);
     }

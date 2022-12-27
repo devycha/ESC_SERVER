@@ -14,6 +14,8 @@ import java.util.List;
 public class StadiumPaymentDto {
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class PaymentRequest {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")

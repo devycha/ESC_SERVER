@@ -63,7 +63,41 @@ public class StadiumInfoResponseDto {
     @ApiModelProperty(value = "마감 시간", example = "HH:MM")
     private String closeTime;
 
+    @ApiModelProperty(value = "찜하기 여부", example = "true or false")
+    private boolean isLike;
+
     public static StadiumInfoResponseDto fromEntity(Stadium stadium) {
+        return StadiumInfoResponseDto.builder()
+                .id(stadium.getId())
+                .memberId(stadium.getMember().getMemberId())
+                .name(stadium.getName())
+                .lat(stadium.getLat())
+                .lnt(stadium.getLnt())
+                .phone(stadium.getPhone())
+                .address(stadium.getAddress())
+                .detailAddress(stadium.getDetailAddress())
+                .starAvg(stadium.getStarAvg())
+                .weekdayPricePerHalfHour(stadium.getWeekdayPricePerHalfHour())
+                .holidayPricePerHalfHour(stadium.getHolidayPricePerHalfHour())
+                .openTime(stadium.getOpenTime().getTime())
+                .closeTime(stadium.getCloseTime().getTime())
+                .rentalItems(stadium.getRentalStadiumItems().stream()
+                        .map(StadiumItemDto.Response::fromEntity)
+                        .collect(Collectors.toList()))
+                .imgs(stadium.getImgs().isEmpty() ?
+                        null :
+                        stadium.getImgs().stream().map(img ->
+                                        StadiumImgDto.builder()
+                                                .id(img.getId())
+                                                .publicId(img.getImgId())
+                                                .imgUrl(img.getImgUrl())
+                                                .build())
+                                .collect(Collectors.toList()))
+                .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
+                .build();
+    }
+
+    public static StadiumInfoResponseDto fromEntity(Stadium stadium, boolean isLike) {
         return StadiumInfoResponseDto.builder()
                 .id(stadium.getId())
                 .memberId(stadium.getMember().getMemberId())
@@ -91,6 +125,7 @@ public class StadiumInfoResponseDto {
                                         .build())
                         .collect(Collectors.toList()))
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
+                .isLike(isLike)
                 .build();
     }
 }

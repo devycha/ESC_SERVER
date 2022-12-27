@@ -30,14 +30,20 @@ public class StadiumService {
     private final StadiumTagRepository stadiumTagRepository;
     private final StadiumItemRepository stadiumItemRepository;
     private final StadiumSearchRepository stadiumSearchRepository;
+    private final StadiumLikeRepository stadiumLikeRepository;
 
     @Transactional(readOnly = true)
-    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId) {
+    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId, Member member) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound)
         );
 
-        return StadiumInfoResponseDto.fromEntity(stadium);
+        boolean isLike = member != null &&
+                stadiumLikeRepository.existsByStadiumAndMember(stadium, member);
+
+        System.out.println(member);
+
+        return StadiumInfoResponseDto.fromEntity(stadium, isLike);
     }
 
     @Transactional(readOnly = true)
@@ -150,7 +156,8 @@ public class StadiumService {
         stadiumRepository.save(stadium);
         StadiumDocument stadiumDocument = StadiumDocument.fromEntity(stadium);
         stadiumSearchRepository.save(stadiumDocument);
-        return StadiumInfoResponseDto.fromEntity(stadium);
+        boolean isLike = stadiumLikeRepository.existsByStadiumAndMember(stadium, member);
+        return StadiumInfoResponseDto.fromEntity(stadium, isLike);
     }
 
     public StadiumTagDto addStadiumTag(Member member, Long stadiumId, String tagName) {

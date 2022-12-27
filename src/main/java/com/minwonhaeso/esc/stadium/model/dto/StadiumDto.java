@@ -56,7 +56,7 @@ public class StadiumDto {
 
         public static CreateStadiumResponse fromEntity(Stadium stadium) {
             return CreateStadiumResponse.builder()
-                    .stadium(StadiumInfoResponseDto.fromEntity(stadium))
+                    .stadium(StadiumInfoResponseDto.fromEntity(stadium, false))
                     .build();
         }
     }
