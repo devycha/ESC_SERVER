@@ -9,23 +9,29 @@ import com.minwonhaeso.esc.stadium.model.entity.Stadium;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumLike;
 import com.minwonhaeso.esc.stadium.repository.StadiumLikeRepository;
 import com.minwonhaeso.esc.stadium.repository.StadiumRepository;
+import com.minwonhaeso.esc.stadium.repository.StadiumRepositorySupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class StadiumLikeService {
     private final StadiumLikeRepository stadiumLikeRepository;
+    private final StadiumRepositorySupport stadiumRepositorySupport;
     private final StadiumRepository stadiumRepository;
 
     public StadiumLikeRequestDto likes(Long stadiumId, Member member) {
         Stadium stadium = stadiumRepository.findById(stadiumId)
-                .orElseThrow(() -> new StadiumException(StadiumErrorCode.StadiumNotFound));
+                .orElseThrow(() -> new StadiumException(StadiumNotFound));
         Optional<StadiumLike> optionalLike = stadiumLikeRepository.findByMemberAndStadium(member, stadium);
         StadiumLikeRequestDto dto = new StadiumLikeRequestDto();
         if (optionalLike.isEmpty()){
@@ -41,7 +47,9 @@ public class StadiumLikeService {
         return dto;
     }
     @Transactional(readOnly = true)
-    public Page<StadiumLikeResponseDto> likeList(Member member, Pageable pageable) {
-        return stadiumLikeRepository.findAllByMember(member,pageable).map(StadiumLikeResponseDto::fromEntity);
+    public List<StadiumLikeResponseDto> likeList(Member member, Pageable pageable) {
+        return stadiumRepositorySupport.getAllAvailableLikeStadium(member.getMemberId(), pageable)
+                .stream().map(StadiumLikeResponseDto::fromEntity).collect(Collectors.toList());
     }
+
 }

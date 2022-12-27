@@ -59,7 +59,7 @@ public class MemberService {
         MemberEmail memberEmail = memberEmailRepository.findById(signDto.getKey()).orElseThrow(
                 ()-> new AuthException(AuthKeyNotMatch));
         if(!memberEmail.getEmail().equals(signDto.getEmail())){
-            throw new AuthException(EmailNotMatched);
+            throw new AuthException(AuthKeyNotMatch);
         }
         signDto.setPassword(passwordEncoder.encode(signDto.getPassword()));
         Member member = Member.of(signDto);
@@ -98,12 +98,8 @@ public class MemberService {
     }
 
     public Map<String, String> emailAuthentication(String key) {
-        MemberEmail memberEmail = memberEmailRepository.findById(key).orElseThrow(
-                () -> new AuthException(EmailAuthTimeOut));
-        memberEmailRepository.save(memberEmail);
-        if (!memberEmail.getId().equals(key)) {
-            throw new AuthException(AuthKeyNotMatch);
-        }
+        memberEmailRepository.findById(key).orElseThrow(
+                () -> new AuthException(AuthKeyNotMatch));
         return successMessage("메일 인증이 완료되었습니다.");
     }
 

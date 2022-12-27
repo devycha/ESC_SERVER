@@ -27,10 +27,6 @@ public class StadiumLikeResponseDto {
 
     public static StadiumLikeResponseDto fromEntity(StadiumLike stadiumLike) {
         Stadium stadium = stadiumLike.getStadium();
-        if (stadium.getStatus() == DELETED
-                || stadium.getStatus() == BANNED) {
-            return null;
-        }
         return StadiumLikeResponseDto.builder()
                 .stadiumId(stadium.getId())
                 .name(stadium.getName())
