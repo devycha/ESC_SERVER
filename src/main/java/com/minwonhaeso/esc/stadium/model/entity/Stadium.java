@@ -220,7 +220,6 @@ public class Stadium {
 
             this.imgs = request.getImgs().stream()
                     .map(img -> StadiumImg.builder()
-                            .id(img.getId())
                             .stadium(this)
                             .imgId(img.getPublicId())
                             .imgUrl(img.getImgUrl())
@@ -229,7 +228,6 @@ public class Stadium {
 
             this.rentalStadiumItems = request.getRentalItems().stream()
                     .map(item -> StadiumItem.builder()
-                            .id(item.getId())
                             .stadium(this)
                             .imgId(item.getPublicId())
                             .imgUrl(item.getImgUrl())

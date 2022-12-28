@@ -116,6 +116,34 @@ public class StadiumReservationDto {
         }
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ApiModel(value = "체육관 예약 사용자 리스트 Response")
+    public static class StadiumReservationUserResponse {
+        private Long stadiumId;
+        private Long reservationId;
+        private String name;
+        private String reservingDate;
+        private String paymentDate;
+        private String status;
+
+        public static StadiumReservationUserResponse fromEntity(
+                StadiumReservation reservation
+        ) {
+            return StadiumReservationUserResponse.builder()
+                    .stadiumId(reservation.getStadium().getId())
+                    .reservationId(reservation.getId())
+                    .name(reservation.getMember().getName())
+                    .reservingDate(reservation.getReservingDate().toString())
+                    .paymentDate(reservation.getCreatedAt().toString())
+                    .status(reservation.getStatus().toString())
+                    .build();
+        }
+    }
+
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

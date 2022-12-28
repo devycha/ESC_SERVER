@@ -30,8 +30,8 @@ import java.util.Optional;
 
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
 import static com.minwonhaeso.esc.error.type.StadiumErrorCode.UnAuthorizedAccess;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
@@ -54,6 +54,9 @@ class StadiumServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private StadiumLikeRepository stadiumLikeRepository;
 
     @InjectMocks
     private StadiumService stadiumService;
@@ -128,12 +131,14 @@ class StadiumServiceTest {
     void getStadiumInfoTest_Success() {
         // given
         given(stadiumRepository.findById(anyLong())).willReturn(Optional.of(stadium));
+        given(stadiumLikeRepository.existsByStadiumAndMember(any(), any())).willReturn(true);
 
         // when
-        StadiumInfoResponseDto stadiumInfo = stadiumService.getStadiumInfo(1L);
+        StadiumInfoResponseDto stadiumInfo = stadiumService.getStadiumInfo(1L, member);
 
         // then
         assertEquals(stadium.getId(), stadiumInfo.getId());
+        assertTrue(stadiumInfo.isLike());
     }
 
     @Test
@@ -144,7 +149,7 @@ class StadiumServiceTest {
 
         // when
         Exception exception = assertThrows(StadiumException.class,
-                () -> stadiumService.getStadiumInfo(123L));
+                () -> stadiumService.getStadiumInfo(123L, member));
 
         // then
         assertEquals(StadiumNotFound.getErrorMessage(), exception.getMessage());

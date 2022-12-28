@@ -20,6 +20,7 @@ import static javax.persistence.EnumType.STRING;
 @Builder
 @Table(name = "stadium_item")
 @Entity
+@ToString
 @EntityListeners(AuditingEntityListener.class)
 public class StadiumItem {
     @Id

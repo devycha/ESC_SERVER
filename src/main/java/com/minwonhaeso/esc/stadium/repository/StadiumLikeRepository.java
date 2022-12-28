@@ -16,4 +16,6 @@ public interface StadiumLikeRepository extends JpaRepository<StadiumLike, Long> 
 
     Page<StadiumLike> findAllByMember(Member member, Pageable pageable);
 
+    boolean existsByStadiumAndMember(Stadium stadium, Member member);
+
 }

@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class StadiumPaymentDto {
 
+
     @Getter
     @Setter
     @Builder
