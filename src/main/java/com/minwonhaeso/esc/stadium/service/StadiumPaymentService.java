@@ -62,13 +62,15 @@ public class StadiumPaymentService {
                 try {
                     StadiumItem stadiumItem = stadiumItemRepository.findById(item.getId())
                             .orElseThrow(() -> new StadiumException(ItemNotFound));
-
-                    items.add(StadiumReservationItem.builder()
+                    StadiumReservationItem reservationItem =   StadiumReservationItem.builder()
                             .item(stadiumItem)
                             .count(item.getCount())
                             .reservation(reservation)
                             .price(item.getCount() * stadiumItem.getPrice())
-                            .build());
+                            .build();
+                    if(reservationItem.getCount() !=0) {
+                        items.add(reservationItem);
+                    }
                 } catch (StadiumException e) {
                     log.info("item not found. id:" + item.getId());
                 }

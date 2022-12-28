@@ -13,6 +13,7 @@ import com.minwonhaeso.esc.stadium.model.dto.StadiumResponseDto;
 import com.minwonhaeso.esc.stadium.model.entity.*;
 import com.minwonhaeso.esc.stadium.model.type.ReservingTime;
 import com.minwonhaeso.esc.stadium.model.type.StadiumItemStatus;
+import com.minwonhaeso.esc.stadium.service.StadiumReservationService;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,6 +63,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StadiumManagerControllerTest {
     @MockBean
     private StadiumService stadiumService;
+
+    @MockBean
+    private StadiumReservationService stadiumReservationService;
 
     @Autowired
     MockMvc mockMvc;

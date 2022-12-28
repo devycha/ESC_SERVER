@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -31,12 +33,12 @@ public class StadiumLikeController {
         return ResponseEntity.ok(stadiumLikeService.likes(stadiumId, member));
     }
 
-    @ApiOperation(value = "찜하기 리스트", notes = "접속한 유저가 찜한 체육관 리스트를 보여줍니다.")
+    @ApiOperation(value = "찜한 리스트", notes = "접속한 유저가 찜한 체육관 리스트를 보여줍니다.")
     @GetMapping("/likelist")
-    public ResponseEntity<Page<StadiumLikeResponseDto>> likeList(@AuthenticationPrincipal PrincipalDetail principalDetail,
-                                      Pageable pageable){
+    public ResponseEntity<List<StadiumLikeResponseDto>> likeList(@AuthenticationPrincipal PrincipalDetail principalDetail,
+                                                                 Pageable pageable){
         Member member = principalDetail.getMember();
-        Page<StadiumLikeResponseDto> likes = stadiumLikeService.likeList(member,pageable);
+        List<StadiumLikeResponseDto> likes = stadiumLikeService.likeList(member,pageable);
         return ResponseEntity.ok(likes);
     }
 

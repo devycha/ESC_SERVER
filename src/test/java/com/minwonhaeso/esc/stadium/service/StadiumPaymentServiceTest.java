@@ -1,6 +1,8 @@
 package com.minwonhaeso.esc.stadium.service;
 
 
+import com.minwonhaeso.esc.error.exception.AuthException;
+import com.minwonhaeso.esc.error.type.AuthErrorCode;
 import com.minwonhaeso.esc.member.model.entity.Member;
 import com.minwonhaeso.esc.stadium.facade.RedissonLockReservingTimeFacade;
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
@@ -26,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.minwonhaeso.esc.stadium.model.dto.StadiumPaymentDto.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
@@ -102,8 +104,61 @@ class StadiumPaymentServiceTest {
         given(stadiumItemRepository.findById(anyLong()))
                 .willReturn(Optional.of(item));
         //when
-        Map<String,String> map =  stadiumPaymentService.payment(member,stadiumId,request);
+
+        Map<String, String> map = stadiumPaymentService.payment(member, stadiumId, request);
         //then
         assertNotNull(map.get("successMessage"));
+    }
+
+    @DisplayName("결제 실패 - 예약자 이메일과 접속중인 유저의 email이 다르디")
+    @Test
+    void paymentFail_EmailNotMatch() {
+        Long stadiumId = 1L;
+        List<StadiumItem> likeList = new ArrayList<>();
+        StadiumItem item = StadiumItem.builder()
+                .name("축구공")
+                .price(30000)
+                .build();
+        likeList.add(item);
+        Member member = Member.builder()
+                .memberId(3L)
+                .name("제로")
+                .password("1111")
+                .email("test@gmail.com")
+                .build();
+        Stadium stadium = Stadium.builder()
+                .id(stadiumId)
+                .name("ESC 체육관")
+                .phone("010-1234-5678")
+                .address("경기도 광교")
+                .detailAddress("123-456")
+                .lat(36.5)
+                .lnt(127.5)
+                .weekdayPricePerHalfHour(19000)
+                .holidayPricePerHalfHour(25000)
+                .openTime(ReservingTime.RT19)
+                .closeTime(ReservingTime.RT37)
+                .rentalStadiumItems(likeList)
+                .build();
+        List<String> reservedTimes = new ArrayList<>();
+        List<ItemRequest> items = new ArrayList<>();
+        items.add(new ItemRequest(1L, 2));
+        reservedTimes.add("09:00");
+        PaymentRequest request = PaymentRequest.builder()
+                .date(LocalDate.now().plusDays(1))
+                .reservedTimes(reservedTimes)
+                .headCount(2)
+                .items(items)
+                .totalPrice(10000)
+                .email("testtest@gmail.com")
+                .paymentType("CARD")
+                .build();
+
+        //when
+        AuthException exception = assertThrows(
+                AuthException.class, () -> stadiumPaymentService.payment(member, stadiumId, request));
+        //then
+
+        assertEquals(exception.getErrorCode().getErrorMessage(), AuthErrorCode.EmailNotMatched.getErrorMessage());
     }
 }

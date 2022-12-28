@@ -5,6 +5,9 @@ import com.minwonhaeso.esc.security.auth.PrincipalDetail;
 import com.minwonhaeso.esc.stadium.model.dto.*;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumDto.CreateStadiumResponse;
 import com.minwonhaeso.esc.stadium.model.dto.StadiumItemDto.CreateItemResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.ReservationInfoResponse;
+import com.minwonhaeso.esc.stadium.model.dto.StadiumReservationDto.StadiumReservationUserResponse;
+import com.minwonhaeso.esc.stadium.service.StadiumReservationService;
 import com.minwonhaeso.esc.stadium.service.StadiumService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/stadiums")
 public class StadiumManagerController {
     private final StadiumService stadiumService;
+    private final StadiumReservationService stadiumReservationService;
 
     @ApiOperation(value = "등록 체육관 조회", notes = "사용자(매니저)가 등록한 체육관을 조회한다.")
     @GetMapping("/manager")
@@ -34,12 +38,38 @@ public class StadiumManagerController {
         return ResponseEntity.ok().body(stadiums);
     }
 
+    @ApiOperation(value = "체육관 누적 사용자 조회", notes = "사용자(매니저)가 등록한 체육관의 누적 사용자를 조회한다.")
+    @GetMapping("/manager/{stadiumId}")
+    public ResponseEntity<Page<StadiumReservationUserResponse>> getAllReservationUsers(
+            @AuthenticationPrincipal PrincipalDetail principalDetail,
+            @PathVariable Long stadiumId,
+            Pageable pageable
+    ) {
+        Member member = principalDetail.getMember();
+        Page<StadiumReservationUserResponse> reservationList = stadiumReservationService
+                .getAllReservationUsersByManager(member, stadiumId, pageable);
+        return ResponseEntity.ok().body(reservationList);
+    }
+
+    @ApiOperation(value = "체육관 사용자 상세 정보 조회", notes = "")
+    @GetMapping("/manager/{stadiumId}/reservations/{reservationId}")
+    public ResponseEntity<?> getStadiumReservationInfo(
+            @AuthenticationPrincipal PrincipalDetail principalDetail,
+            @PathVariable Long stadiumId,
+            @PathVariable Long reservationId
+    ) {
+        Member member = principalDetail.getMember();
+        ReservationInfoResponse reservation = stadiumReservationService
+                .getReservationInfoByManager(member, stadiumId, reservationId);
+        return ResponseEntity.ok().body(reservation);
+    }
+
     @ApiOperation(value = "체육관 신규 등록", notes = "사용자(매니저)가 체육관을 새로 등록한다.")
     @PostMapping("/register")
     public ResponseEntity<CreateStadiumResponse> createStadiumByManager(
             @RequestBody StadiumDto.CreateStadiumRequest request,
             @AuthenticationPrincipal PrincipalDetail principalDetail
-            ) {
+    ) {
         Member member = principalDetail.getMember();
         CreateStadiumResponse stadium = stadiumService.createStadium(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(stadium);

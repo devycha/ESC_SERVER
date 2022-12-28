@@ -43,15 +43,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = StadiumUserController.class,
-    excludeFilters = {
-        @ComponentScan.Filter(
-            type = FilterType.ASSIGNABLE_TYPE,
-            classes = {
-                    WebSecurityConfig.class,
-                    JwtAuthenticationFilter.class
-            }
-        )
-    }
+        excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                                WebSecurityConfig.class,
+                                JwtAuthenticationFilter.class
+                        }
+                )
+        }
 )
 @MockBean(JpaMetamodelMappingContext.class)
 @WithMockUser(username="admin", roles={ "USER" })
@@ -75,7 +75,7 @@ class StadiumUserControllerTest {
     private List<StadiumTag> tags;
     private PageRequest pageable;
     private Page<StadiumResponseDto> stadiums;
-    private Page<StadiumDocument> stadiumDocuments;
+    private Page<StadiumResponseDto> stadiumDocuments;
 
     @BeforeEach
     void beforeEach() {
@@ -138,7 +138,13 @@ class StadiumUserControllerTest {
 
         pageable = PageRequest.of(0, 20);
         stadiums = new PageImpl<>(List.of(StadiumResponseDto.fromEntity(stadium)), pageable, 0);
-        stadiumDocuments = new PageImpl<>(List.of(StadiumDocument.fromEntity(stadium)), pageable, 0);
+        stadiumDocuments = new PageImpl<>(
+                List.of(StadiumResponseDto.fromDocument(
+                        StadiumDocument.fromEntity(stadium)
+                )),
+                pageable,
+                0
+        );
     }
 
     @Test
@@ -160,7 +166,7 @@ class StadiumUserControllerTest {
     @DisplayName("체육관 상세 조회 실패 : 일치하는 체육관 정보 없음")
     void getStadiumInfoTest_Fail_StadiumNotFound() throws Exception {
         // given
-        given(stadiumService.getStadiumInfo(anyLong()))
+        given(stadiumService.getStadiumInfo(anyLong(), any()))
                 .willThrow(new StadiumException(StadiumNotFound));
 
         // then
@@ -174,8 +180,8 @@ class StadiumUserControllerTest {
     @DisplayName("체육관 상세 조회 성공")
     void getStadiumInfoTest_Success() throws Exception {
         // given
-        given(stadiumService.getStadiumInfo(anyLong()))
-                .willReturn(StadiumInfoResponseDto.fromEntity(stadium));
+        given(stadiumService.getStadiumInfo(anyLong(), any()))
+                .willReturn(StadiumInfoResponseDto.fromEntity(stadium, true));
 
         // then
         mockMvc.perform(get("/stadiums/3/info"))
@@ -225,7 +231,7 @@ class StadiumUserControllerTest {
         mockMvc.perform(get("/stadiums/search?searchValue=체육관"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(stadium.getId()))
+                .andExpect(jsonPath("$.content[0].stadiumId").value(stadium.getId()))
                 .andExpect(jsonPath("$.content[0].name").value(stadium.getName()))
                 .andExpect(jsonPath("$.content.size()").value(stadiums.getTotalElements()));
     }

@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.minwonhaeso.esc.error.type.StadiumErrorCode.*;
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.StadiumNotFound;
+import static com.minwonhaeso.esc.error.type.StadiumErrorCode.UnAuthorizedAccess;
+import static com.minwonhaeso.esc.stadium.model.type.StadiumStatus.AVAILABLE;
 
 
 @RequiredArgsConstructor
@@ -30,14 +32,20 @@ public class StadiumService {
     private final StadiumTagRepository stadiumTagRepository;
     private final StadiumItemRepository stadiumItemRepository;
     private final StadiumSearchRepository stadiumSearchRepository;
+    private final StadiumLikeRepository stadiumLikeRepository;
 
     @Transactional(readOnly = true)
-    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId) {
+    public StadiumInfoResponseDto getStadiumInfo(Long stadiumId, Member member) {
         Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(
                 () -> new StadiumException(StadiumNotFound)
         );
 
-        return StadiumInfoResponseDto.fromEntity(stadium);
+        boolean isLike = member != null &&
+                stadiumLikeRepository.existsByStadiumAndMember(stadium, member);
+
+        System.out.println(member);
+
+        return StadiumInfoResponseDto.fromEntity(stadium, isLike);
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +55,7 @@ public class StadiumService {
 
     @Transactional(readOnly = true)
     public Page<StadiumResponseDto> getAllStadiumsByManager(Member member, Pageable pageable) {
-        return stadiumRepository.findByMember(member, pageable).map(StadiumResponseDto::fromEntity);
+        return stadiumRepository.findByMemberAndStatus(member, AVAILABLE, pageable).map(StadiumResponseDto::fromEntity);
     }
 
     @Transactional
@@ -65,7 +73,7 @@ public class StadiumService {
 
         if (request.getImgs().size() > 0) {
             List<StadiumImg> imgs = request.getImgs().stream().map(img -> StadiumImg.builder()
-                    .stadium(stadium).imgId(img.getPublicId()).imgUrl(img.getImgUrl()).build())
+                            .stadium(stadium).imgId(img.getPublicId()).imgUrl(img.getImgUrl()).build())
                     .collect(Collectors.toList());
 
             stadium.getImgs().addAll(imgs);
@@ -96,7 +104,7 @@ public class StadiumService {
 //        // 진짜 삭제
 //        stadiumSearchRepository.deleteById(stadiumId);
 //        stadiumRepository.delete(stadium);
-        
+
         stadium.deleteStadium();
         stadiumRepository.save(stadium);
         stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
@@ -140,17 +148,20 @@ public class StadiumService {
         if (stadium.getMember().getMemberId() != member.getMemberId()) {
             throw new StadiumException(UnAuthorizedAccess);
         }
+
         stadiumTagRepository.deleteAll(stadium.getTags());
         stadiumImgRepository.deleteAll(stadium.getImgs());
         stadiumItemRepository.deleteAll(stadium.getRentalStadiumItems());
         stadium.setAll(request);
+        System.out.println(request.getRentalItems());
         stadiumTagRepository.saveAll(stadium.getTags());
         stadiumImgRepository.saveAll(stadium.getImgs());
         stadiumItemRepository.saveAll(stadium.getRentalStadiumItems());
         stadiumRepository.save(stadium);
         StadiumDocument stadiumDocument = StadiumDocument.fromEntity(stadium);
         stadiumSearchRepository.save(stadiumDocument);
-        return StadiumInfoResponseDto.fromEntity(stadium);
+        boolean isLike = stadiumLikeRepository.existsByStadiumAndMember(stadium, member);
+        return StadiumInfoResponseDto.fromEntity(stadium, isLike);
     }
 
     public StadiumTagDto addStadiumTag(Member member, Long stadiumId, String tagName) {

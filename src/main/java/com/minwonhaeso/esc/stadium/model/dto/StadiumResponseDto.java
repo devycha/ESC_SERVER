@@ -1,6 +1,7 @@
 package com.minwonhaeso.esc.stadium.model.dto;
 
 import com.minwonhaeso.esc.stadium.model.entity.Stadium;
+import com.minwonhaeso.esc.stadium.model.entity.StadiumDocument;
 import com.minwonhaeso.esc.stadium.model.entity.StadiumTag;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -62,5 +63,21 @@ public class StadiumResponseDto {
                         stadium.getImgs().get(0).getImgUrl())
                 .tags(stadium.getTags().stream().map(StadiumTag::getName).collect(Collectors.toList()))
                 .build();
+    }
+
+    public static StadiumResponseDto fromDocument(StadiumDocument document) {
+        return StadiumResponseDto.builder()
+                .stadiumId(document.getId())
+                .name(document.getName())
+                .lat(document.getLat())
+                .lnt(document.getLnt())
+                .address(document.getAddress())
+                .starAvg(document.getStarAvg())
+                .weekdayPricePerHalfHour(document.getWeekdayPricePerHalfHour())
+                .holidayPricePerHalfHour(document.getHolidayPricePerHalfHour())
+                .imgUrl(document.getImgUrl())
+                .tags(document.getTags())
+                .build();
+
     }
 }
