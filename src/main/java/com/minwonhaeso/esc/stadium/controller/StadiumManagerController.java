@@ -51,9 +51,9 @@ public class StadiumManagerController {
         return ResponseEntity.ok().body(reservationList);
     }
 
-    @ApiOperation(value = "체육관 사용자 상세 정보 조회", notes = "")
+    @ApiOperation(value = "체육관 예약 상세 정보 조회", notes = "사용자(매니저)가 사용자의 예약 상세 정보를 조회한다.")
     @GetMapping("/manager/{stadiumId}/reservations/{reservationId}")
-    public ResponseEntity<?> getStadiumReservationInfo(
+    public ResponseEntity<ReservationInfoResponse> getStadiumReservationInfo(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
             @PathVariable Long stadiumId,
             @PathVariable Long reservationId
