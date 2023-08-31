@@ -1,4 +1,4 @@
-# ⚽ Easy Sports Club ⚽
+# ⚽ Easy Sports Club Version 2⚽
 
 <br/>
 
