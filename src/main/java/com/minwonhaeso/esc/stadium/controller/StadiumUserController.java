@@ -69,4 +69,13 @@ public class StadiumUserController {
         Page<StadiumResponseDto> stadiumDocuments = stadiumSearchService.search(searchValue, pageable);
         return ResponseEntity.ok().body(stadiumDocuments);
     }
+
+    @ApiOperation(value = "체육관 쿼리 검색", notes = "검색어를 입력하여 체육관을 조회한다.")
+    @GetMapping("/search/rdb")
+    public ResponseEntity<Page<StadiumResponseDto>> searchStadiumRDB(
+            @RequestParam String searchValue,
+            Pageable pageable) {
+        Page<StadiumResponseDto> stadiumDocuments = stadiumService.searchRDB(searchValue, pageable);
+        return ResponseEntity.ok().body(stadiumDocuments);
+    }
 }

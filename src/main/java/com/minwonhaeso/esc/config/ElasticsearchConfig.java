@@ -14,9 +14,6 @@ public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
     @Value("${elasticsearch.url}")
     private String hostUrl;
 
-    @Value("${elasticsearch.clusterName}")
-    private String clusterName;
-
     @Override
     public RestHighLevelClient elasticsearchClient() {
         ClientConfiguration clientConfiguration = ClientConfiguration.builder()

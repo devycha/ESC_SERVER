@@ -19,5 +19,5 @@ public interface StadiumRepository extends JpaRepository<Stadium, Long> {
     Page<Stadium> findAll(Pageable pageable);
     Page<Stadium> findByMemberAndStatus(Member member, StadiumStatus status, Pageable pageable);
     List<Stadium> findAllByMember(Member member);
-
+    Page<Stadium> findByNameContainingOrAddressContaining(String name, String address, Pageable pageable);
 }
