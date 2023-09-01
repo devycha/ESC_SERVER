@@ -88,7 +88,7 @@ public class StadiumService {
         }
 
         stadiumRepository.save(stadium);
-        stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
+//        stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
 
         return CreateStadiumResponse.fromEntity(stadium);
     }
@@ -107,7 +107,7 @@ public class StadiumService {
 
         stadium.deleteStadium();
         stadiumRepository.save(stadium);
-        stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
+//        stadiumSearchRepository.save(StadiumDocument.fromEntity(stadium));
     }
 
     public StadiumImgDto addStadiumImg(Member member, Long stadiumId, String imgUrl) {
@@ -159,7 +159,7 @@ public class StadiumService {
         stadiumItemRepository.saveAll(stadium.getRentalStadiumItems());
         stadiumRepository.save(stadium);
         StadiumDocument stadiumDocument = StadiumDocument.fromEntity(stadium);
-        stadiumSearchRepository.save(stadiumDocument);
+//        stadiumSearchRepository.save(stadiumDocument);
         boolean isLike = stadiumLikeRepository.existsByStadiumAndMember(stadium, member);
         return StadiumInfoResponseDto.fromEntity(stadium, isLike);
     }
@@ -216,5 +216,10 @@ public class StadiumService {
         }
 
         stadiumItemRepository.deleteByStadiumIdAndId(stadiumId, request.getId());
+    }
+
+    public Page<StadiumResponseDto> searchRDB(String searchValue, Pageable pageable) {
+        return stadiumRepository.findByNameContainingOrAddressContaining(searchValue, searchValue, pageable)
+                .map(StadiumResponseDto::fromEntity);
     }
 }

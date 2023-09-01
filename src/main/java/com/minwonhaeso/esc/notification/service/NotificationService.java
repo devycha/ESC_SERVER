@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,12 +26,14 @@ import static com.minwonhaeso.esc.notification.model.type.NotificationType.REVIE
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
+    @Transactional(readOnly = true)
     public Page<NotificationDto.Response> getAllReadNotifications(Member member, Pageable pageable) {
         return notificationRepository
                 .findAllByReceiverAndIsReadIsTrueOrderByCreatedAtDesc(member, pageable)
                 .map(NotificationDto.Response::fromEntity);
     }
 
+    @Transactional(readOnly = true)
     public Page<NotificationDto.Response> getAllUnreadNotifications(Member member, Pageable pageable) {
         return notificationRepository
                 .findAllByReceiverAndIsReadIsFalseOrderByCreatedAtDesc(member, pageable)
@@ -75,6 +78,7 @@ public class NotificationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public CheckNotificationResponse checkUnReadNotification(Member member) {
         Long unReadCounts = notificationRepository.countByReceiverAndIsReadIsFalse(member);
         return CheckNotificationResponse.builder()

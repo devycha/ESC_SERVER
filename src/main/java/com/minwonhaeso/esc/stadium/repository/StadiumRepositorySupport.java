@@ -44,3 +44,4 @@ public class StadiumRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
     }
 }
+

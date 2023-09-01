@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,6 +40,7 @@ public class NotificationController {
         return ResponseEntity.ok().body(notifications);
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/unread")
     public ResponseEntity<Page<NotificationDto.Response>> getAllUnreadNotifications(
             @AuthenticationPrincipal PrincipalDetail principalDetail,
